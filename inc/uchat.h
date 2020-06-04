@@ -8,6 +8,7 @@
 #include <string.h>
 #include <netinet/in.h>
 
+#define CHILD 0
 
 /* libmx */
 typedef struct s_list {
@@ -69,6 +70,8 @@ t_list 		  *mx_create_node(void *data);
 t_list 	  	  *mx_sort_list(t_list *lst, bool (*cmp)(void *, void *));
 
 
+
+void error(char *msg, int status);
 
 
 
