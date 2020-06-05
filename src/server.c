@@ -5,7 +5,7 @@ static void argv_validator(int argc) {
     char *msg;
 
     if (argc != 2) {
-        msg = "usage: ./server PORT.\n";
+        msg = "usage: ./server PORT\n";
         write(2, msg, (int)strlen(msg));
         exit(1);
     }
@@ -21,7 +21,7 @@ static int get_port(char **argv) {
     char *msg;
 
     if (port == 0) {
-        msg = "Invalid port number";
+        msg = "Invalid port number\n";
         write(2, msg, (int)strlen(msg));
         exit(1);
     }
