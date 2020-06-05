@@ -1,8 +1,8 @@
 #include "uchat.h"
 
-static void argv_validator(int argc, char **argv) {
+// Checks, wether user specified input correctly.
+static void argv_validator(int argc) {
     char *msg;
-    int port;
 
     if (argc != 2) {
         msg = "usage: ./server PORT.\n";
@@ -11,17 +11,26 @@ static void argv_validator(int argc, char **argv) {
     }
 }
 
-static void client_process(int client_socket) {
-    int n;
-    char buffer[256];
-    bzero(buffer,256);
-    n = read(client_socket,buffer,255);
-    write(1, buffer, 255);
+/*
+ * Checks, whather user sepcified port number correctly.
+ * If wrong port number - error msg prints + exit.
+ * In case of success  - returns <int> port number.
+ */
+static int get_port(char **argv) {
+    int port = atoi(argv[1]);
+    char *msg;
+
+    if (port == 0) {
+        msg = "Invalid port number";
+        write(2, msg, (int)strlen(msg));
+        exit(1);
+    }
+    return port;
 }
 
 int main(int argc, char **argv) {
-    argv_validator(argc, argv);
-    int port = atoi(argv[1]);
+    argv_validator(argc);
+    int port = get_port(argv);
 
     /* 
      * Creating socket, which works in IPv4
@@ -32,13 +41,14 @@ int main(int argc, char **argv) {
 
     /* <del>
      * Создаем структуру, которая описывает адресс сервера:
+     * bzero -  заполняет структуру \0
      * - семейство адрессов (aka тип - IPv4/IPv6)
      * - сам адресс.
      */
     struct sockaddr_in serv_addr;
     bzero((char *)&serv_addr, sizeof(serv_addr));
     serv_addr.sin_family      = AF_INET;           // <del> семейство адрессов.
-    serv_addr.sin_addr.s_addr = htonl(INADDR_ANY); // <del> адресс IPv4
+    serv_addr.sin_addr.s_addr = htonl(INADDR_ANY); // <del> адресс IPv4 PS. INADDR_ANY это вроже любой доступный локальный адресс (это не точно)
     serv_addr.sin_port        = htons(port);       // <del> номер порта
 
     /* <del>
@@ -54,7 +64,8 @@ int main(int argc, char **argv) {
      */
     listen(sockfd, 10);
 
-    /* Цикл, который слушает подключения - если возникает подклчение,
+    /* 
+     * Цикл, который слушает подключения - если возникает подклчение,
      * функция accept создает новый файловый дескриптор для этого конкретного клиента (также создаю новый процесс для этого)
      */
     while(1) {
@@ -68,7 +79,7 @@ int main(int argc, char **argv) {
 
         if (pid == CHILD) {
             close(sockfd);
-            client_process(newsockfd);
+            mx_client_process(newsockfd);
             exit(0);
         }
         else {
