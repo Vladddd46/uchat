@@ -17,6 +17,12 @@ SRC		=	error.c\
 			server.c\
 			mx_client_process.c\
 			mx_rsa_decoder.c\
+			mx_count_string_size.c\
+			mx_get_num_by_index.c\
+			mx_count_amount_of_digits.c\
+			mx_modexp.c\
+			mx_get_encrypt.c\
+			mx_get_decrypt.c\
 
 SRCS	=	$(addprefix $(SRCD)/, $(SRC))
 OBJS	=	$(addprefix $(OBJD)/, $(SRC:%.c=%.o))
