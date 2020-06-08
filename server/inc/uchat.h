@@ -8,6 +8,7 @@
 #include <string.h>
 #include <netinet/in.h>
 #include <math.h>
+#include <sqlite3.h>
 
 #define CHILD 0
 

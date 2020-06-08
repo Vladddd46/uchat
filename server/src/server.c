@@ -28,9 +28,49 @@ static int get_port(char **argv) {
     return port;
 }
 
+// static int mx_create_db(const char* dir) {
+//     sqlite3 *db;
+
+//     int tmp_ex = sqlite3_open(dir, &db);
+//     sqlite3_close(db);
+//     return tmp_ex;
+// }
+static int callback(void *NotUsed, int argc, char **argv, char **azColName) {
+    NotUsed = 0;
+    
+    for (int i = 0; i < argc; i++) {
+        printf("%s = %s\n", azColName[i], argv[i] ? argv[i] : "NULL");
+    }
+    
+    printf("\n");
+    
+    return 0;
+}
+
 int main(int argc, char** argv) {
     argv_validator(argc);
     int port = get_port(argv);
+
+    //-----------------------БАЗА-ДАННЫХ---------------------
+    // mx_create_db("users.db");
+    sqlite3* db;
+    char* err_msg = 0;
+
+    int baza = sqlite3_open("users.db", &db);
+    if(baza != SQLITE_OK) {
+        printf("Opende no OK");
+        sqlite3_close(db);
+    }
+    char *sql = "DROP TABLE IF EXISTS Users;"
+                "CREATE TABLE Users(Id INT, Login TEXT, Password TEXT);"
+                "INSERT Into Users VALUES(1, 'ylebid', 'abcd1234');";
+    baza = sqlite3_exec(db, sql, 0, 0, &err_msg);
+    sql = "SELECT * FROM Users;";
+    baza = sqlite3_exec(db, sql, callback, 0, &err_msg);
+
+    
+
+    //-------------------------------------------------------
 
     /* 
      * Creating socket, which works in IPv4
