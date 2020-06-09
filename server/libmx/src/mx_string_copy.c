@@ -1,12 +1,11 @@
 #include "libmx.h"
 
-// the same as mx_strdup().
+// Copies str into new allocated memmory.
 char *mx_string_copy(char *str) {
-    char *copy = mx_strnew(mx_strlen(str));
+    char *new_str = mx_strnew((int)strlen(str));
 
-    for(int i = 0; str[i]; i++)
-        copy[i] = str[i];
-    return copy;
+    for (int i = 0; str[i]; ++i) {
+        new_str[i] = str[i];
+    }
+    return new_str;
 }
-
-
