@@ -1,4 +1,4 @@
-#include "uchat.h"
+#include "server.h"
 
 // Checks, wether user specified input correctly.
 static void argv_validator(int argc) {
@@ -31,7 +31,6 @@ static int get_port(char **argv) {
 int main(int argc, char **argv) {
     argv_validator(argc);
     int port = get_port(argv);
-
     /* 
      * Creating socket, which works in IPv4
      * and has TCP type.

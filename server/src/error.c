@@ -1,4 +1,4 @@
-#include "uchat.h"
+#include "server.h"
 
 /*
  * Prints error msg, if status - negativ number(commonly -1)

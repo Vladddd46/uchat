@@ -10,7 +10,7 @@ LMXD	=	libmx
 LMXA:=	$(LMXD)/libmx.a
 LMXI:=	$(LMXD)/$(INCD)
 
-INC		=	uchat.h
+INC		=	server.h
 INCS	=	$(addprefix $(INCD)/, $(INC))
 
 SRC		=	error.c\

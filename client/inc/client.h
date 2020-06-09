@@ -8,6 +8,7 @@
 #include <string.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
+#include "libmx.h"
 
 #define CHILD 0
 
