@@ -6,7 +6,7 @@ SRCD	=	src
 INCD	=	inc
 OBJD	=	obj
 
-LMXD	=	libmx
+LMXD	=	../libmx
 LMXA:=	$(LMXD)/libmx.a
 LMXI:=	$(LMXD)/$(INCD)
 
