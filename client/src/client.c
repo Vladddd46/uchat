@@ -2,7 +2,7 @@
 #include "libmx.h"
 
 static GtkWidget *login;
-static GtkWidget *Password;
+static GtkWidget *password;
 static GtkWidget *SecondPassword;
 static GtkWidget *Registration;
 //static GtkWidget *newbutton;
@@ -25,6 +25,13 @@ void back_to_menu(GtkWidget *back, int sockfd){
     main_menu(sockfd);
 }
 
+static char *login_data_former(char *user_login, char *user_password) { 
+    char *spaced_login = mx_strjoin(user_login, " ");
+    char *data         = mx_strjoin(spaced_login, user_password);
+    free(spaced_login);
+    return data;
+}
+
 static char *mx_packet_former(char *operation, char *data) {
     char *array[5];
     array[0] = mx_string_copy("OPERATION: ");
@@ -44,8 +51,8 @@ static char *mx_packet_former(char *operation, char *data) {
  * Checks, whether syntax of login, user specified, is correct.
  * In case of incorrect login return 1.
  */
-static int login_validator(char *login) {
-    if (mx_is_in_str(login, ' '))
+static int login_validator(char *user_login) {
+    if (mx_is_in_str(user_login, ' '))
         return 1;
     return 0;
 }
@@ -54,8 +61,8 @@ static int login_validator(char *login) {
  * Checks, whether syntax of password, user specified, is correct.
  * In case of incorrect password return 1.
  */
-static int password_validator(char *password) {
-    if (mx_is_in_str(password, ' '))
+static int password_validator(char *user_password) {
+    if (mx_is_in_str(user_password, ' '))
         return 1;
     return 0;
 }
@@ -71,7 +78,7 @@ void do_login(GtkWidget *entryspawn, int sockfd) {
 
     // Getting input.
     char *bufferLogin    = (char *)gtk_entry_get_text(GTK_ENTRY(login));
-    char *bufferPassword = (char *)gtk_entry_get_text(GTK_ENTRY(Password));
+    char *bufferPassword = (char *)gtk_entry_get_text(GTK_ENTRY(password));
     /* Денис, в этом ифе нужно сделать, чтобы выводилась красная(может и не красная) строка "Недопустимые символы в пароле/логине"
        + Нужно разделить на 2 ифа - неправильный пароль и неправильный логин -> потом выводить соответсвующие сообщения */ 
     if (login_validator(bufferLogin) || password_validator(bufferPassword)) {
@@ -79,7 +86,7 @@ void do_login(GtkWidget *entryspawn, int sockfd) {
         exit(1);                                       // debug
     }
 
-    char *data   = mx_strjoin(bufferLogin, bufferPassword);
+    char *data   = login_data_former(bufferLogin, bufferPassword);
     char *packet = mx_packet_former("login", data);
 
     // Sendind formed packet to server.
@@ -99,9 +106,9 @@ void do_registration(GtkWidget *Registration, int sockfd){
     gtk_entry_set_placeholder_text(login,"Login");
     gtk_grid_attach(GTK_GRID(grid), login, 0, 99, 2, 1);
 
-    Password = gtk_entry_new();
-    gtk_entry_set_placeholder_text(Password,"Password");
-    gtk_grid_attach(GTK_GRID(grid), Password, 0, 100, 2, 1);
+    password = gtk_entry_new();
+    gtk_entry_set_placeholder_text(password,"Password");
+    gtk_grid_attach(GTK_GRID(grid), password, 0, 100, 2, 1);
 
     SecondPassword = gtk_entry_new();
     gtk_entry_set_placeholder_text(SecondPassword,"Confirm your password");
@@ -156,10 +163,10 @@ void main_menu(int sockfd) {
     labell = gtk_label_new("");
     gtk_grid_attach(GTK_GRID(grid), labell, 1, 100, 1, 1);
 
-    Password = gtk_entry_new();
-    gtk_entry_set_placeholder_text(Password,"Password");
-    gtk_widget_set_name(Password,"Password");
-    gtk_grid_attach(GTK_GRID(grid), Password, 1, 101, 1, 1);
+    password = gtk_entry_new();
+    gtk_entry_set_placeholder_text(password,"Password");
+    gtk_widget_set_name(password,"Password");
+    gtk_grid_attach(GTK_GRID(grid), password, 1, 101, 1, 1);
     
     labell2 = gtk_label_new("");
     gtk_grid_attach(GTK_GRID(grid), labell2, 1, 102, 1, 1);
