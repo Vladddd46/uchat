@@ -1,6 +1,6 @@
 NAME	=	client
 
-CFLG	=	-std=c11 $(addprefix -W, all extra error pedantic) -g
+CFLG	=	`pkg-config --cflags --libs gtk+-3.0` -std=c11
 
 SRCD	=	src
 INCD	=	inc

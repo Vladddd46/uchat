@@ -8,11 +8,14 @@
 #include <string.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
-#include "libmx.h"
+#include <gtk/gtk.h>
 
 #define CHILD 0
 
-void error(char *msg, int status);
+static GtkWidget *grid;
 
+void error(char *msg, int status);
+void back_to_menu(GtkWidget *back, int sockfd);
+void main_menu(int sockfd);
 
 
