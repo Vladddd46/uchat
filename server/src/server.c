@@ -28,16 +28,11 @@ static int get_port(char **argv) {
     return port;
 }
 
-int main(int argc, char **argv) {
-    argv_validator(argc);
-    int port = get_port(argv);
-    /* 
-     * Creating socket, which works in IPv4
-     * and has TCP type.
-     */
-    int sockfd = socket(AF_INET, SOCK_STREAM, 0);
-    error("Creating socket error", sockfd);
-
+/*
+ * Describes address of server.
+ * Returns structure sockaddr_in with description.
+ */
+static struct sockaddr_in serv_address_description(int port) {
     /* <del>
      * Создаем структуру, которая описывает адресс сервера:
      * bzero -  заполняет структуру \0
@@ -49,23 +44,41 @@ int main(int argc, char **argv) {
     serv_addr.sin_family      = AF_INET;           // <del> семейство адрессов.
     serv_addr.sin_addr.s_addr = htonl(INADDR_ANY); // <del> адресс IPv4 PS. INADDR_ANY это вроже любой доступный локальный адресс (это не точно)
     serv_addr.sin_port        = htons(port);       // <del> номер порта
+    return serv_addr;
+}
 
-    /* <del>
-     * связываем сокет с определенным адрессом, описанным в структуре.
-     * serv_addr надо приводить к типу sockaddr (так надо)
+int main(int argc, char **argv) {
+    argv_validator(argc);
+    int port = get_port(argv);
+    
+    /* 
+     * Creating listening socket, which works in IPv4
+     * and has TCP type.
+     */
+    int sockfd = socket(AF_INET, SOCK_STREAM, 0);
+    error("Creating socket error", sockfd);
+
+    // Getting structure with server address description.
+    struct sockaddr_in serv_addr = serv_address_description(port);
+
+    /* 
+     * Binding listening socket with certain address, describes in sructure serv_addr.
+     * serv_addr must be cast to sockaddr.
      */
     int bind_status = bind(sockfd, (struct  sockaddr *)&serv_addr, sizeof(serv_addr));
     error("Bind error", bind_status);
 
-    /* <del> 
-     * с помощью функции listen сервер заявляет о своем желании принимать запросы на установление соединения.
-     * второй аргумент = лимит максимально возможных подключений.
+    /* 
+     * Making sockfd listening for incomming requests.
+     * The second argument - number of max. number of requests. 
+     * If more - incomming requests must que.
      */
     listen(sockfd, 10);
 
     /* 
-     * Цикл, который слушает подключения - если возникает подклчение,
-     * функция accept создает новый файловый дескриптор для этого конкретного клиента (также создаю новый процесс для этого)
+     * Loop, which waits for incomming requests.
+     * accept() creates new socket, which will be used for certain client.
+     * For communicating with client, new process is created.
      */
     while(1) {
         struct sockaddr_in client;

@@ -5,6 +5,9 @@
 #include <stdbool.h>
 #include <string.h>
 
+#define true 1
+#define false 0
+
 typedef struct s_list {
 	void *data;
 	struct s_list *next;
