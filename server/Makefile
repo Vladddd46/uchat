@@ -6,7 +6,7 @@ SRCD	=	src
 INCD	=	inc
 OBJD	=	obj
 
-LMXD	=	libmx
+LMXD	=	../libmx
 LMXA:=	$(LMXD)/libmx.a
 LMXI:=	$(LMXD)/$(INCD)
 
@@ -27,7 +27,7 @@ $(FILE:a/%=%)
 #install: $(LMXA) $(NAME)
 
 $(NAME): $(LMXA) $(OBJS)
-	@clang $(CFLG) $(OBJS) -L$(LMXD) -lmx -o $@
+	@clang $(CFLG) $(OBJS) -L$(LMXD) -lsqlite3 -lmx -o $@
 	@printf "\r\33[2K$@ \033[32;1mcreated\033[0m\n"
 
 $(OBJD)/%.o: $(SRCD)/%.c $(INCS)

@@ -6,7 +6,7 @@ SRCD	=	src
 INCD	=	inc
 OBJD	=	obj
 
-LMXD	=	libmx
+LMXD	=	../libmx
 LMXA:=	$(LMXD)/libmx.a
 LMXI:=	$(LMXD)/$(INCD)
 
@@ -15,7 +15,6 @@ INCS	=	$(addprefix $(INCD)/, $(INC))
 
 SRC		=	error.c\
 			client.c\
-
 
 SRCS	=	$(addprefix $(SRCD)/, $(SRC))
 OBJS	=	$(addprefix $(OBJD)/, $(SRC:%.c=%.o))
