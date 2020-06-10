@@ -24,6 +24,7 @@ int 		  mx_get_substr_index( char *str,  char *sub);
 int 		  mx_get_char_index( char *str, char c);
 int 		  mx_count_substr(char *str, char *sub);
 int 		  mx_list_size(t_list *list);
+int 		  mx_is_in_str(char *str, char c);
 int 		  mx_memcmp( void *s1,  void *s2, size_t n);
 char 		  *mx_string_copy(char *str);
 char 		  *mx_strnew( int size);

@@ -62,6 +62,7 @@ SRC		=	mx_array_joiner.c\
 		mx_strstr.c\
 		mx_strtrim.c\
 		mx_swap_char.c\
+		mx_is_in_str.c\
 
 
 SRCS	=	$(addprefix $(SRCD)/, $(SRC))

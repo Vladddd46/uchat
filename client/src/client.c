@@ -1,4 +1,5 @@
 #include "client.h"
+#include "libmx.h"
 
 static GtkWidget *login;
 static GtkWidget *Password;
@@ -19,24 +20,44 @@ static void destroy(GtkWidget *widget, gpointer data){
 
 
 void back_to_menu(GtkWidget *back, int sockfd){
-gtk_widget_destroy(grid);
-gtk_widget_destroy(back);
-main_menu(sockfd);
+    gtk_widget_destroy(grid);
+    gtk_widget_destroy(back);
+    main_menu(sockfd);
 }
 
-void do_login(GtkWidget *entryspawn, int sockfd){
+static char *mx_packet_former(char *operation, char *data) {
+    char *array[5];
+    array[0] = mx_string_copy("OPERATION: ");
+    array[1] = mx_string_copy(operation);
+    array[2] = mx_string_copy("\nDATA: ");
+    array[3] = mx_string_copy(data);
+    array[4] = NULL;
+
+    char *packet = mx_array_joiner(array);
+    for (int i = 0; array[i]; ++i)
+        free(array[i]);
+    return packet;
+}
+
+
+void do_login(GtkWidget *entryspawn, int sockfd) {
     //newbutton = gtk_label_new("");
     //printf("%d\n",sockfd );
     //gtk_grid_attach(GTK_GRID(grid), newbutton, 1, n, 1, 1);
-    char *buffer = (char *)gtk_entry_get_text(GTK_ENTRY(login));
     //gtk_label_set_text(GTK_LABEL(newbutton), buffer);
     //gtk_widget_set_name(newbutton,"labe2");
     //gtk_widget_show (newbutton);
     //n--;
+
+    // Getting input.
+    char *bufferLogin    = (char *)gtk_entry_get_text(GTK_ENTRY(login));
     char *bufferPassword = (char *)gtk_entry_get_text(GTK_ENTRY(Password));
-    send(sockfd,buffer, (int)strlen(buffer),0);
-    send(sockfd,bufferPassword,(int)strlen(bufferPassword),0);
-    //send(sockfd,buffer,sizeof(buffer),0);
+
+    char *data   = mx_strjoin(bufferLogin, bufferPassword);
+    char *packet = mx_packet_former("login", data);
+
+    // Sendind formed packet to server.
+    send(sockfd, packet, (int)strlen(packet),0);
 }
 
 void do_registration(GtkWidget *Registration, int sockfd){
