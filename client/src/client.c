@@ -40,6 +40,26 @@ static char *mx_packet_former(char *operation, char *data) {
 }
 
 
+/*
+ * Checks, whether syntax of login, user specified, is correct.
+ * In case of incorrect login return 1.
+ */
+static int login_validator(char *login) {
+    if (mx_is_in_str(login, ' '))
+        return 1;
+    return 0;
+}
+
+/*
+ * Checks, whether syntax of password, user specified, is correct.
+ * In case of incorrect password return 1.
+ */
+static int password_validator(char *password) {
+    if (mx_is_in_str(password, ' '))
+        return 1;
+    return 0;
+}
+
 void do_login(GtkWidget *entryspawn, int sockfd) {
     //newbutton = gtk_label_new("");
     //printf("%d\n",sockfd );
@@ -52,6 +72,12 @@ void do_login(GtkWidget *entryspawn, int sockfd) {
     // Getting input.
     char *bufferLogin    = (char *)gtk_entry_get_text(GTK_ENTRY(login));
     char *bufferPassword = (char *)gtk_entry_get_text(GTK_ENTRY(Password));
+    /* Денис, в этом ифе нужно сделать, чтобы выводилась красная(может и не красная) строка "Недопустимые символы в пароле/логине"
+       + Нужно разделить на 2 ифа - неправильный пароль и неправильный логин -> потом выводить соответсвующие сообщения */ 
+    if (login_validator(bufferLogin) || password_validator(bufferPassword)) {
+        write(2, "incorrect login or password\n", 29); // debug
+        exit(1);                                       // debug
+    }
 
     char *data   = mx_strjoin(bufferLogin, bufferPassword);
     char *packet = mx_packet_former("login", data);
