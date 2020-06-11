@@ -5,7 +5,7 @@ OBJS	=	server/obj
 NAMECLIENT	=	/client
 NAMESERVER	=	./server/server
 
-LMXD	=	libmx
+LMXD	=	./libs/libmx
 MKCL	=	make\
 			clean\
 
