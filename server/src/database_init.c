@@ -21,4 +21,5 @@ void database_init() {
     char *err_msg = 0;
     status = sqlite3_exec(db, sql, 0, 0, &err_msg);
     dberror(db, status, "Error");
+    sqlite3_close(db);
 }
