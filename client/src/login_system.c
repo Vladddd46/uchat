@@ -41,7 +41,8 @@ int login_system(int socket, char *user_login, char *user_password) {
     if (packet == NULL)
         return PACKET_CREATION_ERROR;
 
-    printf("%s\n", packet);
+    // Sendind formed packet to server.
+    send(socket, packet, (int)strlen(packet),0);
     return 0;
 }
 

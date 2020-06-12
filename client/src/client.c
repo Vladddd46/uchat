@@ -86,11 +86,7 @@ void do_login(GtkWidget *entryspawn, int sockfd) {
         exit(1);                                       // debug
     }
 
-    char *data   = login_data_former(bufferLogin, bufferPassword);
-    char *packet = mx_packet_former("login", data);
-
-    // Sendind formed packet to server.
-    send(sockfd, packet, (int)strlen(packet),0);
+    login_system(sockfd, bufferLogin, bufferPassword);
 }
 
 void do_registration(GtkWidget *Registration, int sockfd){
