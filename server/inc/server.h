@@ -9,6 +9,7 @@
 #include <netinet/in.h>
 #include <sqlite3.h>
 #include "libmx.h"
+#include "cJSON.h"
 
 #define CHILD 0
 
