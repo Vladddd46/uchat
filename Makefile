@@ -1,5 +1,7 @@
 CLN		=	./client
-SRV		=	./server 
+SRV		=	./server
+LIBMX		= 	./libs/libmx
+CJSON 		= 	./libs/cjson
 OBJC	=	client/obj
 OBJS	=	server/obj
 NAMECLIENT	=	/client
@@ -10,6 +12,8 @@ MKCL	=	make\
 			clean\
 
 all:
+	@make -sC $(LIBMX)
+	@make -sC $(CJSON)
 	@make -sC $(CLN)
 	@make -sC $(SRV)
 

@@ -9,6 +9,8 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <gtk/gtk.h>
+#include "cJSON.h"
+#include "libmx.h"
 
 #define CHILD 0
 
