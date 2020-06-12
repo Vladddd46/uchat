@@ -7,11 +7,12 @@
 #include <stdbool.h>
 #include <string.h>
 #include <netinet/in.h>
+#include <sqlite3.h>
 #include "libmx.h"
 
 #define CHILD 0
 
 void error(char *msg, int status);
 void mx_client_process(int client_socket);
-
+void database_init();
 

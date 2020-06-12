@@ -1,6 +1,6 @@
 NAME	=	server
 
-CFLG	=	-std=c11 $(addprefix -W, all extra error pedantic) -g
+CFLG	=	-std=c11 -lsqlite3
 
 SRCD	=	src
 INCD	=	inc
@@ -16,6 +16,7 @@ INCS	=	$(addprefix $(INCD)/, $(INC))
 SRC		=	error.c\
 			server.c\
 			mx_client_process.c\
+			database_init.c\
 
 SRCS	=	$(addprefix $(SRCD)/, $(SRC))
 OBJS	=	$(addprefix $(OBJD)/, $(SRC:%.c=%.o))

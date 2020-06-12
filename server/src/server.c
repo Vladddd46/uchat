@@ -50,6 +50,7 @@ static struct sockaddr_in serv_address_description(int port) {
 int main(int argc, char **argv) {
     argv_validator(argc);
     int port = get_port(argv);
+    database_init();
     
     /* 
      * Creating listening socket, which works in IPv4
