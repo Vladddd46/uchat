@@ -86,7 +86,18 @@ void do_login(GtkWidget *entryspawn, int sockfd) {
         exit(1);                                       // debug
     }
 
-    login_system(sockfd, bufferLogin, bufferPassword);
+    // Froms and sends login packet to server and gets response.
+    int status = login_system(sockfd, bufferLogin, bufferPassword);
+
+    if (status == LOGIN_SUCCESS) {
+        printf("%s\n", "You are logged in\n");
+    }
+    else if (status == LOGIN_WRONG_LOGIN) {
+        printf("%s\n", "Wrong login\n");
+    }
+    else if (status == LOGIN_WRONG_PASSWORD) {
+        printf("%s\n", "Wrong password\n");
+    }
 }
 
 void do_registration(GtkWidget *Registration, int sockfd){
