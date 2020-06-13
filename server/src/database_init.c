@@ -16,7 +16,8 @@ void database_init() {
     int status = sqlite3_open("uchat.db", &db);
     dberror(db, status, "Can`t open database");
 
-    char *sql = "CREATE TABLE IF NOT EXISTS Users(Id INT, Login TEXT, Password TEXT, Nickname TEXT);";
+    char *sql = "CREATE TABLE IF NOT EXISTS Users(Id INT, Login TEXT, Password TEXT, Nickname TEXT);"
+                "INSERT INTO Users VALUES(0, 'admin', 'qwerty', 'admin');";
 
     char *err_msg = 0;
     status = sqlite3_exec(db, sql, 0, 0, &err_msg);

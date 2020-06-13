@@ -30,7 +30,7 @@ void mx_client_process(int client_socket) {
 
         char *packet_type = packet_type_determiner(buffer);
         if (!strcmp(packet_type, "login")) {
-            printf("%s\n", "Hello in login module");
+            login(client_socket, buffer);
         }
 		
         // refreshing buffer.
