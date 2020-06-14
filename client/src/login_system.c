@@ -46,9 +46,10 @@ int login_system(int socket, char *user_login, char *user_password) {
 
     char buffer[256];
     bzero(buffer,256);
-    read(socket, buffer, 255);
-    printf(">>%s\n", buffer);
+    recv(socket, buffer, 255, 0);
 
-    return 0;
+    int result = atoi(buffer);
+
+    return result;
 }
 
