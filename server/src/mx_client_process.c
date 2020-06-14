@@ -1,6 +1,5 @@
 #include "server.h"
 
-
 // Determines type of packet.
 static char *packet_type_determiner(char *buffer) {
     char *packet_type = NULL;
@@ -19,18 +18,16 @@ static char *packet_type_determiner(char *buffer) {
     return packet_type;
 }
 
-
 void mx_client_process(int client_socket) {
-    int n;
+    int status;
     char buffer[256];
     bzero(buffer,256);
     while(1) {
-        n = read(client_socket, buffer, 255);
-
+        read(client_socket, buffer, 255);
 
         char *packet_type = packet_type_determiner(buffer);
         if (!strcmp(packet_type, "login")) {
-            login(client_socket, buffer);
+            status = login(client_socket, buffer);
         }
 		
         // refreshing buffer.
