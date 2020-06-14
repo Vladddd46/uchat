@@ -31,22 +31,18 @@ static int data_validator(char **data) {
 
     // Forming pattern.
     char *pattern = "SELECT COUNT(*) FROM Users WHERE Login='";
-    int len = (int)strlen(pattern) + (int)strlen(data[0]);
+    int len       = (int)strlen(pattern) + (int)strlen(data[0]) + (int)strlen("' AND Password='") + 
+    (int)strlen(data[1]) + (int)strlen("';");
     char sql[len];
-    sprintf(sql, "%s%s%s", pattern, data[0], "';");
-
+    sprintf(sql, "%s%s%s%s%s", pattern, data[0], "' AND Password='", data[1],"';");
 
     sqlite3_stmt *res;
     int rc = sqlite3_prepare_v2(db, sql, -1, &res, 0);
-
     sqlite3_step(res); 
-    char *s = (char *)sqlite3_column_text(res, 0);
-    if (!strcmp(s, "0")) {
-        printf("%s\n", "No user with such login");
+    char *user_exist = (char *)sqlite3_column_text(res, 0);
+
+    if (!strcmp(user_exist, "0"))
         result = LOGIN_WRONG_LOGIN;
-    }
-
-
     sqlite3_finalize(res);
     sqlite3_close(db);
     return result;
@@ -56,10 +52,11 @@ static int data_validator(char **data) {
 int login(int socket, char *packet) {
 
     /*
-     * Retrieves login and password from database. 
+     * Retrieves login and password from received packet. 
      * Returns arr[2] = {"login", "password"};
      */
     char **data = data_retriever(packet);
+    
     int  status = data_validator(data);
 
     printf("%d\n", status);
