@@ -14,8 +14,7 @@
 #define CHILD 0
 
 #define LOGIN_SUCCESS 			1
-#define LOGIN_WRONG_LOGIN 		2
-#define LOGIN_WRONG_PASSWORD 	3
+#define LOGIN_FAIL  	     	2
 
 void error(char *msg, int status);
 void mx_client_process(int client_socket);
