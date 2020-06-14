@@ -1,7 +1,8 @@
 #include "server.h"
 
 /*
- * Returns array of two strings. 
+ * Retrieves data from received packet.
+ * Returns array[2] with two strings: 
  * array[0] = login. array[1] = password
  */
 static char **data_retriever(char *packet) {
@@ -26,7 +27,6 @@ static char **data_retriever(char *packet) {
 
 static int data_validator(char **data) {
     int result = LOGIN_SUCCESS;
-
     sqlite3 *db = opening_db();
 
     // Forming pattern.
@@ -57,6 +57,11 @@ int login(int socket, char *packet) {
      */
     char **data = data_retriever(packet);
     
+    /*
+     * Checks, whether user with such login(data[0]) 
+     * and such password(data[1]) exists.
+     * Returns the corresponding code.
+     */
     int  status = data_validator(data);
 
     printf("%d\n", status);
