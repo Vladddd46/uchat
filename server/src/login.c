@@ -37,7 +37,6 @@ static int data_validator(char **data) {
 
 
     sqlite3_stmt *res;
-    sqlite3_stmt *res2;
     int rc = sqlite3_prepare_v2(db, sql, -1, &res, 0);
 
     sqlite3_step(res); 
@@ -46,26 +45,9 @@ static int data_validator(char **data) {
         printf("%s\n", "No user with such login");
         result = LOGIN_WRONG_LOGIN;
     }
-    else {
-
-        char *pattern2 = "SELECT Password FROM Users WHERE Login='";
-        int len2 = (int)strlen(pattern2) + (int)strlen(data[0]);
-        char sql2[len2];
-        sprintf(sql2, "%s%s%s", pattern2, data[0], "';");
-
-        // sqlite3_stmt *res2;
-        rc = sqlite3_prepare_v2(db, sql2, -1, &res2, 0);
-        sqlite3_step(res2);
-        char *s2 = (char *)sqlite3_column_text(res2, 0);
-        if (strcmp(s, data[1]) != 0) {
-            printf("%s\n", "Wrong password");
-            result = LOGIN_WRONG_PASSWORD;
-        }
-    }
 
 
     sqlite3_finalize(res);
-    sqlite3_finalize(res2);
     sqlite3_close(db);
     return result;
 }

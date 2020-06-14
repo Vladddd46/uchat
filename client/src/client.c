@@ -25,28 +25,6 @@ void back_to_menu(GtkWidget *back, int sockfd){
     main_menu(sockfd);
 }
 
-static char *login_data_former(char *user_login, char *user_password) { 
-    char *spaced_login = mx_strjoin(user_login, " ");
-    char *data         = mx_strjoin(spaced_login, user_password);
-    free(spaced_login);
-    return data;
-}
-
-static char *mx_packet_former(char *operation, char *data) {
-    char *array[5];
-    array[0] = mx_string_copy("OPERATION: ");
-    array[1] = mx_string_copy(operation);
-    array[2] = mx_string_copy("\nDATA: ");
-    array[3] = mx_string_copy(data);
-    array[4] = NULL;
-
-    char *packet = mx_array_joiner(array);
-    for (int i = 0; array[i]; ++i)
-        free(array[i]);
-    return packet;
-}
-
-
 /*
  * Checks, whether syntax of login, user specified, is correct.
  * In case of incorrect login return 1.
@@ -89,7 +67,7 @@ void do_login(GtkWidget *entryspawn, int sockfd) {
     // Froms and sends login packet to server and gets response.
     int status = login_system(sockfd, bufferLogin, bufferPassword);
 
-    if (status == LOGIN_SUCCESS) {
+    if (status      == LOGIN_SUCCESS) {
         printf("%s\n", "You are logged in\n");
     }
     else if (status == LOGIN_WRONG_LOGIN) {

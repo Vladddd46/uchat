@@ -21,6 +21,8 @@
 static GtkWidget *grid;
 
 void error(char *msg, int status);
+
+// GUI
 void back_to_menu(GtkWidget *back, int sockfd);
 void main_menu(int sockfd);
 
