@@ -14,8 +14,9 @@
 
 #define CHILD 0
 
-#define LOGIN_SUCCESS 			1
-#define LOGIN_FAIL      		2
+#define LOGIN_SUCCESS 			     1
+#define LOGIN_FAIL      		     2 
+#define LOGIN_PACKET_CREATION_ERROR  3
 
 static GtkWidget *grid;
 

@@ -71,6 +71,10 @@ void do_login(GtkWidget *entryspawn, int sockfd) {
         printf("%s\n", "DEBUG: Wrong login or password\n");
         // TODO: ошибка: Неправильный логин/пароль
     }
+    else if (status == LOGIN_PACKET_CREATION_ERROR) {
+        printf("%s\n", "DEBUG: Packet was  not formed. Error occurred\n");
+        // TODO: ошибка: Ошибка формирования пакета(в теории это возможно, на практике хз).
+    }
 }
 
 void do_registration(GtkWidget *Registration, int sockfd){

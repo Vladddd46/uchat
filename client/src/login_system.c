@@ -1,9 +1,11 @@
 #include "client.h"
 
-#define PACKET_CREATION_ERROR 10
-
 /*
- * Do user authentication.
+ * System, which implements authentication of the user.
+ * 1. Takes user-specified login and password.
+ * 2. Froms "login" packet.
+ * 3. Sends formed packet to the server.
+ * 4. Waits for server`s answer. (Server returns corresponding code)
  */
 
 static int json_error(cJSON *object) {
@@ -14,7 +16,7 @@ static int json_error(cJSON *object) {
     return 0;
 }
 
-// Froms packet in json format.
+// Froms  "login" packet in json format.
 static char *json_packet_creation(char *user_login, char *user_password) {
     cJSON *packet = cJSON_CreateObject();
     char  *packet_str = NULL;
@@ -39,17 +41,17 @@ static char *json_packet_creation(char *user_login, char *user_password) {
 int login_system(int socket, char *user_login, char *user_password) {
     char *packet = json_packet_creation(user_login, user_password);
     if (packet == NULL)
-        return PACKET_CREATION_ERROR;
+        return LOGIN_PACKET_CREATION_ERROR;
 
-    // Sendind formed packet to server.
+    // Sending formed packet to server.
     send(socket, packet, (int)strlen(packet),0);
 
+    // Receiving status code of login.
     char buffer[256];
     bzero(buffer,256);
     recv(socket, buffer, 255, 0);
-
     int result = atoi(buffer);
-
+    
     return result;
 }
 
