@@ -43,6 +43,12 @@ int login_system(int socket, char *user_login, char *user_password) {
 
     // Sendind formed packet to server.
     send(socket, packet, (int)strlen(packet),0);
+
+    char buffer[256];
+    bzero(buffer,256);
+    read(socket, buffer, 255);
+    printf(">>%s\n", buffer);
+
     return 0;
 }
 

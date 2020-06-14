@@ -62,9 +62,9 @@ int login(int socket, char *packet) {
      * and such password(data[1]) exists.
      * Returns the corresponding code.
      */
-    int  status = data_validator(data);
+    char *status = mx_itoa(data_validator(data));
 
-    printf("%d\n", status);
-
+    send(socket, status, (int)strlen(status), 0);
+    printf("lpplpl\n");
     return 0;
 }
