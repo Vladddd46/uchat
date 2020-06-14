@@ -26,7 +26,7 @@ void back_to_menu(GtkWidget *back, int sockfd){
 }
 
 /*
- * Checks, whether syntax of login, user specified, is correct.
+ * Checks, whether format of login, user specified, is correct.
  * In case of incorrect login return 1.
  */
 static int login_validator(char *user_login) {
@@ -36,7 +36,7 @@ static int login_validator(char *user_login) {
 }
 
 /*
- * Checks, whether syntax of password, user specified, is correct.
+ * Checks, whether format of password, user specified, is correct.
  * In case of incorrect password return 1.
  */
 static int password_validator(char *user_password) {
@@ -45,36 +45,31 @@ static int password_validator(char *user_password) {
     return 0;
 }
 
+// Implements login functionality.
 void do_login(GtkWidget *entryspawn, int sockfd) {
-    //newbutton = gtk_label_new("");
-    //printf("%d\n",sockfd );
-    //gtk_grid_attach(GTK_GRID(grid), newbutton, 1, n, 1, 1);
-    //gtk_label_set_text(GTK_LABEL(newbutton), buffer);
-    //gtk_widget_set_name(newbutton,"labe2");
-    //gtk_widget_show (newbutton);
-    //n--;
-
-    // Getting input.
+    // Getting input from input boxes.
     char *bufferLogin    = (char *)gtk_entry_get_text(GTK_ENTRY(login));
     char *bufferPassword = (char *)gtk_entry_get_text(GTK_ENTRY(password));
-    /* Денис, в этом ифе нужно сделать, чтобы выводилась красная(может и не красная) строка "Недопустимые символы в пароле/логине"
-       + Нужно разделить на 2 ифа - неправильный пароль и неправильный логин -> потом выводить соответсвующие сообщения */ 
-    if (login_validator(bufferLogin) || password_validator(bufferPassword)) {
-        write(2, "incorrect login or password\n", 29); // debug
-        exit(1);                                       // debug
+    
+    // Validation of login and password format.
+    if (login_validator(bufferLogin)) {
+        write(2, "DEBUG: incorrect login fromat\n", 33);
+        exit(1);                                       
+    }
+    else if (password_validator(bufferPassword)) {
+        write(2, "DEBUG: incorrect password fromat\n", 35);
+        exit(1);
     }
 
     // Froms and sends login packet to server and gets response.
     int status = login_system(sockfd, bufferLogin, bufferPassword);
-
     if (status      == LOGIN_SUCCESS) {
-        printf("%s\n", "You are logged in\n");
+        printf("%s\n", "DEBUG: You are logged in\n");
+        // TODO: запуск окна после логина
     }
-    else if (status == LOGIN_WRONG_LOGIN) {
-        printf("%s\n", "Wrong login\n");
-    }
-    else if (status == LOGIN_WRONG_PASSWORD) {
-        printf("%s\n", "Wrong password\n");
+    else if (status == LOGIN_FAIL) {
+        printf("%s\n", "DEBUG: Wrong login or password\n");
+        // TODO: ошибка: Неправильный логин/пароль
     }
 }
 
