@@ -15,6 +15,8 @@ static GtkWidget *grid;
 void error(char *msg, int status);
 void back_to_menu(GtkWidget *back, int sockfd);
 void main_menu(int sockfd);
+void do_login(GtkWidget *entryspawn, int sockfd);
+void create_row(GtkWidget *labell, gpointer data);
 
 
 

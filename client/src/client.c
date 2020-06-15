@@ -2,6 +2,7 @@
 
 
 static GtkWidget *login;
+static GtkWidget *nickname;
 static GtkWidget *Password;
 static GtkWidget *SecondPassword;
 static GtkWidget *Registration;
@@ -9,9 +10,20 @@ static GtkWidget *Registration;
 static GtkWidget *fixed;
 static GtkWidget *window;
 static GtkWidget *grid;
+static GtkWidget *labell;
+static GtkWidget *labell2;
+static GtkWidget *labell3;
+static GtkWidget *scroll;
+static GtkWidget *listbox;
+static GtkWidget *row;
+static GtkWidget *gridmenu;
+static GtkWidget *labellmenu;
+static GtkWidget *labellmenu2;
+static GtkWidget *labellmenu3;
 //static GtkWidget *iconn;
+static GtkWidget *icon;
 
-//static int n = 98;
+static int n = 0;
 //static int sockfd = 0;
 
 static void destroy(GtkWidget *widget, gpointer data){
@@ -38,37 +50,103 @@ void do_login(GtkWidget *entryspawn, int sockfd){
     send(sockfd,buffer,sizeof(buffer),0);
     send(sockfd,bufferPassword,sizeof(bufferPassword),0);
     //send(sockfd,buffer,sizeof(buffer),0);
+    gtk_widget_destroy(grid);
+     scroll =gtk_scrolled_window_new(0,0);
+     gtk_fixed_put(GTK_FIXED (fixed), scroll, 0,0);
+     listbox = gtk_list_box_new();
+     gtk_widget_set_size_request(scroll,250,768);
+     gtk_container_add(GTK_CONTAINER(scroll), listbox);
+
+      labell = gtk_button_new_with_label("create row");
+      gtk_fixed_put(GTK_FIXED (fixed), labell, 260,200);
+      g_signal_connect(labell, "clicked", G_CALLBACK(create_row), NULL);
+     // gtk_list_box_insert (listbox,labell,1);
+     gtk_widget_show_all(window);
 }
 
+void create_row(GtkWidget *labell, gpointer data){
+    GtkWidget *row;
+    row = gtk_list_box_row_new();
+    gtk_widget_set_name(row,"chatrow");
+    gtk_list_box_insert (listbox,row,n);
+    n++;
 
+    gridmenu = gtk_grid_new();
+    gtk_container_add(GTK_CONTAINER(row), gridmenu);
+    GdkPixbuf *iconn = gdk_pixbuf_new_from_file("pokemon-2.png",NULL);
+    iconn = gdk_pixbuf_scale_simple(iconn, 32,32, GDK_INTERP_BILINEAR);
+    icon = gtk_image_new_from_pixbuf(iconn);
+    gtk_grid_attach(GTK_GRID(gridmenu), icon, 0, 0, 1, 2);
+
+    labellmenu = gtk_label_new("Vlad");
+    gtk_widget_set_name(labellmenu,"labellmenu");
+    gtk_grid_attach(GTK_GRID(gridmenu), labellmenu, 1, 0, 1, 1);
+
+    labellmenu2 = gtk_label_new("Kill me please");
+    gtk_widget_set_name(labellmenu2,"labellmenu2");
+    gtk_grid_attach(GTK_GRID(gridmenu), labellmenu2, 1, 1, 1, 1);
+
+    labellmenu3 = gtk_label_new("Yesterday");
+    gtk_grid_attach(GTK_GRID(gridmenu), labellmenu3, 3, 0, 1, 1);
+    gtk_widget_set_name(labellmenu3,"labellmenu3");
+
+    gtk_widget_show_all(window);
+}
 void do_registration(GtkWidget *Registration, int sockfd){
+
+}
+
+void make_registration(GtkWidget *Registration, int sockfd){
     GtkWidget *back;
 
     gtk_widget_destroy(grid);
 
     grid = gtk_grid_new();
     gtk_widget_set_name(grid,"gride");
-    gtk_fixed_put(GTK_FIXED (fixed), grid, 500,300);
+    gtk_fixed_put(GTK_FIXED (fixed), grid, 350,175);
+
+    GdkPixbuf *iconn = gdk_pixbuf_new_from_file("pokeball.png",NULL);
+    iconn = gdk_pixbuf_scale_simple(iconn, 128,128, GDK_INTERP_BILINEAR);
+    GtkWidget *iconnn = gtk_image_new_from_pixbuf(iconn);
+     gtk_widget_set_name(iconnn,"image");
+     gtk_grid_attach(GTK_GRID(grid), iconnn, 1, 98, 1, 1);
 
     login = gtk_entry_new();
     gtk_entry_set_placeholder_text(login,"Login");
-    gtk_grid_attach(GTK_GRID(grid), login, 0, 99, 2, 1);
+    gtk_grid_attach(GTK_GRID(grid), login, 1, 99, 1, 1);
+
+    nickname = gtk_entry_new();
+    gtk_entry_set_placeholder_text(nickname,"Username");
+    gtk_grid_attach(GTK_GRID(grid), nickname, 1, 100, 1, 1);
+
+    labell = gtk_label_new("");
+    gtk_grid_attach(GTK_GRID(grid), labell, 1, 101, 1, 1);
 
     Password = gtk_entry_new();
     gtk_entry_set_placeholder_text(Password,"Password");
-    gtk_grid_attach(GTK_GRID(grid), Password, 0, 100, 2, 1);
+    gtk_grid_attach(GTK_GRID(grid), Password, 1, 102, 1, 1);
 
     SecondPassword = gtk_entry_new();
     gtk_entry_set_placeholder_text(SecondPassword,"Confirm your password");
-    gtk_grid_attach(GTK_GRID(grid), SecondPassword, 0, 101, 2, 1);
+    gtk_grid_attach(GTK_GRID(grid), SecondPassword, 1, 103, 1, 1);
 
-    Registration = gtk_button_new_with_label("Confirm registration");
+    labell2 = gtk_label_new("");
+    gtk_grid_attach(GTK_GRID(grid), labell2, 1, 104, 1, 1);
+
+
+    Registration = gtk_button_new_with_label("Sign Up");
+    gtk_widget_set_name(Registration,"reg");
     //g_signal_connect(Registration, "clicked", G_CALLBACK(do_registration), sockfd);
-    gtk_grid_attach(GTK_GRID(grid), Registration, 0, 102, 2, 1);
+    gtk_grid_attach(GTK_GRID(grid), Registration, 1, 105, 1, 1);
+
+    labell3 = gtk_label_new("");
+    gtk_grid_attach(GTK_GRID(grid), labell3, 1, 106, 1, 1);
 
     back = gtk_button_new_with_label("Back to Login");
+    gtk_widget_set_name(back,"log");
     g_signal_connect(back, "clicked", G_CALLBACK(back_to_menu), sockfd);
-    gtk_fixed_put(GTK_FIXED (fixed), back, 300,500);
+    gtk_grid_attach(GTK_GRID(grid), back, 1, 107, 1, 1);
+    //gtk_fixed_put(GTK_FIXED (fixed), back, 550,540);
 
     gtk_widget_show_all(window);
     }
@@ -91,12 +169,15 @@ static void argv_validator(int argc, char **argv) {
 }
 
 void main_menu(int sockfd) {
-    GtkWidget *quit, *entryspawn, *labell, *labell2;
+    GtkWidget *entryspawn;
+    //GtkWidget *scroll;
+    //GtkWidget *view;
     grid = gtk_grid_new();
     gtk_widget_set_name(grid,"gride");
-    gtk_fixed_put(GTK_FIXED (fixed), grid, 300,200);
-    GdkPixbuf *iconn = gdk_pixbuf_new_from_file("Unknown.jpeg",NULL);
-    iconn = gdk_pixbuf_scale_simple(iconn, 100,100, GDK_INTERP_BILINEAR);
+    gtk_fixed_put(GTK_FIXED (fixed), grid, 350,175);
+
+    GdkPixbuf *iconn = gdk_pixbuf_new_from_file("pokeball.png",NULL);
+    iconn = gdk_pixbuf_scale_simple(iconn, 128,128, GDK_INTERP_BILINEAR);
     GtkWidget *iconnn = gtk_image_new_from_pixbuf(iconn);
     // iconn = gtk_image_new_from_file("Unknown.jpeg");
      gtk_widget_set_name(iconnn,"image");
@@ -119,20 +200,34 @@ void main_menu(int sockfd) {
     gtk_grid_attach(GTK_GRID(grid), labell2, 1, 102, 1, 1);
 
     entryspawn = gtk_button_new_with_label("Login");
+    gtk_widget_set_name(entryspawn,"log");
     g_signal_connect(entryspawn, "clicked", G_CALLBACK(do_login), sockfd);
     gtk_grid_attach(GTK_GRID(grid), entryspawn, 1, 103, 1, 1);
 
+     labell3 = gtk_label_new("");
+    gtk_grid_attach(GTK_GRID(grid), labell3, 1, 104, 1, 1);
+
     Registration = gtk_button_new_with_label("Sign In");
     gtk_widget_set_name(Registration,"reg");
-    g_signal_connect(Registration, "clicked", G_CALLBACK(do_registration), sockfd);
-    gtk_grid_attach(GTK_GRID(grid), Registration, 1, 104, 1, 1);
+    g_signal_connect(Registration, "clicked", G_CALLBACK(make_registration), sockfd);
+    gtk_grid_attach(GTK_GRID(grid), Registration, 1, 105, 1, 1);
 
-    quit = gtk_button_new_with_label("X");
-    gtk_grid_attach(GTK_GRID(grid), quit, 1, 105, 1, 1);
-    g_signal_connect(quit, "clicked", G_CALLBACK(destroy), NULL);
+
+   // scroll = gtk_scrolled_window_new(NULL,NULL);
+   // gtk_grid_attach(GTK_GRID(grid), scroll, 1, 106, 1, 1);
+   // view = gtk_viewport_new(NULL,NULL);
+   // gtk_container_add(GTK_CONTAINER(scroll), view);
+
+
+
+    //gtk_grid_attach(GTK_GRID(grid), emoj, 1, 106, 1, 1);
+
+    // quit = gtk_button_new_with_label("X");
+    // gtk_grid_attach(GTK_GRID(grid), quit, 1, 105, 1, 1);
+    // g_signal_connect(quit, "clicked", G_CALLBACK(destroy), NULL);
     
     gtk_widget_set_size_request(GTK_WIDGET(window),1024,768);
-    gtk_window_set_resizable(GTK_WIDGET(window), FALSE);
+    //gtk_window_set_resizable(GTK_WIDGET(window), FALSE);
     gtk_widget_show_all(window);
 
 }
