@@ -8,6 +8,7 @@
 #include <string.h>
 #include <netinet/in.h>
 #include <sqlite3.h>
+#include <pthread.h>
 #include "libmx.h"
 #include "cJSON.h"
 
@@ -21,3 +22,6 @@ void mx_client_process(int client_socket);
 void database_init();
 int login(int socket, char *packet);
 sqlite3 *opening_db();
+
+
+char *json_packet_former(int num, ...);

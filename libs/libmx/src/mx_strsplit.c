@@ -6,7 +6,7 @@
  * Returns NULL-terminated array of strings in case of success or NULL
  * if the strings does not exist or conversion fails.
  */
-char **mx_strsplit(char *s, char c){
+char **mx_strsplit(char *s, char c) {
     // Calculate mem. for array
     int counter1 = 0;
     int len = 0;

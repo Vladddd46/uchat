@@ -47,11 +47,11 @@ int login_system(int socket, char *user_login, char *user_password) {
     send(socket, packet, (int)strlen(packet),0);
 
     // Receiving status code of login.
-    char buffer[256];
-    bzero(buffer,256);
-    recv(socket, buffer, 255, 0);
-    int result = atoi(buffer);
+    // char buffer[256];
+    // bzero(buffer,256);
+    // recv(socket, buffer, 255, 0);
+    // int result = atoi(buffer);
     
-    return result;
+    return 0;
 }
 

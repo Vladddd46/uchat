@@ -79,7 +79,7 @@ int main(int argc, char **argv) {
     /* 
      * Loop, which waits for incomming requests.
      * accept() creates new socket, which will be used for certain client.
-     * For communicating with client, new process is created.
+     * For communicating with client, two threads are created - listening and writing thread.
      */
     while(1) {
         struct sockaddr_in client;

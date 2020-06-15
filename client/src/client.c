@@ -195,6 +195,21 @@ void gui(int argc, char **argv, int sockfd){
     gtk_main();
 }
 
+
+void *listening_thread(void *arg) {
+    int  *socket = (int *)arg;
+    char buffer[255];
+    bzero(&buffer, 255);
+
+    while(1) {
+        read(*socket, buffer, 254);
+        printf("listening_thread = %s\n", buffer);
+        // refreshing buffer.
+        bzero(&buffer, 255);
+    }
+    return NULL;
+}
+
 int main(int argc, char **argv) {
     argv_validator(argc, argv);
     int port = atoi(argv[2]);
@@ -225,7 +240,11 @@ int main(int argc, char **argv) {
 
     int res = connect(sockfd, (struct sockaddr *)&client_addr, sizeof(client_addr));
     error("Error while connection", res);
+
+    pthread_t thread;
+    int err = pthread_create(&thread, NULL, listening_thread, &sockfd);
     gui(argc, argv, sockfd);
+    pthread_join(thread, NULL);
     write(sockfd, "hello server\n", 15);
 
 }
