@@ -44,6 +44,14 @@ window{
   background-color:#fbfafa;
   border: 1px solid #ecebeb;
 }
-#labelmenu2{
-margin-left: 50px;
+#listboxleft{
+  background-color:#fbfafa;
+  border: 1px solid #ecebeb;
+}
+#leftbox{
+  background-color:#dbd7d3;
+  border: 1px solid #d3d0ce;
+}
+#searchmenu{
+  background-color:#f1f1f1;
 }

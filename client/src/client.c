@@ -22,6 +22,10 @@ static GtkWidget *labellmenu2;
 static GtkWidget *labellmenu3;
 //static GtkWidget *iconn;
 static GtkWidget *icon;
+static GtkWidget *leftbox;
+static GtkWidget *leftmenu;
+static GtkWidget *searchmenu;
+static GtkWidget *newchatbutton;
 
 static int n = 0;
 //static int sockfd = 0;
@@ -50,17 +54,49 @@ void do_login(GtkWidget *entryspawn, int sockfd){
     send(sockfd,buffer,sizeof(buffer),0);
     send(sockfd,bufferPassword,sizeof(bufferPassword),0);
     //send(sockfd,buffer,sizeof(buffer),0);
-    gtk_widget_destroy(grid);
-     scroll =gtk_scrolled_window_new(0,0);
-     gtk_fixed_put(GTK_FIXED (fixed), scroll, 0,0);
-     listbox = gtk_list_box_new();
-     gtk_widget_set_size_request(scroll,250,768);
-     gtk_container_add(GTK_CONTAINER(scroll), listbox);
 
-      labell = gtk_button_new_with_label("create row");
-      gtk_fixed_put(GTK_FIXED (fixed), labell, 260,200);
-      g_signal_connect(labell, "clicked", G_CALLBACK(create_row), NULL);
-     // gtk_list_box_insert (listbox,labell,1);
+
+    
+
+
+    gtk_widget_destroy(grid);
+    scroll = gtk_scrolled_window_new(0,0);
+    gtk_fixed_put(GTK_FIXED (fixed), scroll, 0,50);
+
+    leftbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL,0);
+    gtk_widget_set_size_request(leftbox,300,50);
+    gtk_widget_set_name(leftbox,"leftbox");
+    gtk_fixed_put(GTK_FIXED (fixed), leftbox, 0,0);
+
+    leftmenu = gtk_button_new();
+    gtk_box_pack_start(GTK_BOX(leftbox), leftmenu, TRUE, TRUE, 0);
+    gtk_widget_set_name(leftmenu,"leftmenu");
+    GdkPixbuf *iconn = gdk_pixbuf_new_from_file("menu_icon.png",NULL);
+    iconn = gdk_pixbuf_scale_simple(iconn, 32,32, GDK_INTERP_BILINEAR);
+    icon = gtk_image_new_from_pixbuf(iconn);
+    gtk_button_set_image (GTK_BUTTON (leftmenu), icon);
+    //gtk_widget_set_size_request(leftmenu,36,36);
+       
+    searchmenu = gtk_entry_new();
+    gtk_entry_set_placeholder_text(searchmenu,"Search");
+    gtk_widget_set_name(searchmenu,"searchmenu");
+    gtk_box_pack_start(GTK_BOX(leftbox),searchmenu, TRUE, TRUE, 10);
+    
+
+    newchatbutton = gtk_button_new();
+    gtk_box_pack_end(GTK_BOX(leftbox), newchatbutton, TRUE, TRUE, 0);
+    g_signal_connect(newchatbutton, "clicked", G_CALLBACK(create_row), NULL);
+    iconn = gdk_pixbuf_new_from_file("plus_icon.png",NULL);
+    iconn = gdk_pixbuf_scale_simple(iconn, 32,32, GDK_INTERP_BILINEAR);
+    icon = gtk_image_new_from_pixbuf(iconn);
+    gtk_button_set_image (GTK_BUTTON (newchatbutton), icon);
+
+    listbox = gtk_list_box_new();
+    gtk_widget_set_name(listbox,"listboxleft");
+    gtk_widget_set_size_request(scroll,300,718);
+    gtk_container_add(GTK_CONTAINER(scroll), listbox);
+
+    
      gtk_widget_show_all(window);
 }
 
@@ -87,7 +123,7 @@ void create_row(GtkWidget *labell, gpointer data){
     gtk_grid_attach(GTK_GRID(gridmenu), labellmenu2, 1, 1, 1, 1);
 
     labellmenu3 = gtk_label_new("Yesterday");
-    gtk_grid_attach(GTK_GRID(gridmenu), labellmenu3, 3, 0, 1, 1);
+    gtk_grid_attach(GTK_GRID(gridmenu), labellmenu3, 2, 0, 1, 1);
     gtk_widget_set_name(labellmenu3,"labellmenu3");
 
     gtk_widget_show_all(window);
