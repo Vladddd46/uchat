@@ -18,10 +18,11 @@
 #define LOGIN_FAIL  	     	2
 
 void error(char *msg, int status);
-void mx_client_process(int client_socket);
+void *handle_client(void *client_socket);
 void database_init();
 int login(int socket, char *packet);
 sqlite3 *opening_db();
 
+int listening_socket_init(int port);
 
 char *json_packet_former(int num, ...);

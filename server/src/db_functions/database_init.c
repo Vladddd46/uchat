@@ -1,6 +1,9 @@
 #include "server.h"
 
- // Initialize database, if it does not exist.
+/*
+ * Initialize database, if it does not exist.
+ * Creates user(login = admin, password = qwerty) by default.
+ */
 
 static void dberror(sqlite3 *db, int status, char *msg) {
     if (status != SQLITE_OK) {

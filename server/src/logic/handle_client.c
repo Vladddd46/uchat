@@ -18,19 +18,23 @@ static char *packet_type_determiner(char *buffer) {
     return packet_type;
 }
 
-void mx_client_process(int client_socket) {
+void *handle_client(void *client_socket) {
+    int *socket = (int *)client_socket;
     int status;
     char buffer[256];
     bzero(buffer,256);
-    while(1) {
-        read(client_socket, buffer, 255);
 
+    while(1) {
+        recv(*socket, buffer, 255, 0);
+        
         char *packet_type = packet_type_determiner(buffer);
         if (!strcmp(packet_type, "login")) {
-            status = login(client_socket, buffer);
+            status = login(*socket, buffer);
         }
-		
+        
         // refreshing buffer.
         bzero(buffer,256);
+        free(packet_type);
     }
+    return NULL;
 }
