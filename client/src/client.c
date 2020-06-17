@@ -195,31 +195,7 @@ void gui(int argc, char **argv, int sockfd){
     gtk_main();
 }
 
-
-void *listening_thread(void *arg) {
-    int  *socket = (int *)arg;
-    char buffer[255];
-    bzero(&buffer, 255);
-
-    while(1) {
-        read(*socket, buffer, 254);
-        printf("listening_thread = %s\n", buffer);
-        // refreshing buffer.
-        bzero(&buffer, 255);
-    }
-    return NULL;
-}
-
-int main(int argc, char **argv) {
-    argv_validator(argc, argv);
-    int port = atoi(argv[2]);
-
-    /* <del>
-     * Создаем сокет типа IPv4 для протокола TCP.
-     */
-    int sockfd = socket(AF_INET, SOCK_STREAM, 0);
-    error("Error while creating socket", sockfd);
-
+static struct sockaddr_in client_address_describer(int port) {
     /* <del>
      * Создаем структуру, в которой описываем информацию клинта:
      * (bzero - заполняет все нулями)
@@ -233,18 +209,39 @@ int main(int argc, char **argv) {
     client_addr.sin_family = AF_INET;
     client_addr.sin_port = htons(port);
 
+    return client_addr;
+}
+
+static int Socket() {
+    int sockfd = socket(AF_INET, SOCK_STREAM, 0);
+    error("Error while creating socket", sockfd);
+
+    return sockfd;
+}
+
+
+
+int main(int argc, char **argv) {
+    argv_validator(argc, argv);
+    int port = atoi(argv[2]);
+
+    // Creating IPv4 socket for TCP protocol.
+    int sockfd = Socket();
+    // Describing client address.
+    struct sockaddr_in client_addr = client_address_describer(port);
+
     /* <del>
      * Конектимся к серверу.
      * 1 - дескриптор сокета. 2 - указатель на структуру с информацией о сервере/клиента. 3. размер структуры.
      */
 
+    // Do the connection to server.
     int res = connect(sockfd, (struct sockaddr *)&client_addr, sizeof(client_addr));
     error("Error while connection", res);
 
     pthread_t thread;
     int err = pthread_create(&thread, NULL, listening_thread, &sockfd);
     gui(argc, argv, sockfd);
-    pthread_join(thread, NULL);
     write(sockfd, "hello server\n", 15);
 
 }

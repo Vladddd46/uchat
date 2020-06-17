@@ -27,3 +27,5 @@ void back_to_menu(GtkWidget *back, int sockfd);
 void main_menu(int sockfd);
 
 
+void *listening_thread(void *arg);
+
