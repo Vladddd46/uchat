@@ -1,34 +1,9 @@
 #include "client.h"
 
 
-static GtkWidget *login;
-static GtkWidget *nickname;
-static GtkWidget *Password;
-static GtkWidget *SecondPassword;
-static GtkWidget *Registration;
-//static GtkWidget *newbutton;
-static GtkWidget *fixed;
-static GtkWidget *window;
-static GtkWidget *grid;
-static GtkWidget *labell;
-static GtkWidget *labell2;
-static GtkWidget *labell3;
-static GtkWidget *scroll;
-static GtkWidget *listbox;
-static GtkWidget *row;
-static GtkWidget *gridmenu;
-static GtkWidget *labellmenu;
-static GtkWidget *labellmenu2;
-static GtkWidget *labellmenu3;
-//static GtkWidget *iconn;
-static GtkWidget *icon;
-static GtkWidget *leftbox;
-static GtkWidget *leftmenu;
-static GtkWidget *searchmenu;
-static GtkWidget *newchatbutton;
+
 
 static int n = 0;
-//static int sockfd = 0;
 
 static void destroy(GtkWidget *widget, gpointer data){
   gtk_main_quit();
@@ -42,22 +17,14 @@ main_menu(sockfd);
 }
 
 void do_login(GtkWidget *entryspawn, int sockfd){
-    //newbutton = gtk_label_new("");
-    //printf("%d\n",sockfd );
-    //gtk_grid_attach(GTK_GRID(grid), newbutton, 1, n, 1, 1);
     char *buffer = (char *)gtk_entry_get_text(GTK_ENTRY(login));
-    //gtk_label_set_text(GTK_LABEL(newbutton), buffer);
-    //gtk_widget_set_name(newbutton,"labe2");
-    //gtk_widget_show (newbutton);
-    //n--;
     char *bufferPassword = (char *)gtk_entry_get_text(GTK_ENTRY(Password));
     send(sockfd,buffer,sizeof(buffer),0);
     send(sockfd,bufferPassword,sizeof(bufferPassword),0);
-    //send(sockfd,buffer,sizeof(buffer),0);
 
 
     
-
+        //another function
 
     gtk_widget_destroy(grid);
     scroll = gtk_scrolled_window_new(0,0);
@@ -78,7 +45,7 @@ void do_login(GtkWidget *entryspawn, int sockfd){
     //gtk_widget_set_size_request(leftmenu,36,36);
        
     searchmenu = gtk_entry_new();
-    gtk_entry_set_placeholder_text(searchmenu,"Search");
+    gtk_entry_set_placeholder_text(GTK_ENTRY(searchmenu),"Search");
     gtk_widget_set_name(searchmenu,"searchmenu");
     gtk_box_pack_start(GTK_BOX(leftbox),searchmenu, TRUE, TRUE, 10);
     
@@ -91,10 +58,26 @@ void do_login(GtkWidget *entryspawn, int sockfd){
     icon = gtk_image_new_from_pixbuf(iconn);
     gtk_button_set_image (GTK_BUTTON (newchatbutton), icon);
 
+    rightbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL,0);
+    gtk_widget_set_size_request(rightbox,724,50);
+    gtk_widget_set_name(rightbox,"rightbox");
+    gtk_fixed_put(GTK_FIXED (fixed), rightbox, 300,0);
+
     listbox = gtk_list_box_new();
     gtk_widget_set_name(listbox,"listboxleft");
     gtk_widget_set_size_request(scroll,300,718);
     gtk_container_add(GTK_CONTAINER(scroll), listbox);
+
+    downbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL,0);
+    gtk_widget_set_size_request(downbox,724,50);
+    gtk_widget_set_name(downbox,"downbox");
+    gtk_fixed_put(GTK_FIXED (fixed), downbox, 300,718);
+
+    newmessedgentry = gtk_entry_new();
+    gtk_entry_set_placeholder_text(GTK_ENTRY(newmessedgentry),"Write a message...");
+    gtk_widget_set_name(newmessedgentry,"newmessedgentry");
+    gtk_box_pack_start(GTK_BOX(downbox),newmessedgentry, TRUE, TRUE, 0);
+    g_signal_connect(newmessedgentry, "activate", G_CALLBACK(create_row), NULL);
 
     
      gtk_widget_show_all(window);
@@ -104,7 +87,7 @@ void create_row(GtkWidget *labell, gpointer data){
     GtkWidget *row;
     row = gtk_list_box_row_new();
     gtk_widget_set_name(row,"chatrow");
-    gtk_list_box_insert (listbox,row,n);
+    gtk_list_box_insert (GTK_LIST_BOX(listbox),row,n);
     n++;
 
     gridmenu = gtk_grid_new();
@@ -148,22 +131,22 @@ void make_registration(GtkWidget *Registration, int sockfd){
      gtk_grid_attach(GTK_GRID(grid), iconnn, 1, 98, 1, 1);
 
     login = gtk_entry_new();
-    gtk_entry_set_placeholder_text(login,"Login");
+    gtk_entry_set_placeholder_text(GTK_ENTRY(login),"Login");
     gtk_grid_attach(GTK_GRID(grid), login, 1, 99, 1, 1);
 
     nickname = gtk_entry_new();
-    gtk_entry_set_placeholder_text(nickname,"Username");
+    gtk_entry_set_placeholder_text(GTK_ENTRY(nickname),"Username");
     gtk_grid_attach(GTK_GRID(grid), nickname, 1, 100, 1, 1);
 
     labell = gtk_label_new("");
     gtk_grid_attach(GTK_GRID(grid), labell, 1, 101, 1, 1);
 
     Password = gtk_entry_new();
-    gtk_entry_set_placeholder_text(Password,"Password");
+    gtk_entry_set_placeholder_text(GTK_ENTRY(Password),"Password");
     gtk_grid_attach(GTK_GRID(grid), Password, 1, 102, 1, 1);
 
     SecondPassword = gtk_entry_new();
-    gtk_entry_set_placeholder_text(SecondPassword,"Confirm your password");
+    gtk_entry_set_placeholder_text(GTK_ENTRY(SecondPassword),"Confirm your password");
     gtk_grid_attach(GTK_GRID(grid), SecondPassword, 1, 103, 1, 1);
 
     labell2 = gtk_label_new("");
@@ -172,7 +155,6 @@ void make_registration(GtkWidget *Registration, int sockfd){
 
     Registration = gtk_button_new_with_label("Sign Up");
     gtk_widget_set_name(Registration,"reg");
-    //g_signal_connect(Registration, "clicked", G_CALLBACK(do_registration), sockfd);
     gtk_grid_attach(GTK_GRID(grid), Registration, 1, 105, 1, 1);
 
     labell3 = gtk_label_new("");
@@ -220,7 +202,7 @@ void main_menu(int sockfd) {
      gtk_grid_attach(GTK_GRID(grid), iconnn, 1, 98, 1, 1);
 
     login = gtk_entry_new();
-    gtk_entry_set_placeholder_text(login,"Log In");
+    gtk_entry_set_placeholder_text(GTK_ENTRY(login),"Log In");
     gtk_widget_set_name(login,"login");
     gtk_grid_attach(GTK_GRID(grid), login, 1, 99, 1, 1);
 
@@ -228,7 +210,7 @@ void main_menu(int sockfd) {
     gtk_grid_attach(GTK_GRID(grid), labell, 1, 100, 1, 1);
 
     Password = gtk_entry_new();
-    gtk_entry_set_placeholder_text(Password,"Password");
+    gtk_entry_set_placeholder_text(GTK_ENTRY(Password),"Password");
     gtk_widget_set_name(Password,"Password");
     gtk_grid_attach(GTK_GRID(grid), Password, 1, 101, 1, 1);
     

@@ -50,8 +50,20 @@ window{
 }
 #leftbox{
   background-color:#dbd7d3;
-  border: 1px solid #d3d0ce;
+  border: 2px solid #c8c2bc;
 }
 #searchmenu{
   background-color:#f1f1f1;
+  font-size: 24px;
+}
+#rightbox{
+  background-color:#dbd7d3;
+  border: 2px solid #c8c2bc;
+}
+#downbox{
+  background-color:#ffffff;
+}
+#newmessedgentry{
+background: transparent;
+border: none;
 }
