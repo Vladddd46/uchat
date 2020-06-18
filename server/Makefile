@@ -24,4 +24,4 @@ OBJS	=	$(addprefix $(OBJD)/, $(SRC:%.c=%.o))
 all: $(NAME)
 
 $(NAME):
-	clang $(CFLG) src/*/*.c -I inc/ -I ../libs/cjson/inc  -I ../libs/libmx/inc/ ../libs/libmx/libmx.a ../libs/cjson/cJSON.a -o server
+	clang $(CFLG) src/*/*.c -I inc/ -I ../libs/cjson/inc  -I ../libs/libmx/inc/ -lpthread ../libs/libmx/libmx.a ../libs/cjson/cJSON.a -o server

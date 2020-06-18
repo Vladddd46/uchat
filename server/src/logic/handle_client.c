@@ -20,6 +20,7 @@ static char *packet_type_determiner(char *buffer) {
 
 void *handle_client(void *client_socket) {
     int *socket = (int *)client_socket;
+    fd_set read_descriptors;
     int status;
     char buffer[256];
     bzero(buffer,256);
