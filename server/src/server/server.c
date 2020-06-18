@@ -133,7 +133,7 @@ static void *handle_server(void *param) {
         // if no sockets are availabe => continue loop.
         if (status <= 0) continue;
         
-        // if stdin is active => checking it`s input. if input == 'q', stop server 
+        // if stdin is active => checking it`s input. if input == 'q', stop server. 
         if (FD_ISSET(0, &read_descriptors)) {
             int s = getchar();
             if (s == 'q') {
@@ -146,12 +146,15 @@ static void *handle_server(void *param) {
         }
 
         pthread_mutex_lock(&ctx_mutex);
-        for (socket_list_t * p = ctx.head.next; p != NULL; p = p->next)
-        {
-            if (FD_ISSET(p->sock_fd, &read_descriptors)) 
-            {
+        /*
+         * Going through each opened socket and determine, whether socket is active
+         *
+         */
+        for (socket_list_t *p = ctx.head.next; p != NULL; p = p->next) {
+            if (FD_ISSET(p->sock_fd, &read_descriptors))  {
                 buf_len = recv(p->sock_fd, buffer, 255, 0);
-                printf("There was received %d bytes from socket %d\n",buf_len, p->sock_fd);
+
+                printf("There was received %d bytes from socket %d\n", buf_len, p->sock_fd);
                 //error("recv() error", buf_len);
                 if (buf_len < 0) continue;
         #if 0
@@ -167,8 +170,7 @@ static void *handle_server(void *param) {
                 if (0){}
         #endif
                 else {
-                    for (socket_list_t * s = ctx.head.next; s != NULL; s = s->next)
-                    {
+                    for (socket_list_t * s = ctx.head.next; s != NULL; s = s->next) {
                         if (s->is_logged) {
                             send(s->sock_fd, buffer, buf_len, 0);
                             printf("Sending of %d bytes\n",buf_len);
