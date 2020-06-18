@@ -1,18 +1,26 @@
 #include "server.h"
 #include <signal.h> 
 
+/*
+ * Declaration of structure, which contains  server context.
+ * a. fd_set read_descriptors - bitarray, which contains all conected client sockets.
+ *    (it is needed for select)
+ * b. socket_list_t list - linked list of connected client sockets.
+ */
 static server_context_t ctx;
+
+// Initialize mutex with default settings.
 static pthread_mutex_t ctx_mutex = PTHREAD_MUTEX_INITIALIZER;
+
+// if quit == true, server exits.
 static bool quit = false; 
 
-static void handle_sigchld(int sig) 
-{
+static void handle_sigchld(int sig)  {
     printf("SIGCHLD handler\n");
     quit = true;
 }
 
-static void server_context_init(void)
-{
+static void server_context_init(void) {
     pthread_mutex_lock(&ctx_mutex);
     FD_ZERO (&ctx.read_descriptors);
     ctx.head.sock_fd = -1;
@@ -21,32 +29,31 @@ static void server_context_init(void)
     pthread_mutex_unlock(&ctx_mutex);
 }
 
-static void server_context_free(void)
-{
+static void server_context_free(void) {
     pthread_mutex_lock(&ctx_mutex);
-    for (socket_list_t * p = ctx.head.next; p != NULL; p = p->next)
-    {
+    for (socket_list_t *p = ctx.head.next; p != NULL; p = p->next) {
         close(p->sock_fd);
     }
-    socket_list_free (&ctx.head);
+    socket_list_free(&ctx.head);
     pthread_mutex_unlock(&ctx_mutex);
 }
 
-static bool update_connections(fd_set * descriptors)
-{
+/*
+ * Checks, whether socket is closed.
+ * if true => deletes socket from socket list.
+ */
+static bool update_connections(fd_set *descriptors) {
     char buffer[256];
     bool status = true;
     if (descriptors == NULL) return false;
+
     pthread_mutex_lock(&ctx_mutex);  
-    for (socket_list_t * s = ctx.head.next; s != NULL; s = s->next)
-    {
-        if (recv(s->sock_fd, buffer, sizeof(buffer), MSG_PEEK | MSG_DONTWAIT) == 0)
-        {
-            printf("Connection on socket with fd %d was closed\n",s->sock_fd);
+    for (socket_list_t *s = ctx.head.next; s != NULL; s = s->next) {
+        if (recv(s->sock_fd, buffer, sizeof(buffer), MSG_PEEK | MSG_DONTWAIT) == 0) {
+            printf("Connection on socket with fd %d was closed\n", s->sock_fd);
             close(s->sock_fd);
             FD_CLR(s->sock_fd, &ctx.read_descriptors);
-            if (socket_list_remove(&ctx.head, s->sock_fd) < 0)
-            {
+            if (socket_list_remove(&ctx.head, s->sock_fd) < 0) {
                 status = false;
             }
         }
@@ -55,6 +62,7 @@ static bool update_connections(fd_set * descriptors)
     pthread_mutex_unlock(&ctx_mutex);
     return status;
 }
+
 // Checks, wether user specified input correctly.
 static void argv_validator(int argc) {
     char *msg;
@@ -101,9 +109,8 @@ static char *packet_type_determiner(char *buffer) {
     return packet_type;
 }
 
-static void *handle_server(void *param) 
-{
-    (void) param;
+static void *handle_server(void *param) {
+    (void)param;
     int status;
     char buffer[256];
     int buf_len;
@@ -113,21 +120,23 @@ static void *handle_server(void *param)
     tv.tv_sec = 1;
     tv.tv_usec = 0;
 
-    while(!quit) 
-    {    
+    while(!quit) {    
         update_connections(&read_descriptors);
-        FD_SET(0,&read_descriptors);//stdin
-       
-        printf("thread loop step\n"); 
-        tv.tv_sec = 1;
-        status = select (FD_SETSIZE, &read_descriptors, NULL, NULL, &tv);
 
+        // <del> добавляем stdin в список отслеживаемых дескрипторов.
+        FD_SET(0,&read_descriptors); 
+       
+        printf("wait for incomming packets...\n"); 
+        tv.tv_sec = 1;
+        status = select(FD_SETSIZE, &read_descriptors, NULL, NULL, &tv);
+
+        // if no sockets are availabe => continue loop.
         if (status <= 0) continue;
         
-        if (FD_ISSET(0, &read_descriptors))
-        {
+        // if stdin is active => checking it`s input. if input == 'q', stop server 
+        if (FD_ISSET(0, &read_descriptors)) {
             int s = getchar();
-            if (s == 'Q'){
+            if (s == 'q') {
                 printf("Force QUIT\n");
                 pid_t pid = getpid();
                 kill(pid, SIGCHLD);
@@ -188,6 +197,7 @@ int main(int argc, char **argv) {
     int listening_socket = listening_socket_init(port);
     database_init();
     server_context_init();
+
     /* 
      * Making sockfd listening for incomming requests.
      * The second argument - number of max. number of requests. 
@@ -204,26 +214,34 @@ int main(int argc, char **argv) {
     /* 
      * Loop, which waits for incomming requests.
      * accept() creates new socket, which will be used for certain client.
-     * For communicating with client, two threads are created - listening and writing thread.
+     * Place new socket in linked list of opening sockets and in fd_set array. 
      */
     while(!quit) {
         struct sockaddr_in client;
         socklen_t client_len = sizeof(client);
         int newsockfd = accept(listening_socket, (struct sockaddr *)&client, &client_len);
-        //error("Accept Error", newsockfd);
+
+        // if acception error, continue the loop.
         if (newsockfd < 0) continue;
+
+        /*
+         * When new connection comes in, created socket is getting placed in 
+         * linked list with opening sockets. If socket was successfully placed in llist,
+         * it is also getting placed in fd_set bitarray (it`s needed for select.)
+         * *Mutex is used because `ctx.head` is also used in handle_server thread.
+         */
         pthread_mutex_lock(&ctx_mutex);
         int status = socket_list_add(&ctx.head, newsockfd);
         if (status == 0) {
             FD_SET(newsockfd, &ctx.read_descriptors);
-            printf("new connection was accepted, fs = %d\n", newsockfd);
+            printf("New connection was accepted, socket = %d\n", newsockfd);
         }
         pthread_mutex_unlock(&ctx_mutex);
         error("Unable to add socket descriptor to the list", status);
     }
     sleep(2);
     server_context_free();
-    printf("main thread was finished\n");
+    printf("Main thread was finished\n");
     exit(0);
 }
 

@@ -5,7 +5,7 @@
 typedef struct socket_list {
 	int sock_fd;
 	bool is_logged;
-	struct socket_list * next;
+	struct socket_list *next;
 } socket_list_t;
 
 int socket_list_add (socket_list_t  * head, int new_sock_fd);
