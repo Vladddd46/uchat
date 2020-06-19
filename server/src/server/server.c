@@ -133,7 +133,7 @@ static void *handle_server(void *param) {
         // if no sockets are availabe => continue loop.
         if (status <= 0) continue;
         
-        // if stdin is active => checking it`s input. if input == 'q', stop server. 
+        // if stdin is active => checking it`s input. if input == 'q', stop server. // debug 
         if (FD_ISSET(0, &read_descriptors)) {
             int s = getchar();
             if (s == 'q') {
@@ -147,15 +147,19 @@ static void *handle_server(void *param) {
 
         pthread_mutex_lock(&ctx_mutex);
         /*
-         * Going through each opened socket and determine, whether socket is active
-         *
+         * Going through each opened socket and determine, whether socket is active.
+         * if socket is active => receive packet from it => alalyze this packet =>
+         * change db if it`s needed => if this packet must be sent to another user, 
+         * go through linked list with opened sockets(connected clients) and check,
+         * whether socket node has the same attribute(user_login) as specified in packet.
+         * if node was found -> send packet to socket, specified in it. Otherwise, just 
+         * change db depending on packet => as user is getting logged, all new data retrieves 
+         * from db.
          */
         for (socket_list_t *p = ctx.head.next; p != NULL; p = p->next) {
-            if (FD_ISSET(p->sock_fd, &read_descriptors))  {
+            if (FD_ISSET(p->sock_fd, &read_descriptors)) {
                 buf_len = recv(p->sock_fd, buffer, 255, 0);
-
-                printf("There was received %d bytes from socket %d\n", buf_len, p->sock_fd);
-                //error("recv() error", buf_len);
+                printf("There was received %d bytes from socket %d\n", buf_len, p->sock_fd); // Debug.
                 if (buf_len < 0) continue;
         #if 0
                 char *packet_type = packet_type_determiner(buffer);
@@ -205,7 +209,7 @@ int main(int argc, char **argv) {
      * The second argument - number of max. number of requests. 
      * If more - incomming requests must que.
      */
-    listen(listening_socket, 10);
+    listen(listening_socket, 128);
 
     signal(SIGCHLD, handle_sigchld);
 
@@ -246,6 +250,3 @@ int main(int argc, char **argv) {
     printf("Main thread was finished\n");
     exit(0);
 }
-
-
-
