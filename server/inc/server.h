@@ -26,10 +26,17 @@ typedef struct {
 
 void error(char *msg, int status);
 void *handle_client(void *client_socket);
-void database_init();
 int login(int socket, char *packet);
-sqlite3 *opening_db();
 
 int listening_socket_init(int port);
 
 char *json_packet_former(int num, ...);
+
+
+char *login_determiner(char *send_packet);
+// Database functions.
+void database_init();
+char *mx_database_communication(char *packet);
+sqlite3 *opening_db();
+
+

@@ -149,9 +149,9 @@ static void *handle_server(void *param) {
         /*
          * Going through each opened socket and determine, whether socket is active.
          * if socket is active => receive packet from it => alalyze this packet =>
-         * change db if it`s needed => if this packet must be sent to another user, 
+         * change db if it`s needed => if this packet must be sent to another user => form new packet, 
          * go through linked list with opened sockets(connected clients) and check,
-         * whether socket node has the same attribute(user_login) as specified in packet.
+         * whether socket node has the same attribute(user_login) as specified in new packet.
          * if node was found -> send packet to socket, specified in it. Otherwise, just 
          * change db depending on packet => as user is getting logged, all new data retrieves 
          * from db.
@@ -161,38 +161,30 @@ static void *handle_server(void *param) {
                 buf_len = recv(p->sock_fd, buffer, 255, 0);
                 printf("There was received %d bytes from socket %d\n", buf_len, p->sock_fd); // Debug.
                 if (buf_len < 0) continue;
-        #if 0
-                char *packet_type = packet_type_determiner(buffer);
-                if (!strcmp(packet_type, "login")) {
-                    status = login(*socket, buffer);
-                    if (status  == LOGIN_SUCCESS) {
-                        p->is_logged = true;
-                    }
-                }
-        #else
-                p->is_logged = true;
-                if (0){}
-        #endif
-                else {
-                    for (socket_list_t * s = ctx.head.next; s != NULL; s = s->next) {
-                        if (s->is_logged) {
-                            send(s->sock_fd, buffer, buf_len, 0);
-                            printf("Sending of %d bytes\n",buf_len);
-                        }
-                    }                   
-                }
 
+                // Modify db and forms packet, which must be send to specified in packet client.
+                char *send_packet = mx_database_communication(buffer);
+                /* Retrieves user`s login from packet. Packet will be send on this login, 
+                 * if user with this login is connected to the server.
+                 */
+                char *client_login = login_determiner(send_packet);
+
+                p->is_logged = true;
+                for (socket_list_t *s = ctx.head.next; s != NULL; s = s->next) {
+                    if (s->is_logged) { // && !strcmp(client_login, s->login)
+                        send(s->sock_fd, buffer, buf_len, 0); // send_packet must be sent
+                        printf("Sending of %d bytes\n",buf_len); // Debug.
+                    }
+                }                    
                 // refreshing buffer.
                 bzero(buffer,256);
-        #if 0
-                free(packet_type);
-        #endif
+                // free(send_packet);
+                // free(client_login)
             }            
         }
         pthread_mutex_unlock(&ctx_mutex);
-  
     }
-    printf("handle_server thread was finished\n");
+    printf("handle_server thread was finished\n"); // Debug.
     return NULL;
 }
 
