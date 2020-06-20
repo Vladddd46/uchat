@@ -13,6 +13,8 @@
 #include "libmx.h"
 #include "cJSON.h"
 #include "socket_list.h"
+#include <sys/types.h>
+#include <sys/stat.h>
 
 #define CHILD 0
 
@@ -33,3 +35,5 @@ sqlite3 *opening_db();
 int listening_socket_init(int port);
 
 char *json_packet_former(int num, ...);
+
+void mx_deamon_start();

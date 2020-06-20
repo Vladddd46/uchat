@@ -1,5 +1,5 @@
 #include "server.h"
-#include <signal.h> 
+#include <signal.h>
 
 /*
  * Declaration of structure, which contains  server context.
@@ -13,7 +13,7 @@ static server_context_t ctx;
 static pthread_mutex_t ctx_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 // if quit == true, server exits.
-static bool quit = false; 
+static bool quit = false;
 
 static void handle_sigchld(int sig)  {
     printf("SIGCHLD handler\n");
@@ -47,7 +47,7 @@ static bool update_connections(fd_set *descriptors) {
     bool status = true;
     if (descriptors == NULL) return false;
 
-    pthread_mutex_lock(&ctx_mutex);  
+    pthread_mutex_lock(&ctx_mutex);
     for (socket_list_t *s = ctx.head.next; s != NULL; s = s->next) {
         if (recv(s->sock_fd, buffer, sizeof(buffer), MSG_PEEK | MSG_DONTWAIT) == 0) {
             printf("Connection on socket with fd %d was closed\n", s->sock_fd);
@@ -58,7 +58,7 @@ static bool update_connections(fd_set *descriptors) {
             }
         }
     }
-    *descriptors = ctx.read_descriptors;    
+    *descriptors = ctx.read_descriptors;
     pthread_mutex_unlock(&ctx_mutex);
     return status;
 }
@@ -120,20 +120,20 @@ static void *handle_server(void *param) {
     tv.tv_sec = 1;
     tv.tv_usec = 0;
 
-    while(!quit) {    
+    while(!quit) {
         update_connections(&read_descriptors);
 
         // <del> добавляем stdin в список отслеживаемых дескрипторов.
-        FD_SET(0,&read_descriptors); 
-       
-        printf("wait for incomming packets...\n"); 
+        FD_SET(0,&read_descriptors);
+
+        printf("wait for incomming packets...\n");
         tv.tv_sec = 1;
         status = select(FD_SETSIZE, &read_descriptors, NULL, NULL, &tv);
 
         // if no sockets are availabe => continue loop.
         if (status <= 0) continue;
-        
-        // if stdin is active => checking it`s input. if input == 'q', stop server. 
+
+        // if stdin is active => checking it`s input. if input == 'q', stop server.
         if (FD_ISSET(0, &read_descriptors)) {
             int s = getchar();
             if (s == 'q') {
@@ -175,7 +175,7 @@ static void *handle_server(void *param) {
                             send(s->sock_fd, buffer, buf_len, 0);
                             printf("Sending of %d bytes\n",buf_len);
                         }
-                    }                   
+                    }
                 }
 
                 // refreshing buffer.
@@ -183,10 +183,10 @@ static void *handle_server(void *param) {
         #if 0
                 free(packet_type);
         #endif
-            }            
+            }
         }
         pthread_mutex_unlock(&ctx_mutex);
-  
+
     }
     printf("handle_server thread was finished\n");
     return NULL;
@@ -197,14 +197,17 @@ int main(int argc, char **argv) {
     argv_validator(argc);
     int port             = get_port(argv);
     int listening_socket = listening_socket_init(port);
+
+    mx_deamon_start();
     database_init();
     server_context_init();
 
-    /* 
+    /*
      * Making sockfd listening for incomming requests.
-     * The second argument - number of max. number of requests. 
+     * The second argument - number of max. number of requests.
      * If more - incomming requests must que.
      */
+
     listen(listening_socket, 10);
 
     signal(SIGCHLD, handle_sigchld);
@@ -213,10 +216,10 @@ int main(int argc, char **argv) {
     int err = pthread_create(&server_thread, NULL, handle_server, NULL);
     error("Can not create new thread", err);
 
-    /* 
+    /*
      * Loop, which waits for incomming requests.
      * accept() creates new socket, which will be used for certain client.
-     * Place new socket in linked list of opening sockets and in fd_set array. 
+     * Place new socket in linked list of opening sockets and in fd_set array.
      */
     while(!quit) {
         struct sockaddr_in client;
@@ -227,7 +230,7 @@ int main(int argc, char **argv) {
         if (newsockfd < 0) continue;
 
         /*
-         * When new connection comes in, created socket is getting placed in 
+         * When new connection comes in, created socket is getting placed in
          * linked list with opening sockets. If socket was successfully placed in llist,
          * it is also getting placed in fd_set bitarray (it`s needed for select.)
          * *Mutex is used because `ctx.head` is also used in handle_server thread.
@@ -246,6 +249,3 @@ int main(int argc, char **argv) {
     printf("Main thread was finished\n");
     exit(0);
 }
-
-
-
