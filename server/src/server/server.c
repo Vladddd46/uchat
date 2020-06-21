@@ -91,24 +91,6 @@ static int get_port(char **argv) {
     return port;
 }
 
-// Determines type of packet.
-static char *packet_type_determiner(char *buffer) {
-    char *packet_type = NULL;
-    cJSON *parsed_str = cJSON_Parse(buffer);
-    char *msg = "Json Parsing error\n";
-    if (parsed_str == NULL) {
-        write(2, msg, (int)strlen(msg));
-        exit(1);
-    }
-    cJSON *type = cJSON_GetObjectItemCaseSensitive(parsed_str, "TYPE");
-    if (cJSON_IsString(type) && (type->valuestring != NULL)) {
-        packet_type = mx_string_copy(type->valuestring);
-    }
-    cJSON_Delete(parsed_str);
-
-    return packet_type;
-}
-
 static void *handle_server(void *param) {
     (void)param;
     int status;
@@ -226,7 +208,7 @@ int main(int argc, char **argv) {
          * When new connection comes in, created socket is getting placed in 
          * linked list with opening sockets. If socket was successfully placed in llist,
          * it is also getting placed in fd_set bitarray (it`s needed for select.)
-         * *Mutex is used because `ctx.head` is also used in handle_server thread.
+         * * Mutex is used because `ctx.head` is also used in handle_server thread.
          */
         pthread_mutex_lock(&ctx_mutex);
         int status = socket_list_add(&ctx.head, newsockfd);
