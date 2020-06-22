@@ -56,10 +56,6 @@ char *get_value_buy_key(char *json_str, char *key);
 
 
 // Other
-void *handle_client(void *client_socket);
-int login(int socket, char *packet);
-
-char *login_determiner(char *send_packet);
 char *json_packet_former(int num, ...);
 
 
