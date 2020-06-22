@@ -104,6 +104,8 @@ static void *handle_server(void *param) {
                 // if (send_packet == NULL) // Connection was closed but update has not been made yet.
                     // continue;
 
+                char *test = json_packet_former(3, "LOGIN:vlad", "PASSWORD:123", "HELLO:WORLD");
+                printf("%s\n", test);
                 /* 
                  * Retrieves user`s login from packet. Packet will be send on this login,
                  * if user with this login is connected to the server.

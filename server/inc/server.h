@@ -14,7 +14,6 @@
 #include "libmx.h"
 #include "cJSON.h"
 
-
 #define CHILD 0
 
 #define LOGIN_SUCCESS 			1
@@ -52,21 +51,6 @@ connected_client_list_t *socket_list_find(connected_client_list_t *head, int soc
 
 // Json
 char *get_value_buy_key(char *json_str, char *key);
-
-
-
-// Other
 char *json_packet_former(int num, ...);
-
-
-
-
-
-
-
-
-
-
-
 
 
