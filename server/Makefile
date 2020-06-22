@@ -1,27 +1,41 @@
-NAME	=	server
+#compiler name
+CC 		=	clang
 
-CFLG	=	-std=c11 -lsqlite3
+#binary name
+NAME	=	uchat_server
 
-SRCD	=	src
-INCD	=	inc
-OBJD	=	obj
+#general compiler flags
+CFLG_G	=	-std=c11 $(addprefix -W, all, error, pedantic, extra)
 
-LMXD	=	../libs/libmx
-LMXA:=	$(LMXD)/libmx.a
-LMXI:=	$(LMXD)/$(INCD)
+#specific compiler flags (add some, if you need it)
+CFGG_S	=	-lsqlite3 -lpthread
 
-INC		=	server.h
-INCS	=	$(addprefix $(INCD)/, $(INC))
+SRC_DIR = src/
+OBJ_DIR	= obj/
+LIB_DIR = ../libmx/
 
-SRC		=	error.c\
-			server.c\
-			mx_client_process.c\
-			database_init.c\
+#add dir new <dir_name> in src/<dir_name>, if you`ve created newone
+dirs	=	db_functions help_functions logic server
 
-SRCS	=	$(addprefix $(SRCD)/, $(SRC))
-OBJS	=	$(addprefix $(OBJD)/, $(SRC:%.c=%.o))
+#add your new dir_name and file included it (without any extansions)
+db_functions = database_init mx_database_communication opening_db
 
-all: $(NAME)
+help_functions = error json_packet_former
+
+logic = handle_client login_determiner login socket_list
+
+server = deamon listening_socket_init server
+
+#making filenames for compiling
+FILES	=	$(foreach dir, $(dirs), $($(dir):%=$(dir)/%))
+
+#make src file
+SRC		=	$(FILES:%=$(SRC_DIR)%.c)
+#make obj file
+OBJD	=	$(FILES:%=$(OBJ_DIR)%.o)
+#ADD LIB!!!!
+
+all: `$(NAME)
 
 $(NAME):
 	clang $(CFLG) src/*/*.c -I inc/ -I ../libs/cjson/inc  -I ../libs/libmx/inc/ -lpthread ../libs/libmx/libmx.a ../libs/cjson/cJSON.a -o server
