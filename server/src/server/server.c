@@ -3,8 +3,8 @@
 
 /*
  * Declaration of structure, which contains  server context.
- * a. fd_set read_descriptors - bitarray, which contains all conected client sockets.
- *    (it is needed for select)
+ * a. fd_set read_descriptors - bitarray, which contains 
+ *    all conected client sockets. (it is needed for select)
  * b. socket_list_t list - linked list of connected client sockets.
  */
 static server_context_t ctx;
@@ -14,11 +14,6 @@ static pthread_mutex_t ctx_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 // if quit == true, server exits.
 static bool quit = false; 
-
-static void handle_sigchld(int sig)  {
-    printf("SIGCHLD handler\n");
-    quit = true;
-}
 
 static void server_context_init(void) {
     pthread_mutex_lock(&ctx_mutex);
@@ -39,8 +34,8 @@ static void server_context_free(void) {
 }
 
 /*
- * Checks, whether socket is closed.
- * if true => deletes socket from socket list.
+ * Checks, whether client closed the connection.
+ * if true => deletes socket from server context.
  */
 static bool update_connections(fd_set *descriptors) {
     char buffer[256];
@@ -50,7 +45,7 @@ static bool update_connections(fd_set *descriptors) {
     pthread_mutex_lock(&ctx_mutex);  
     for (socket_list_t *s = ctx.head.next; s != NULL; s = s->next) {
         if (recv(s->sock_fd, buffer, sizeof(buffer), MSG_PEEK | MSG_DONTWAIT) == 0) {
-            printf("Connection on socket with fd %d was closed\n", s->sock_fd);
+            printf("Connection on socket with socket fd %d was closed\n", s->sock_fd);
             close(s->sock_fd);
             FD_CLR(s->sock_fd, &ctx.read_descriptors);
             if (socket_list_remove(&ctx.head, s->sock_fd) < 0) {
@@ -63,76 +58,35 @@ static bool update_connections(fd_set *descriptors) {
     return status;
 }
 
-// Checks, wether user specified input correctly.
-static void argv_validator(int argc) {
-    char *msg;
-
-    if (argc != 2) {
-        msg = "usage: ./server PORT\n";
-        write(2, msg, (int)strlen(msg));
-        exit(1);
-    }
-}
-
-/*
- * Checks, whather user sepcified port number correctly.
- * If wrong port number - error msg prints + exit.
- * In case of success  - returns <int> port number.
- */
-static int get_port(char **argv) {
-    int port = atoi(argv[1]);
-    char *msg;
-
-    if (port == 0) {
-        msg = "Invalid port number\n";
-        write(2, msg, (int)strlen(msg));
-        exit(1);
-    }
-    return port;
+static struct timeval wait_time() {
+    struct timeval tv;
+    tv.tv_sec  = 1;
+    tv.tv_usec = 0;
+    return tv;
 }
 
 static void *handle_server(void *param) {
-    (void)param;
     int status;
     char buffer[256];
-    int buf_len;
     bzero(buffer,256);
+    int buf_len;
     fd_set read_descriptors;
-    struct timeval tv;
-    tv.tv_sec = 1;
-    tv.tv_usec = 0;
+    // Setting waiting time for select.
+    struct timeval tv = wait_time();
 
     while(!quit) {    
         update_connections(&read_descriptors);
-
-        // <del> добавляем stdin в список отслеживаемых дескрипторов.
-        FD_SET(0,&read_descriptors); 
-       
-        printf("wait for incomming packets...\n"); 
-        tv.tv_sec = 1;
+        printf("wait for incomming packets...\n");
         status = select(FD_SETSIZE, &read_descriptors, NULL, NULL, &tv);
-
         // if no sockets are availabe => continue loop.
         if (status <= 0) continue;
         
-        // if stdin is active => checking it`s input. if input == 'q', stop server. // debug 
-        if (FD_ISSET(0, &read_descriptors)) {
-            int s = getchar();
-            if (s == 'q') {
-                printf("Force QUIT\n");
-                pid_t pid = getpid();
-                kill(pid, SIGCHLD);
-                sleep(1);
-                continue;
-            }
-        }
-
         pthread_mutex_lock(&ctx_mutex);
         /*
          * Going through each opened socket and determine, whether socket is active.
-         * if socket is active => receive packet from it => alalyze this packet =>
-         * change db if it`s needed => if this packet must be sent to another user => form new packet, 
-         * go through linked list with opened sockets(connected clients) and check,
+         * if true => receive packet from socket => alalyze this packet =>
+         * change db if it`s needed and form new packet to send.
+         * Go through linked list with opened sockets(connected clients) and check,
          * whether socket node has the same attribute(user_login) as specified in new packet.
          * if node was found -> send packet to socket, specified in it. Otherwise, just 
          * change db depending on packet => as user is getting logged, all new data retrieves 
@@ -144,9 +98,11 @@ static void *handle_server(void *param) {
                 printf("There was received %d bytes from socket %d\n", buf_len, p->sock_fd); // Debug.
                 if (buf_len < 0) continue;
 
-                // Modify db and forms packet, which must be send to specified in packet client.
+                // Modify db and forms packet, which must be send to specified in packet client(login).
                 char *send_packet = mx_database_communication(buffer);
-                /* Retrieves user`s login from packet. Packet will be send on this login, 
+                
+                /* 
+                 * Retrieves user`s login from packet. Packet will be send on this login,
                  * if user with this login is connected to the server.
                  */
                 char *client_login = login_determiner(send_packet);
@@ -181,11 +137,8 @@ int main(int argc, char **argv) {
     /* 
      * Making sockfd listening for incomming requests.
      * The second argument - number of max. number of requests. 
-     * If more - incomming requests must que.
      */
     listen(listening_socket, 128);
-
-    signal(SIGCHLD, handle_sigchld);
 
     pthread_t server_thread;
     int err = pthread_create(&server_thread, NULL, handle_server, NULL);
