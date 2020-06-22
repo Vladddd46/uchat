@@ -58,10 +58,11 @@ static bool update_connections(fd_set *descriptors) {
     return status;
 }
 
+// Determines how much time select will wait for incomming connections.
 static struct timeval wait_time() {
     struct timeval tv;
-    tv.tv_sec  = 1;
-    tv.tv_usec = 0;
+    tv.tv_sec  = 1; // seconds.
+    tv.tv_usec = 0; // mili-seconds.
     return tv;
 }
 
@@ -100,17 +101,22 @@ static void *handle_server(void *param) {
 
                 // Modify db and forms packet, which must be send to specified in packet client(login).
                 char *send_packet = mx_database_communication(buffer);
-                
+                // if (send_packet == NULL) // Connection was closed but update has not been made yet.
+                    // continue;
+
                 /* 
                  * Retrieves user`s login from packet. Packet will be send on this login,
                  * if user with this login is connected to the server.
                  */
-                char *client_login = login_determiner(send_packet);
+                // char *client_login = get_value_buy_key(send_packet, "TO");
 
+                /* Makes user logged in. */
+                // if (!strcmp(get_value_buy_key(send_packet, "TYPE"), "login_s") && !strcmp(get_value_buy_key(send_packet, "STATUS"), "true"))
                 p->is_logged = true;
+                
                 for (socket_list_t *s = ctx.head.next; s != NULL; s = s->next) {
                     if (s->is_logged) { // && !strcmp(client_login, s->login)
-                        send(s->sock_fd, buffer, buf_len, 0); // send_packet must be sent
+                        send(s->sock_fd, buffer, buf_len, 0);
                         printf("Sending of %d bytes\n",buf_len); // Debug.
                     }
                 }                    

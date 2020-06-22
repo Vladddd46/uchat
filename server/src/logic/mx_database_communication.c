@@ -25,26 +25,30 @@ static char *packet_type_determiner(char *buffer) {
  * {to: client_login2; from: client_login1; type: msg_update; data: "Hello"}
  */
 char *mx_database_communication(char *packet) {
+    if (!strcmp(packet, ""))
+        return NULL;
     char *packet_type = packet_type_determiner(packet);
-    // char *back_msg;
+    char *send_back_packet;
 
     if (!strcmp(packet_type, "login_c")) {
         printf("\n\nLogin packet received\n\n");
-        // back_msg = login();
+        // send_back_packet = login();
     }
     else if (!strcmp(packet_type, "reg_c")) {
         printf("\n\nReg packet received\n\n");
-        // back_msg = registration();
+        // send_back_packet = registration();
     }
     else if (!strcmp(packet_type, "find_user_c")) {
         printf("\n\nfind_user_c packet received\n\n");
-        // back_msg = find_user();
+        // send_back_packet = find_user();
     }
     else if (!strcmp(packet_type, "msg_c")) {
         printf("\n\nmsg_c packet received\n\n");
-        // back_msg = msg();
+        // send_back_packet = msg();
     }
+
+    free(packet_type);
     return NULL;
-    // return back_msg;
+    // return send_back_packet;
 }
 

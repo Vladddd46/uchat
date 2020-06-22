@@ -50,6 +50,11 @@ int socket_list_free(socket_list_t   *head);
 int socket_list_remove(socket_list_t *head, int sock_fd);
 socket_list_t *socket_list_find(socket_list_t *head, int sock_fd);
 
+// Json
+char *get_value_buy_key(char *json_str, char *key);
+
+
+
 // Other
 void *handle_client(void *client_socket);
 int login(int socket, char *packet);
