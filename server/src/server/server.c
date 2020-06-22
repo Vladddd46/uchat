@@ -5,7 +5,7 @@
  * Declaration of structure, which contains  server context.
  * a. fd_set read_descriptors - bitarray, which contains 
  *    all conected client sockets. (it is needed for select)
- * b. socket_list_t list - linked list of connected client sockets.
+ * b. connected_client_list_t list - linked list of connected client sockets.
  */
 static server_context_t ctx;
 
@@ -26,7 +26,7 @@ static void server_context_init(void) {
 
 static void server_context_free(void) {
     pthread_mutex_lock(&ctx_mutex);
-    for (socket_list_t *p = ctx.head.next; p != NULL; p = p->next) {
+    for (connected_client_list_t *p = ctx.head.next; p != NULL; p = p->next) {
         close(p->sock_fd);
     }
     socket_list_free(&ctx.head);
@@ -43,7 +43,7 @@ static bool update_connections(fd_set *descriptors) {
     if (descriptors == NULL) return false;
 
     pthread_mutex_lock(&ctx_mutex);  
-    for (socket_list_t *s = ctx.head.next; s != NULL; s = s->next) {
+    for (connected_client_list_t *s = ctx.head.next; s != NULL; s = s->next) {
         if (recv(s->sock_fd, buffer, sizeof(buffer), MSG_PEEK | MSG_DONTWAIT) == 0) {
             printf("Connection on socket with socket fd %d was closed\n", s->sock_fd);
             close(s->sock_fd);
@@ -93,7 +93,7 @@ static void *handle_server(void *param) {
          * change db depending on packet => as user is getting logged, all new data retrieves 
          * from db.
          */
-        for (socket_list_t *p = ctx.head.next; p != NULL; p = p->next) {
+        for (connected_client_list_t *p = ctx.head.next; p != NULL; p = p->next) {
             if (FD_ISSET(p->sock_fd, &read_descriptors)) {
                 buf_len = recv(p->sock_fd, buffer, 255, 0);
                 printf("There was received %d bytes from socket %d\n", buf_len, p->sock_fd); // Debug.
@@ -114,7 +114,7 @@ static void *handle_server(void *param) {
                 // if (!strcmp(get_value_buy_key(send_packet, "TYPE"), "login_s") && !strcmp(get_value_buy_key(send_packet, "STATUS"), "true"))
                 p->is_logged = true;
                 
-                for (socket_list_t *s = ctx.head.next; s != NULL; s = s->next) {
+                for (connected_client_list_t *s = ctx.head.next; s != NULL; s = s->next) {
                     if (s->is_logged) { // && !strcmp(client_login, s->login)
                         send(s->sock_fd, buffer, buf_len, 0);
                         printf("Sending of %d bytes\n",buf_len); // Debug.

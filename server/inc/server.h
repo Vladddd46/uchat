@@ -25,12 +25,12 @@ typedef struct socket_list {
 	int sock_fd;
 	bool is_logged;
 	struct socket_list *next;
-} socket_list_t;
+} connected_client_list_t;
 
 // Server context.
 typedef struct {
 	fd_set read_descriptors;
-	socket_list_t head;
+	connected_client_list_t head;
 } server_context_t;
 
 // Server main functions.
@@ -45,10 +45,10 @@ char    *mx_database_communication(char *packet);
 sqlite3 *opening_db();
 
 // Socket list.
-int socket_list_add(socket_list_t    *head, int new_sock_fd);
-int socket_list_free(socket_list_t   *head);
-int socket_list_remove(socket_list_t *head, int sock_fd);
-socket_list_t *socket_list_find(socket_list_t *head, int sock_fd);
+int socket_list_add(connected_client_list_t    *head, int new_sock_fd);
+int socket_list_free(connected_client_list_t   *head);
+int socket_list_remove(connected_client_list_t *head, int sock_fd);
+connected_client_list_t *socket_list_find(connected_client_list_t *head, int sock_fd);
 
 // Json
 char *get_value_buy_key(char *json_str, char *key);
