@@ -32,7 +32,7 @@ int listening_socket_init(int port);
 
 char *json_packet_former(int num, ...);
 
-void mx_deamon_start(void) {
+void mx_deamon_start(void);
 
 char *login_determiner(char *send_packet);
 // Database functions.
