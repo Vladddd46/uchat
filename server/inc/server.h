@@ -55,5 +55,5 @@ char *json_packet_former(int num, ...);
 
 // Logic
 char *login_system(char *packet);
-
+char *registration_system(char *packet);
 

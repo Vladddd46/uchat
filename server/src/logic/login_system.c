@@ -11,9 +11,7 @@ char *login_system(char *packet) {
 
     // char *return_status = db_login_request(login, password);
     // char *status        = mx_strjoin("STATUS:", return_status);
-    // char *new_packet    = json_packet_former(2, "TYPE:login_s", status);
-
-    char *new_packet = json_packet_former(2, "TYPE:login_s", "STATUS:true");
-    return new_packet;
+    // char *sendback_packet    = json_packet_former(2, "TYPE:login_s", status);
+    char   *sendback_packet = json_packet_former(2, "TYPE:login_s", "STATUS:true"); // Debug.
+    return sendback_packet;
 }
-

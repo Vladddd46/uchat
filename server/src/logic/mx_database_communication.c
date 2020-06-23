@@ -11,6 +11,7 @@ char *mx_database_communication(char *packet) {
     if (!strcmp(packet, ""))
         return NULL;
     char *packet_type = get_value_buy_key(packet, "TYPE");
+    printf(">>%s\n", packet_type);
     char *send_back_packet = NULL;
 
     if (!strcmp(packet_type, "login_c")) {
@@ -19,7 +20,7 @@ char *mx_database_communication(char *packet) {
     }
     else if (!strcmp(packet_type, "reg_c")) {
         printf("\n\nReg packet received\n\n");
-        // send_back_packet = registration();
+        send_back_packet = registration_system(packet);
     }
     else if (!strcmp(packet_type, "find_user_c")) {
         printf("\n\nfind_user_c packet received\n\n");
