@@ -19,9 +19,9 @@
 // }
 
 char *registration_system(char *packet) {
-    char *login    = get_value_buy_key(packet, "LOGIN");
-    char *password = get_value_buy_key(packet, "PASSWORD");
-    char *nickname = get_value_buy_key(packet, "NICKNAME");
+    char *login    = get_value_by_key(packet, "LOGIN");
+    char *password = get_value_by_key(packet, "PASSWORD");
+    char *nickname = get_value_by_key(packet, "NICKNAME");
 
     // int  return_status     = db_reg_request(login, password, nickname);
     // char *status           = status_converter(return_status);

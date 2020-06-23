@@ -10,7 +10,7 @@
 char *mx_database_communication(char *packet) {
     if (!strcmp(packet, ""))
         return NULL;
-    char *packet_type = get_value_buy_key(packet, "TYPE");
+    char *packet_type = get_value_by_key(packet, "TYPE");
     printf(">>%s\n", packet_type);
     char *send_back_packet = NULL;
 
