@@ -43,26 +43,40 @@ void database_init() {
     int exit = 0;
     char *message_error;
     char *sql = "CREATE TABLE IF NOT EXISTS USERS("
-        "ID     INTEGER PRIMARY KEY AUTOINCREMENT, "
-        "LOGIN  TEXT NOT NULL, "
+        "ID       INTEGER PRIMARY KEY AUTOINCREMENT, "
+        "LOGIN    TEXT NOT NULL, "
         "NICKNAME TEXT NOT NULL, "
         "PASSWORD TEXT NOT NULL);";
     mx_add_user("uchat.db", "admin", "qwerty", "admin");
 
     exit = sqlite3_open("uchat.db", &db);
     exit = sqlite3_exec(db, sql, NULL, 0, &message_error);
+    dberror(db, exit, "Error to create USERS table");
 
-    if(exit != SQLITE_OK) {
-        printf("Error to create a table ");
-    }
+    sql = "CREATE TABLE IF NOT EXISTS CHATS("
+        "ID     INTEGER PRIMARY KEY AUTOINCREMENT, "
+        "CHATNAME TEXT NOT NULL, " // тут должна быть какая-то шняга Влада
+        "LASTMESSAGE TEXT NOT NULL);";
+    exit = sqlite3_open("uchat.db", &db);
+    exit = sqlite3_exec(db, sql, NULL, 0, &message_error);
+    dberror(db, exit, "Error to create CHATS table");
+
+    sql = "CREATE TABLE IF NOT EXISTS USERCHAR("
+        "USERID     INTEGER, "
+        "CHATID     INTEGER); ";
+    exit = sqlite3_open("uchat.db", &db);
+    exit = sqlite3_exec(db, sql, NULL, 0, &message_error);
+    dberror(db, exit, "Error to create USERCHAR table");
+
     sql = "CREATE TABLE IF NOT EXISTS MESSAGES("
-        "USER TEXT NOT NULL, "
-        "SENDER TEXT NOT NULL, "
-        "TIME TEXT NOT NULL, "
-        "MESSAGE TEXT NOT NULL);";
+        "USER       TEXT NOT NULL, "
+        "CHATID     INTEGER, " 
+        "SENDER     TEXT NOT NULL, "
+        "TIME       TEXT NOT NULL, "
+        "MESSAGE    TEXT NOT NULL);";
     exit = sqlite3_open("uchat.db", &db);
     exit = sqlite3_exec(db, sql, NULL, 0, &message_error);
 
-    dberror(db, exit, "Error");
+    dberror(db, exit, "Error to create MESSAGES table");
     sqlite3_close(db);
 }
