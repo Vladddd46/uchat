@@ -1,6 +1,6 @@
 #include "libmx.h"
 
-/* 
+/*
  * Sorts array <arr> in ascengind order.
  * Returns number of swaps.
  */
@@ -19,4 +19,3 @@ int mx_bubble_sort(char **arr, int size){
     }
     return swap_counter;
 }
-

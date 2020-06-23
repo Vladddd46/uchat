@@ -1,4 +1,4 @@
-NAME	=	cJSON.a
+NAME	=	cjson.a
 CFLG	=	-fPIC -pedantic -Wall -Werror -Wstrict-prototypes -Wwrite-strings -Wshadow -Winit-self -Wcast-align -Wformat=2 -Wmissing-prototypes -Wstrict-overflow=2 -Wcast-qual -Wc++-compat -Wundef -Wswitch-default -Wconversion
 SRCD	=	src
 INCD	=	inc
