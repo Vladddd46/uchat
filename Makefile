@@ -1,27 +1,27 @@
-CLN		=	./client
-SRV		=	./server 
-OBJC	=	client/obj
-OBJS	=	server/obj
-NAMECLIENT	=	/client
-NAMESERVER	=	./server/server
+NAME	=	server
 
-LMXD	=	libmx
-MKCL	=	make\
-			clean\
+CFLG	=	-std=c11 -lsqlite3
 
-all:
-	@make -sC $(CLN)
-	@make -sC $(SRV)
+SRCD	=	src
+INCD	=	inc
+OBJD	=	obj
 
-clean:
-	@make -sC $(LMXD) $@
-	@rm -rf $(OBJC)
-	@printf "$(OBJC)\t   \033[31;1mdeleted\033[0m\n"
-	@rm -rf $(OBJS)
-	@printf "$(OBJS)\t   \033[31;1mdeleted\033[0m\n"
+LMXD	=	../libs/libmx
+LMXA:=	$(LMXD)/libmx.a
+LMXI:=	$(LMXD)/$(INCD)
 
-uninstall:
-	@make -sC $(LMXD) $@
-	@rm -rf $(CLN)$(NAMECLIENT) $(NAMESERVER)
+INC		=	server.h
+INCS	=	$(addprefix $(INCD)/, $(INC))
 
-reinstall: uninstall all
+SRC		=	error.c\
+			server.c\
+			mx_client_process.c\
+			database_init.c\
+
+SRCS	=	$(addprefix $(SRCD)/, $(SRC))
+OBJS	=	$(addprefix $(OBJD)/, $(SRC:%.c=%.o))
+
+all: $(NAME)
+
+$(NAME):
+	clang $(CFLG) src/*/*.c -I inc/ -I ../libs/cjson/inc  -I ../libs/libmx/inc/ -lpthread ../libs/libmx/libmx.a ../libs/cjson/cJSON.a -o server
