@@ -103,9 +103,7 @@ static void *handle_server(void *param) {
                 char *send_packet = mx_database_communication(buffer);
                 // if (send_packet == NULL) // Connection was closed but update has not been made yet.
                     // continue;
-
-                char *test = json_packet_former(3, "LOGIN:vlad", "PASSWORD:123", "HELLO:WORLD");
-                printf("%s\n", test);
+                printf(">%s\n", send_packet);
                 /* 
                  * Retrieves user`s login from packet. Packet will be send on this login,
                  * if user with this login is connected to the server.
@@ -113,8 +111,8 @@ static void *handle_server(void *param) {
                 // char *client_login = get_value_buy_key(send_packet, "TO");
 
                 /* Makes user logged in. */
-                // if (!strcmp(get_value_buy_key(send_packet, "TYPE"), "login_s") && !strcmp(get_value_buy_key(send_packet, "STATUS"), "true"))
-                p->is_logged = true;
+                // if (send_packet && !strcmp(get_value_buy_key(send_packet, "TYPE"), "login_s") && !strcmp(get_value_buy_key(send_packet, "STATUS"), "true"))
+                    p->is_logged = true;
                 
                 for (connected_client_list_t *s = ctx.head.next; s != NULL; s = s->next) {
                     if (s->is_logged) { // && !strcmp(client_login, s->login)

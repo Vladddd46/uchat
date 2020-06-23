@@ -11,11 +11,11 @@ char *mx_database_communication(char *packet) {
     if (!strcmp(packet, ""))
         return NULL;
     char *packet_type = get_value_buy_key(packet, "TYPE");
-    char *send_back_packet;
+    char *send_back_packet = NULL;
 
     if (!strcmp(packet_type, "login_c")) {
         printf("\n\nLogin packet received\n\n");
-        // send_back_packet = login();
+        send_back_packet = login_system(packet);
     }
     else if (!strcmp(packet_type, "reg_c")) {
         printf("\n\nReg packet received\n\n");
@@ -29,9 +29,7 @@ char *mx_database_communication(char *packet) {
         printf("\n\nmsg_c packet received\n\n");
         // send_back_packet = msg();
     }
-
-    free(packet_type);
-    return NULL;
-    // return send_back_packet;
+    // free(packet_type); // почему - то иногда выдает ошибку malloc error
+    return send_back_packet;
 }
 
