@@ -9,6 +9,8 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <gtk/gtk.h>
+#include "cJSON.h"
+#include "libmx.h"
 
 #define CHILD 0
 static GtkWidget *grid;
@@ -19,11 +21,19 @@ void do_login(GtkWidget *entryspawn, int sockfd);
 void create_row(GtkWidget *labell, gpointer data);
 void create_message(GtkWidget *newmessedgentry, gpointer data);
 
-static GtkWidget *login;
-static GtkWidget *nickname;
-static GtkWidget *Password;
-static GtkWidget *SecondPassword;
-static GtkWidget *Registration;
+// Json lib. API
+char *json_packet_former(int num, ...);
+char *get_value_by_key(char *json_str, char *key);
+
+// Logic
+void do_registration(GtkWidget *Registration, int sockfd);
+
+
+GtkWidget *login;
+GtkWidget *nickname;
+GtkWidget *Password;
+GtkWidget *SecondPassword;
+GtkWidget *Registration;
 //static GtkWidget *newbutton;
 static GtkWidget *fixed;
 static GtkWidget *window;

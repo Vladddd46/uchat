@@ -22,7 +22,6 @@ void do_login(GtkWidget *entryspawn, int sockfd){
     send(sockfd,buffer,sizeof(buffer),0);
     send(sockfd,bufferPassword,sizeof(bufferPassword),0);
 
-
     
         //another function
 
@@ -156,9 +155,7 @@ void create_row(GtkWidget *labell, gpointer data){
 
     gtk_widget_show_all(window);
 }
-void do_registration(GtkWidget *Registration, int sockfd){
 
-}
 
 void make_registration(GtkWidget *Registration, int sockfd){
     GtkWidget *back;
@@ -200,6 +197,7 @@ void make_registration(GtkWidget *Registration, int sockfd){
 
     Registration = gtk_button_new_with_label("Sign Up");
     gtk_widget_set_name(Registration,"reg");
+    g_signal_connect(Registration, "clicked", G_CALLBACK(do_registration), NULL);
     gtk_grid_attach(GTK_GRID(grid), Registration, 1, 105, 1, 1);
 
     labell3 = gtk_label_new("");
@@ -275,32 +273,17 @@ void main_menu(int sockfd) {
     g_signal_connect(Registration, "clicked", G_CALLBACK(make_registration), sockfd);
     gtk_grid_attach(GTK_GRID(grid), Registration, 1, 105, 1, 1);
 
-
-   // scroll = gtk_scrolled_window_new(NULL,NULL);
-   // gtk_grid_attach(GTK_GRID(grid), scroll, 1, 106, 1, 1);
-   // view = gtk_viewport_new(NULL,NULL);
-   // gtk_container_add(GTK_CONTAINER(scroll), view);
-
-
-
-    //gtk_grid_attach(GTK_GRID(grid), emoj, 1, 106, 1, 1);
-
-    // quit = gtk_button_new_with_label("X");
-    // gtk_grid_attach(GTK_GRID(grid), quit, 1, 105, 1, 1);
-    // g_signal_connect(quit, "clicked", G_CALLBACK(destroy), NULL);
-    
     gtk_widget_set_size_request(GTK_WIDGET(window),1024,768);
     //gtk_window_set_resizable(GTK_WIDGET(window), FALSE);
     gtk_widget_show_all(window);
 
 }
 
-
-
+// Main window init.
 void gui(int argc, char **argv, int sockfd){
     gtk_init(&argc, &argv);
 
-    GtkCssProvider *provider = gtk_css_provider_new ();
+    GtkCssProvider *provider = gtk_css_provider_new();
     gtk_css_provider_load_from_path (provider,"theme.css", NULL);
     gtk_style_context_add_provider_for_screen(gdk_screen_get_default(),
                                GTK_STYLE_PROVIDER(provider),
@@ -313,6 +296,12 @@ void gui(int argc, char **argv, int sockfd){
     fixed = gtk_fixed_new();
     gtk_container_add(GTK_CONTAINER(window), fixed);
     main_menu(sockfd);
+
+    // char buf[1000];
+    // while(recv(sockfd, buf, sizeof(buf), 0)) {
+    //     printf(">>%s\n", buf);
+    // }
+
     gtk_main();
 }
 
