@@ -51,7 +51,7 @@ RM			= /bin/rm -rf
 
 all: $(LIB_LIST) $(NAME)
 
-$(NAME): $(LIB_LIST) $(OBJ_DIR) $(OBJ)
+$(NAME): $(OBJ_DIR) $(OBJ)
 	@$(COMPILE) $(OBJ) -lmx -o $(NAME)
 	@printf "\r\33[2K$@ \033[32;1mcreated\033[0m\n"
 
@@ -77,4 +77,4 @@ uninstall:
 
 reinstall: uninstall all
 
-.PHONY: all clean uninstall reinstall $(NAME) $(LIB_LIST)
+.PHONY: all clean uninstall reinstall
