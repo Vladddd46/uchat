@@ -12,11 +12,16 @@
 #include "cJSON.h"
 #include "libmx.h"
 
-#define CHILD 0
+
+typedef struct client_context_s {
+	int sockfd;
+} client_context_t;
+
+
 static GtkWidget *grid;
 void error(char *msg, int status);
 void back_to_menu(GtkWidget *back, int sockfd);
-void main_menu(int sockfd);
+void main_menu(client_context_t *client_context);
 void do_login(GtkWidget *entryspawn, int sockfd);
 void create_row(GtkWidget *labell, gpointer data);
 void create_message(GtkWidget *newmessedgentry, gpointer data);

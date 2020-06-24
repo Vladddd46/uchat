@@ -1,5 +1,7 @@
 #include "client.h"
 
+client_context_t *client_context;
+
 static int messagenumber = 0;
 static int n = 0;
 
@@ -227,7 +229,7 @@ static void argv_validator(int argc, char **argv) {
     }
 }
 
-void main_menu(int sockfd) {
+void main_menu(client_context_t *client_context) {
     GtkWidget *entryspawn;
     //GtkWidget *scroll;
     //GtkWidget *view;
@@ -243,7 +245,7 @@ void main_menu(int sockfd) {
      gtk_grid_attach(GTK_GRID(grid), iconnn, 1, 98, 1, 1);
 
     login = gtk_entry_new();
-    gtk_entry_set_placeholder_text(GTK_ENTRY(login),"Log In");
+    gtk_entry_set_placeholder_text(GTK_ENTRY(login),"Login");
     gtk_widget_set_name(login,"login");
     gtk_grid_attach(GTK_GRID(grid), login, 1, 99, 1, 1);
 
@@ -260,15 +262,15 @@ void main_menu(int sockfd) {
 
     entryspawn = gtk_button_new_with_label("Login");
     gtk_widget_set_name(entryspawn,"log");
-    g_signal_connect(entryspawn, "clicked", G_CALLBACK(do_login), sockfd);
+    g_signal_connect(entryspawn, "clicked", G_CALLBACK(do_login), client_context->sockfd);
     gtk_grid_attach(GTK_GRID(grid), entryspawn, 1, 103, 1, 1);
 
-     labell3 = gtk_label_new("");
+    labell3 = gtk_label_new("");
     gtk_grid_attach(GTK_GRID(grid), labell3, 1, 104, 1, 1);
 
     Registration = gtk_button_new_with_label("Sign In");
     gtk_widget_set_name(Registration,"reg");
-    g_signal_connect(Registration, "clicked", G_CALLBACK(make_registration), sockfd);
+    g_signal_connect(Registration, "clicked", G_CALLBACK(make_registration), client_context->sockfd);
     gtk_grid_attach(GTK_GRID(grid), Registration, 1, 105, 1, 1);
 
     gtk_widget_set_size_request(GTK_WIDGET(window),1024,768);
@@ -278,7 +280,7 @@ void main_menu(int sockfd) {
 }
 
 // Main window init.
-void gui(int argc, char **argv, int sockfd){
+void gui(int argc, char **argv, client_context_t *client_context) {
     gtk_init(&argc, &argv);
 
     GtkCssProvider *provider = gtk_css_provider_new();
@@ -289,16 +291,10 @@ void gui(int argc, char **argv, int sockfd){
 
     window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
     g_signal_connect(window,"destroy",G_CALLBACK(gtk_main_quit), NULL);
-    //gtk_widget_set_name(window,"window");
 
     fixed = gtk_fixed_new();
     gtk_container_add(GTK_CONTAINER(window), fixed);
-    main_menu(sockfd);
-
-    // char buf[1000];
-    // while(recv(sockfd, buf, sizeof(buf), 0)) {
-    //     printf(">>%s\n", buf);
-    // }
+    main_menu(client_context);
 
     gtk_main();
 }
@@ -337,8 +333,11 @@ int main(int argc, char **argv) {
     int res = connect(sockfd, (struct sockaddr *)&client_addr, sizeof(client_addr));
     error("Error while connection", res);
 
+    client_context = (client_context_t *)malloc(sizeof(client_context_t));
+    client_context->sockfd = sockfd;
     // Gui initialization
-    gui(argc, argv, sockfd);
+    gui(argc, argv, client_context);
+    free(client_context);
     return 0;
 }
 
