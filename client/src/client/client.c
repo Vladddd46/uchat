@@ -37,7 +37,7 @@ void do_login(GtkWidget *entryspawn, int sockfd){
     leftmenu = gtk_button_new();
     gtk_box_pack_start(GTK_BOX(leftbox), leftmenu, TRUE, TRUE, 0);
     gtk_widget_set_name(leftmenu,"leftmenu");
-    GdkPixbuf *iconn = gdk_pixbuf_new_from_file("menu_icon.png",NULL);
+    GdkPixbuf *iconn = gdk_pixbuf_new_from_file("./media/img/menu_icon.png",NULL);
     iconn = gdk_pixbuf_scale_simple(iconn, 32,32, GDK_INTERP_BILINEAR);
     icon = gtk_image_new_from_pixbuf(iconn);
     gtk_button_set_image (GTK_BUTTON (leftmenu), icon);
@@ -51,7 +51,7 @@ void do_login(GtkWidget *entryspawn, int sockfd){
     newchatbutton = gtk_button_new();
     gtk_box_pack_end(GTK_BOX(leftbox), newchatbutton, TRUE, TRUE, 0);
     g_signal_connect(newchatbutton, "clicked", G_CALLBACK(create_row), NULL);
-    iconn = gdk_pixbuf_new_from_file("plus_icon.png",NULL);
+    iconn = gdk_pixbuf_new_from_file("./media/img/plus_icon.png",NULL);
     iconn = gdk_pixbuf_scale_simple(iconn, 32,32, GDK_INTERP_BILINEAR);
     icon = gtk_image_new_from_pixbuf(iconn);
     gtk_button_set_image (GTK_BUTTON (newchatbutton), icon);
@@ -100,7 +100,7 @@ void create_message(GtkWidget *newmessedgentry, gpointer data){
 
     gridmenu = gtk_grid_new();
     gtk_container_add(GTK_CONTAINER(row), gridmenu);
-    GdkPixbuf *iconn = gdk_pixbuf_new_from_file("pokemon-2.png",NULL);
+    GdkPixbuf *iconn = gdk_pixbuf_new_from_file("./media/img/pokemon-2.png",NULL);
     iconn = gdk_pixbuf_scale_simple(iconn, 32,32, GDK_INTERP_BILINEAR);
     icon = gtk_image_new_from_pixbuf(iconn);
     gtk_grid_attach(GTK_GRID(gridmenu), icon, 0, 0, 1, 2);
@@ -136,7 +136,7 @@ void create_row(GtkWidget *labell, gpointer data){
 
     gridmenu = gtk_grid_new();
     gtk_container_add(GTK_CONTAINER(row), gridmenu);
-    GdkPixbuf *iconn = gdk_pixbuf_new_from_file("pokemon-2.png",NULL);
+    GdkPixbuf *iconn = gdk_pixbuf_new_from_file("./media/img/pokemon-2.png",NULL);
     iconn = gdk_pixbuf_scale_simple(iconn, 32,32, GDK_INTERP_BILINEAR);
     icon = gtk_image_new_from_pixbuf(iconn);
     gtk_grid_attach(GTK_GRID(gridmenu), icon, 0, 0, 1, 2);
@@ -166,7 +166,7 @@ void make_registration(GtkWidget *Registration, int sockfd){
     gtk_widget_set_name(grid,"gride");
     gtk_fixed_put(GTK_FIXED (fixed), grid, 350,175);
 
-    GdkPixbuf *iconn = gdk_pixbuf_new_from_file("pokeball.png",NULL);
+    GdkPixbuf *iconn = gdk_pixbuf_new_from_file("./media/img/pokeball.png",NULL);
     iconn = gdk_pixbuf_scale_simple(iconn, 128,128, GDK_INTERP_BILINEAR);
     GtkWidget *iconnn = gtk_image_new_from_pixbuf(iconn);
      gtk_widget_set_name(iconnn,"image");
@@ -237,7 +237,7 @@ void main_menu(int sockfd) {
     gtk_widget_set_name(grid,"gride");
     gtk_fixed_put(GTK_FIXED (fixed), grid, 350,175);
 
-    GdkPixbuf *iconn = gdk_pixbuf_new_from_file("pokeball.png",NULL);
+    GdkPixbuf *iconn = gdk_pixbuf_new_from_file("./media/img/pokeball.png",NULL);
     iconn = gdk_pixbuf_scale_simple(iconn, 128,128, GDK_INTERP_BILINEAR);
     GtkWidget *iconnn = gtk_image_new_from_pixbuf(iconn);
     // iconn = gtk_image_new_from_file("Unknown.jpeg");
@@ -284,7 +284,7 @@ void gui(int argc, char **argv, int sockfd){
     gtk_init(&argc, &argv);
 
     GtkCssProvider *provider = gtk_css_provider_new();
-    gtk_css_provider_load_from_path (provider,"theme.css", NULL);
+    gtk_css_provider_load_from_path (provider,"./media/css/theme.css", NULL);
     gtk_style_context_add_provider_for_screen(gdk_screen_get_default(),
                                GTK_STYLE_PROVIDER(provider),
                                GTK_STYLE_PROVIDER_PRIORITY_USER);

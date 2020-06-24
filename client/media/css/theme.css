@@ -1,6 +1,6 @@
 window{
 	/* The image used */
-  background-image: url("background2.jpg");
+  background-image: url("../img/background2.jpg");
 
   background-position: center;
   background-repeat: no-repeat;
@@ -68,7 +68,7 @@ background: transparent;
 border: none;
 }
 #listboxmess{
-  background-image: url("background2.jpg");
+  background-image: url("../img/background2.jpg");
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;

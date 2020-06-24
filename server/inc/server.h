@@ -14,11 +14,6 @@
 #include "libmx.h"
 #include "cJSON.h"
 
-#define CHILD 0
-
-#define LOGIN_SUCCESS 			1
-#define LOGIN_FAIL  	     	2
-
 // Linked list with opened sockets.
 typedef struct socket_list {
 	int sock_fd;
