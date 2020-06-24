@@ -157,7 +157,7 @@ void create_row(GtkWidget *labell, gpointer data){
 }
 
 
-void make_registration(GtkWidget *Registration, int sockfd){
+void make_registration(GtkWidget *Registration, client_context_t *client_context){
     GtkWidget *back;
 
     gtk_widget_destroy(grid);
@@ -197,7 +197,7 @@ void make_registration(GtkWidget *Registration, int sockfd){
 
     Registration = gtk_button_new_with_label("Sign Up");
     gtk_widget_set_name(Registration,"reg");
-    g_signal_connect(Registration, "clicked", G_CALLBACK(do_registration), NULL);
+    g_signal_connect(Registration, "clicked", G_CALLBACK(do_registration), client_context);
     gtk_grid_attach(GTK_GRID(grid), Registration, 1, 105, 1, 1);
 
     labell3 = gtk_label_new("");
@@ -205,7 +205,7 @@ void make_registration(GtkWidget *Registration, int sockfd){
 
     back = gtk_button_new_with_label("Back to Login");
     gtk_widget_set_name(back,"log");
-    g_signal_connect(back, "clicked", G_CALLBACK(back_to_menu), sockfd);
+    g_signal_connect(back, "clicked", G_CALLBACK(back_to_menu), client_context->sockfd);
     gtk_grid_attach(GTK_GRID(grid), back, 1, 107, 1, 1);
     //gtk_fixed_put(GTK_FIXED (fixed), back, 550,540);
 
@@ -270,7 +270,7 @@ void main_menu(client_context_t *client_context) {
 
     Registration = gtk_button_new_with_label("Sign In");
     gtk_widget_set_name(Registration,"reg");
-    g_signal_connect(Registration, "clicked", G_CALLBACK(make_registration), client_context->sockfd);
+    g_signal_connect(Registration, "clicked", G_CALLBACK(make_registration), client_context);
     gtk_grid_attach(GTK_GRID(grid), Registration, 1, 105, 1, 1);
 
     gtk_widget_set_size_request(GTK_WIDGET(window),1024,768);

@@ -31,7 +31,7 @@ char *json_packet_former(int num, ...);
 char *get_value_by_key(char *json_str, char *key);
 
 // Logic
-void do_registration(GtkWidget *Registration, int sockfd);
+void do_registration(GtkWidget *Registration, client_context_t *client_context);
 
 
 GtkWidget *login;
