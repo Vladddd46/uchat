@@ -1,7 +1,5 @@
 #include "client.h"
 
-
-
 static int messagenumber = 0;
 static int n = 0;
 
@@ -11,9 +9,9 @@ static void destroy(GtkWidget *widget, gpointer data){
 
 
 void back_to_menu(GtkWidget *back, int sockfd){
-gtk_widget_destroy(grid);
-gtk_widget_destroy(back);
-main_menu(sockfd);
+    gtk_widget_destroy(grid);
+    gtk_widget_destroy(back);
+    main_menu(sockfd);
 }
 
 void do_login(GtkWidget *entryspawn, int sockfd){
@@ -23,7 +21,7 @@ void do_login(GtkWidget *entryspawn, int sockfd){
     send(sockfd,bufferPassword,sizeof(bufferPassword),0);
 
     
-        //another function
+    //another function
 
     gtk_widget_destroy(grid);
     scroll = gtk_scrolled_window_new(0,0);
@@ -305,22 +303,20 @@ void gui(int argc, char **argv, int sockfd){
     gtk_main();
 }
 
-int main(int argc, char **argv) {
-    argv_validator(argc, argv);
-    int port = atoi(argv[2]);
-
-    /* <del>
-     * Создаем сокет типа IPv4 для протокола TCP.
-     */
+static int Socket() {
+    // Create socket TCP and IPv4
     int sockfd = socket(AF_INET, SOCK_STREAM, 0);
     error("Error while creating socket", sockfd);
 
-    /* <del>
-     * Создаем структуру, в которой описываем информацию клинта:
-     * (bzero - заполняет все нулями)
-     * 1. адресс сервера, к которому хотим подключиться.
-     * 2. версия айпи-адресса AF_INET = IPv4
-     * 3. порт сервера.
+    return sockfd;
+}
+
+static struct sockaddr_in client_address_describer(int port) {
+    /*
+     * Create structure, where client address is described.
+     * 1. server`s address
+     * 2. ip version AF_INET = IPv4
+     * 3. server`s port.
      */
     struct sockaddr_in client_addr;
     bzero(&client_addr, sizeof(client_addr));
@@ -328,16 +324,22 @@ int main(int argc, char **argv) {
     client_addr.sin_family = AF_INET;
     client_addr.sin_port = htons(port);
 
-    /* <del>
-     * Конектимся к серверу.
-     * 1 - дескриптор сокета. 2 - указатель на структуру с информацией о сервере/клиента. 3. размер структуры.
-     */
+    return client_addr;
+}
 
+int main(int argc, char **argv) {
+    argv_validator(argc, argv);
+    int port                       = atoi(argv[2]);
+    int sockfd                     = Socket();
+    struct sockaddr_in client_addr = client_address_describer(port);
+
+    // Do the connect to the server.
     int res = connect(sockfd, (struct sockaddr *)&client_addr, sizeof(client_addr));
     error("Error while connection", res);
-    gui(argc,argv,sockfd);
-    write(sockfd, "hello server\n", 15);
 
+    // Gui initialization
+    gui(argc, argv, sockfd);
+    return 0;
 }
 
 
