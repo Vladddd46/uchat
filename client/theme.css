@@ -67,3 +67,12 @@ window{
 background: transparent;
 border: none;
 }
+#listboxmess{
+  background-image: url("background2.jpg");
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+#message{
+  background-color: #ffffff;
+}

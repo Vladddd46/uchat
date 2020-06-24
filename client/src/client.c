@@ -2,7 +2,7 @@
 
 
 
-
+static int messagenumber = 0;
 static int n = 0;
 
 static void destroy(GtkWidget *widget, gpointer data){
@@ -42,8 +42,7 @@ void do_login(GtkWidget *entryspawn, int sockfd){
     iconn = gdk_pixbuf_scale_simple(iconn, 32,32, GDK_INTERP_BILINEAR);
     icon = gtk_image_new_from_pixbuf(iconn);
     gtk_button_set_image (GTK_BUTTON (leftmenu), icon);
-    //gtk_widget_set_size_request(leftmenu,36,36);
-       
+
     searchmenu = gtk_entry_new();
     gtk_entry_set_placeholder_text(GTK_ENTRY(searchmenu),"Search");
     gtk_widget_set_name(searchmenu,"searchmenu");
@@ -77,16 +76,62 @@ void do_login(GtkWidget *entryspawn, int sockfd){
     gtk_entry_set_placeholder_text(GTK_ENTRY(newmessedgentry),"Write a message...");
     gtk_widget_set_name(newmessedgentry,"newmessedgentry");
     gtk_box_pack_start(GTK_BOX(downbox),newmessedgentry, TRUE, TRUE, 0);
-    g_signal_connect(newmessedgentry, "activate", G_CALLBACK(create_row), NULL);
+    g_signal_connect(newmessedgentry, "activate", G_CALLBACK(create_message), NULL);
 
-    
+    scrollmess = gtk_scrolled_window_new(0,0);
+    gtk_fixed_put(GTK_FIXED (fixed), scrollmess, 300,50);
+    gtk_widget_set_name(scrollmess,"scrollmess");
+    gtk_widget_set_size_request(GTK_WIDGET(scrollmess),724,668);
+
+    listboxmess = gtk_list_box_new();
+    gtk_widget_set_name(listboxmess,"listboxmess");
+    gtk_container_add(GTK_CONTAINER(scrollmess), listboxmess);
+
      gtk_widget_show_all(window);
 }
+
+
+void create_message(GtkWidget *newmessedgentry, gpointer data){
+    GtkWidget *row;
+    row = gtk_list_box_row_new();
+    gtk_widget_set_name(row,"message");
+    gtk_list_box_row_set_selectable (GTK_LIST_BOX_ROW(row),FALSE);
+    gtk_list_box_insert (GTK_LIST_BOX(listboxmess),row,n);
+    messagenumber++;
+
+    gridmenu = gtk_grid_new();
+    gtk_container_add(GTK_CONTAINER(row), gridmenu);
+    GdkPixbuf *iconn = gdk_pixbuf_new_from_file("pokemon-2.png",NULL);
+    iconn = gdk_pixbuf_scale_simple(iconn, 32,32, GDK_INTERP_BILINEAR);
+    icon = gtk_image_new_from_pixbuf(iconn);
+    gtk_grid_attach(GTK_GRID(gridmenu), icon, 0, 0, 1, 2);
+
+    labellmenu = gtk_label_new("Vlad");
+    gtk_widget_set_name(labellmenu,"labellmenu");
+    gtk_grid_attach(GTK_GRID(gridmenu), labellmenu, 1, 0, 1, 1);
+
+    labellmenu2 = gtk_label_new("Kill me please \nHello");
+    gtk_widget_set_name(labellmenu2,"labellmenu2");
+    gtk_grid_attach(GTK_GRID(gridmenu), labellmenu2, 1, 1, 1, 1);
+
+    labellmenu3 = gtk_label_new("Yesterday");
+    gtk_grid_attach(GTK_GRID(gridmenu), labellmenu3, 2, 0, 1, 1);
+    gtk_widget_set_name(labellmenu3,"labellmenu3");
+
+    fileMenu = gtk_menu_new();
+    gtk_menu_popup_at_pointer (GTK_MENU (fileMenu),trigger_event);
+    Password = gtk_button_new_with_label("fdfdf");
+    gtk_container_add(fileMenu,Password);
+
+    gtk_widget_show_all(window);
+}
+
 
 void create_row(GtkWidget *labell, gpointer data){
     GtkWidget *row;
     row = gtk_list_box_row_new();
     gtk_widget_set_name(row,"chatrow");
+    gtk_list_box_row_set_selectable (GTK_LIST_BOX_ROW(row),FALSE);
     gtk_list_box_insert (GTK_LIST_BOX(listbox),row,n);
     n++;
 
