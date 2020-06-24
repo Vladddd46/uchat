@@ -13,6 +13,8 @@
 #include "libmx.h"
 #include "cJSON.h"
 #include "socket_list.h"
+#include <sys/types.h>
+#include <sys/stat.h>
 
 #define CHILD 0
 

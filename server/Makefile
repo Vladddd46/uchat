@@ -1,6 +1,5 @@
-CC = clang
-LIB = libmx.a
-NAME = uchat_server
+# name of binary
+NAME		= uchat_server
 
 # add your new dir_name and file included it (without any extansions)
 db_functions = database_init mx_database_communication opening_db
@@ -11,45 +10,53 @@ logic = handle_client login_determiner login socket_list
 
 server = deamon listening_socket_init server
 # add dir new <dir_name> in src/<dir_name>, if you`ve created newone
-dirs = db_functions help_functions logic server
+dirs		= db_functions help_functions logic server
 
-FILES = $(foreach dir, $(dirs), $($(dir):%=$(dir)/%))
+SRC_DIR		= src/
+OBJ_DIR		= obj/
+INC_DIR		= inc/
 
-SRC_DIR = src/
-OBJ_DIR = obj/
+FILES		= $(foreach dir, $(dirs), $($(dir):%=$(dir)/%))
+SRC			= $(FILES:%=$(SRC_DIR)%.c)
+OBJ			= $(FILES:%=$(OBJ_DIR)%.o)
+
 # library list
-LIB_DIR	= ../libs
-# add lib folder in ../libs/ (the <lib_name>.a and the ../lib/<lib_folder_name> must be the same)
-LIB_LIST = libmx cjson
-# make path to library
-LIB_DIRS = $(foreach libdirs, $(LIB_LIST), $(LIB_DIR)/$(libdirs))
+LIB_DIR		= ../libs
+# add lib folder in ../libs/
+# (the <lib_name>.a and the ../lib/<lib_fol der_name> must be the same)
+LIB_LIST	= libmx cjson
+# make path to library ../libs/<lib_name>/
+LIB_DIRS	= $(foreach libdirs, $(LIB_LIST), $(LIB_DIR)/$(libdirs)/)
 # make path to ../libs/<lib_name>/<lib_name>.a
-LIB_BIN = $(foreach libbin, $(LIB_DIRS), ())
+LIB_BIN		= $(join $(LIB_DIRS), $(addsuffix .a, $(LIB_LIST)))
+# make path to ../libs/<lib_name>/inc
+LIB_INC		= $(addsuffix $(INC_DIR), $(LIB_DIRS))
 
-SRC = $(FILES:%=$(SRC_DIR)%.c)
-OBJ = $(FILES:%=$(OBJ_DIR)%.o)
-LIB_PATH = $(LIB_DIR)$(LIB)
 
-WFLAGS = -Wall -Wextra -Werror -Wpedantic
+# compiler
+CC			= clang
+# general flags
+GFLAGS		= -std=c11 -pipe -Wall -Wextra -Werror -Wpedantic\
+	-Wno-unused-command-line-argument -Wno-unused-variable \
+	-Wno-unused-function -Wno-unused-parameter
+# specific flags
+CFLAGS		= -lsqlite3 -lpthread
+# folder with header files
+IFLAGS		= $(addprefix -I, $(LIB_INC) $(INC_DIR))
 
-LFLAGS = -I inc -I
-
-CFLAGS = -lsqlite3
-
-COMPILE = $(CC) -std=c11 -pipe $(WFLAGS) $(LFLAGS)
-EXEC_IT = make -sf Makefile
-EXEC_LD = $(EXEC_IT) -C $(LIB_DIR)
-MKDIR = mkdir -p
-RM = /bin/rm -rf
-TARGET = debug
+COMPILE		= $(CC) $(GFLAGS) $(IFLAGS) $(CFLAGS) $(LIB_BIN)
+MAKE_M		= make -sf Makefile -C
+MKDIR		= mkdir -p
+RM			= /bin/rm -rf
 
 all: $(LIB_LIST) $(NAME)
 
-print:
-	@printf "$(LIB_DIRS)"
+$(NAME): $(LIB_LIST) $(OBJ_DIR) $(OBJ)
+	@$(COMPILE) $(OBJ) -lmx -o $(NAME)
+	@printf "\r\33[2K$@ \033[32;1mcreated\033[0m\n"
 
 $(LIB_LIST):
-	@make -sf Makefile -C $(LIB_DIR)/$@
+	@$(MAKE_M) $(LIB_DIR)/$@
 
 $(OBJ_DIR):
 	@$(MKDIR) $@ $(foreach dir, $(dirs), $@/$(dir))
@@ -58,19 +65,16 @@ $(OBJ_DIR)%.o: $(SRC_DIR)%.c
 	@$(COMPILE) -o $@ -c $<
 	@printf "\r\33[2K$(NAME) \033[33;1mcompile \033[0m$(<:$(SRC_DIR)/%.c=%) "
 
-$(NAME): $(OBJ_DIR) $(OBJ)
-	@$(COMPILE) $(LIB_PATH) $(OBJ) -o $(NAME)
-	@printf "\r\33[2K$@ \033[32;1mcreated\033[0m\n"
-
 
 clean:
-	@$(EXEC_LD) $@
 	@$(RM) $(OBJ_DIR)
+	@printf "$(OBJ_DIR)\t   \033[31;1mdeleted\033[0m\n"
 
 uninstall:
-	@$(EXEC_LD) $@
 	@$(RM) $(OBJ_DIR) $(NAME)
+	@printf "$(OBJ_DIR)\t   \033[31;1mdeleted\033[0m\n"
+	@printf "$(NAME) \033[31;1muninstalled\033[0m\n"
 
 reinstall: uninstall all
 
-.PHONY: all clean uninstall reinstall
+.PHONY: all clean uninstall reinstall $(NAME) $(LIB_LIST)

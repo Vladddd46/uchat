@@ -5,3 +5,4 @@ obj
 libmx.a
 cJSON.a
 uchat.db
+uchat_server
