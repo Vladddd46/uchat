@@ -277,6 +277,22 @@ void main_menu(client_context_t *client_context) {
     //gtk_window_set_resizable(GTK_WIDGET(window), FALSE);
     gtk_widget_show_all(window);
 
+    fd_set read_descriptors;
+    FD_ZERO(&read_descriptors);
+    FD_SET(client_context->read_pipe, &read_descriptors);
+    struct timeval tv;
+    tv.tv_sec  = 1; // seconds.
+    tv.tv_usec = 0; // mili-seconds.
+    int status = select(FD_SETSIZE, &read_descriptors, NULL, NULL, &tv);
+    // if no sockets are availabe => continue loop.
+    if (status > 0) {
+        char buf[1000];
+        bzero(buf, 1000);
+        read(client_context->read_pipe, buf, 1000);
+        printf(">>>>%s\n", buf);
+        bzero(buf, 1000);
+    } 
+
 }
 
 // Main window init.
@@ -323,18 +339,52 @@ static struct sockaddr_in client_address_describer(int port) {
     return client_addr;
 }
 
+void client_context_init(int sockfd, int write_pipe, int read_pipe) {
+    client_context = (client_context_t *)malloc(sizeof(client_context_t));
+    if (client_context == NULL) {
+        char *msg = "Client context malloc error\n";
+        write(2, msg, (int)strlen(msg));
+        exit(1);
+    }
+    client_context->sockfd     = sockfd;
+    client_context->write_pipe = write_pipe;
+    client_context->read_pipe  = read_pipe;
+}
+
+void *server_communication(void *param) {
+    while(1) {
+        fd_set read_descriptors;
+        FD_ZERO(&read_descriptors);
+        FD_SET(client_context->sockfd, &read_descriptors);
+        struct timeval tv;
+        tv.tv_sec  = 1; // seconds.
+        tv.tv_usec = 0; // mili-seconds.
+        int status = select(FD_SETSIZE, &read_descriptors, NULL, NULL, &tv);
+        if (status <= 0) continue;
+
+        char buf[1000];
+        bzero(buf, 1000);
+        read(client_context->sockfd, buf, 1000);
+        write(client_context->write_pipe, buf, 1000);
+        bzero(buf, 1000);
+    }
+    return NULL;
+}
+
 int main(int argc, char **argv) {
     argv_validator(argc, argv);
     int port                       = atoi(argv[2]);
     int sockfd                     = Socket();
     struct sockaddr_in client_addr = client_address_describer(port);
 
+    int pipefd[2];
+    pipe(pipefd);
+
     // Do the connect to the server.
     int res = connect(sockfd, (struct sockaddr *)&client_addr, sizeof(client_addr));
     error("Error while connection", res);
 
-    client_context = (client_context_t *)malloc(sizeof(client_context_t));
-    client_context->sockfd = sockfd;
+    client_context_init(sockfd, pipefd[1], pipefd[0]);
     // Gui initialization
     gui(argc, argv, client_context);
     free(client_context);

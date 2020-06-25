@@ -15,6 +15,8 @@
 
 typedef struct client_context_s {
 	int sockfd;
+	int write_pipe;
+	int read_pipe;
 } client_context_t;
 
 
