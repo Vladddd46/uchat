@@ -65,7 +65,6 @@ $(OBJ_DIR)%.o: $(SRC_DIR)%.c
 	@$(COMPILE) -o $@ -c $<
 	@printf "\r\33[2K$(NAME) \033[33;1mcompile \033[0m$(<:$(SRC_DIR)/%.c=%) "
 
-
 clean:
 	@$(RM) $(OBJ_DIR)
 	@printf "$(OBJ_DIR)\t   \033[31;1mdeleted\033[0m\n"
