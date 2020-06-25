@@ -354,6 +354,11 @@ void client_context_init(int sockfd, int write_pipe, int read_pipe) {
     client_context->read_pipe  = read_pipe;
 }
 
+/*
+ * Thread, which receives packets from server.
+ * If packet was received -> write it in pipe.
+ * Gui thread reads this packet on another side of pipe.
+ */
 void *server_communication(void *param) {
     while(1) {
         fd_set read_descriptors;
