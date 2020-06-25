@@ -1,8 +1,12 @@
 ./server/server
 ./client/client
 obj
+*.o
 .DS_Store
 libmx.a
 cJSON.a
 uchat.db
 uchat_server
+uchat
+server
+client
