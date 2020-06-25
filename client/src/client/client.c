@@ -229,7 +229,7 @@ static void argv_validator(int argc, char **argv) {
     }
 }
 
-void main_menu(client_context_t *client_context) {
+void main_menu() {
     GtkWidget *entryspawn;
     //GtkWidget *scroll;
     //GtkWidget *view;
@@ -277,21 +277,24 @@ void main_menu(client_context_t *client_context) {
     //gtk_window_set_resizable(GTK_WIDGET(window), FALSE);
     gtk_widget_show_all(window);
 
-    fd_set read_descriptors;
-    FD_ZERO(&read_descriptors);
-    FD_SET(client_context->read_pipe, &read_descriptors);
-    struct timeval tv;
-    tv.tv_sec  = 1; // seconds.
-    tv.tv_usec = 0; // mili-seconds.
-    int status = select(FD_SETSIZE, &read_descriptors, NULL, NULL, &tv);
-    // if no sockets are availabe => continue loop.
-    if (status > 0) {
-        char buf[1000];
-        bzero(buf, 1000);
-        read(client_context->read_pipe, buf, 1000);
-        printf(">>>>%s\n", buf);
-        bzero(buf, 1000);
-    } 
+    // fd_set read_descriptors;
+    // FD_ZERO(&read_descriptors);
+    // FD_SET(client_context->read_pipe, &read_descriptors);
+    // struct timeval tv;
+    // tv.tv_sec  = 1; // seconds.
+    // tv.tv_usec = 0; // mili-seconds.
+    // int status = select(FD_SETSIZE, &read_descriptors, NULL, NULL, &tv);
+    // // if no sockets are availabe => continue loop.
+    // if (status > 0) {
+    //     char buf[1000];
+    //     bzero(buf, 1000);
+    //     read(client_context->read_pipe, buf, 1000);
+    //     printf(">>>>%s\n", buf);
+    //     bzero(buf, 1000);
+    // }
+    // else {
+    //     printf("%d\n", status);
+    // }
 
 }
 
@@ -310,7 +313,7 @@ void gui(int argc, char **argv, client_context_t *client_context) {
 
     fixed = gtk_fixed_new();
     gtk_container_add(GTK_CONTAINER(window), fixed);
-    main_menu(client_context);
+    main_menu();
 
     gtk_main();
 }
@@ -356,17 +359,19 @@ void *server_communication(void *param) {
         fd_set read_descriptors;
         FD_ZERO(&read_descriptors);
         FD_SET(client_context->sockfd, &read_descriptors);
+
+        // Set time select must wait for incomming packets.
         struct timeval tv;
         tv.tv_sec  = 1; // seconds.
         tv.tv_usec = 0; // mili-seconds.
-        int status = select(FD_SETSIZE, &read_descriptors, NULL, NULL, &tv);
-        if (status <= 0) continue;
 
         char buf[1000];
         bzero(buf, 1000);
+        int status = select(FD_SETSIZE, &read_descriptors, NULL, NULL, &tv);
+        if (status <= 0) continue;
         read(client_context->sockfd, buf, 1000);
+        printf("===%s\n", buf);
         write(client_context->write_pipe, buf, 1000);
-        bzero(buf, 1000);
     }
     return NULL;
 }
@@ -385,6 +390,9 @@ int main(int argc, char **argv) {
     error("Error while connection", res);
 
     client_context_init(sockfd, pipefd[1], pipefd[0]);
+    pthread_t client_thread;
+    int err = pthread_create(&client_thread, NULL, server_communication, NULL);
+
     // Gui initialization
     gui(argc, argv, client_context);
     free(client_context);

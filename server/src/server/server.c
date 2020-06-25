@@ -103,7 +103,7 @@ static void *handle_server(void *param) {
                 char *send_packet = mx_database_communication(buffer);
                 // if (send_packet == NULL) // Connection was closed but update has not been made yet.
                     // continue;
-                printf(">%s\n", send_packet);
+                printf(">%s\n", buffer);
                 /* 
                  * Retrieves user`s login from packet. Packet will be send on this login,
                  * if user with this login is connected to the server.
@@ -116,7 +116,7 @@ static void *handle_server(void *param) {
                 
                 for (connected_client_list_t *s = ctx.head.next; s != NULL; s = s->next) {
                     if (s->is_logged) { // && !strcmp(client_login, s->login)
-                        send(s->sock_fd, buffer, buf_len, 0);
+                        send(s->sock_fd, send_packet, buf_len, 0);
                         printf("Sending of %d bytes\n",buf_len); // Debug.
                     }
                 }                    

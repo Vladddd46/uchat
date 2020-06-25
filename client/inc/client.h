@@ -23,7 +23,7 @@ typedef struct client_context_s {
 static GtkWidget *grid;
 void error(char *msg, int status);
 void back_to_menu(GtkWidget *back, int sockfd);
-void main_menu(client_context_t *client_context);
+void main_menu();
 void do_login(GtkWidget *entryspawn, int sockfd);
 void create_row(GtkWidget *labell, gpointer data);
 void create_message(GtkWidget *newmessedgentry, gpointer data);
