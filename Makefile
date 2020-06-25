@@ -1,27 +1,18 @@
-NAME	=	server
+CLN		=	./client
+SRV		=	./server
+LIBMX		= 	./libs/libmx
+CJSON 		= 	./libs/cjson
 
-CFLG	=	-std=c11 -lsqlite3
+all:
+	@make -sC $(LIBMX)
+	@make -sC $(CJSON)
+	@make -sC $(CLN)
+	@make -sC $(SRV)
 
-SRCD	=	src
-INCD	=	inc
-OBJD	=	obj
-
-LMXD	=	../libs/libmx
-LMXA:=	$(LMXD)/libmx.a
-LMXI:=	$(LMXD)/$(INCD)
-
-INC		=	server.h
-INCS	=	$(addprefix $(INCD)/, $(INC))
-
-SRC		=	error.c\
-			server.c\
-			mx_client_process.c\
-			database_init.c\
-
-SRCS	=	$(addprefix $(SRCD)/, $(SRC))
-OBJS	=	$(addprefix $(OBJD)/, $(SRC:%.c=%.o))
-
-all: $(NAME)
-
-$(NAME):
-	clang $(CFLG) src/*/*.c -I inc/ -I ../libs/cjson/inc  -I ../libs/libmx/inc/ -lpthread ../libs/libmx/libmx.a ../libs/cjson/cJSON.a -o server
+clean:
+	rm -rf ./server/server
+	rm -rf ./client/client
+	rm -rf ./libs/libmx/libmx.a
+	rm -rf ./libs/libmx/obj
+	rm -rf ./libs/cjson/cJSON.a
+	rm -rf ./libs/cjson/obj

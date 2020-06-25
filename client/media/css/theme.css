@@ -1,0 +1,19 @@
+window{
+	/* The image used */
+  background-image: url("../img/background.jpg");
+
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+#gride {
+  background: #ffffff;
+  border-radius: 15px;
+  padding: 70px;  
+}
+#image{
+	padding-bottom: 25px; 
+}
+#Login{
+	border-width: 10px;
+}
