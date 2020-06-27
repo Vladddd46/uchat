@@ -353,6 +353,29 @@ void client_context_init(int sockfd, int write_pipe, int read_pipe) {
     client_context->read_pipe  = read_pipe;
 }
 
+
+/*
+ * Make registration of the user.
+ * a.k.a takes reg_s packet from server.
+ * analyze it -> if reg. was successful -> open user`s main view.
+ * Otherwise displays fail msg in gui.
+ */
+void registration_system(char *packet) {
+    char *msg;
+    char *status = get_value_by_key(packet, "STATUS");
+
+    if (!strcmp(status, "true"))
+        do_login(entryspawn, client_context->sockfd);
+    else {
+        msg = get_value_by_key(packet, "MSG");
+        // регестрация прошла неуспешно
+        // тут у пользователя должно вывестись красным msg.
+        // msg - 
+        printf(">%s\n", msg);
+    }
+}
+
+
 /*
  * Thread, which receives packets from server.
  * When packet received, it is analyzed.
@@ -369,19 +392,16 @@ void *server_communication(void *param) {
         tv.tv_sec  = 1; // seconds.
         tv.tv_usec = 0; // mili-seconds.
 
-        char buf[1000];
-        bzero(buf, 1000);
+        char packet[1000];
+        bzero(packet, 1000);
         int status = select(FD_SETSIZE, &read_descriptors, NULL, NULL, &tv);
         if (status <= 0) continue;
 
-        read(client_context->sockfd, buf, 1000);
-        char *packet_type = get_value_by_key(buf, "TYPE");
+        read(client_context->sockfd, packet, 1000);
+        char *packet_type = get_value_by_key(packet, "TYPE");
 
-        if (!strcmp(packet_type, "reg_s")) {
-            // registration system
-            printf("reg_s packet received\n");
-            do_login(entryspawn, client_context->sockfd);
-        }
+        if (!strcmp(packet_type, "reg_s"))
+            registration_system(packet);
         else if (!strcmp(packet_type, "login_s")) {
             // login system
             printf("login packet received\n");
