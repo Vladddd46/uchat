@@ -354,9 +354,14 @@ void client_context_init(int sockfd, int write_pipe, int read_pipe) {
 }
 
 
+// System functions block. (PS. they must be moved in new folder + one file for each func.)
+// System functions are functions, which handle packets received from server.
+// Each function already takes packet of needed type. (packet type is checked if server_communication func. (received packets from server))
+// Further login is being done in *_system functions.
+
 /*
  * Make registration of the user.
- * a.k.a takes reg_s packet from server.
+ * Takes packet of type 'reg_s' from server.
  * analyze it -> if reg. was successful -> open user`s main view.
  * Otherwise displays fail msg in gui.
  */
@@ -364,22 +369,35 @@ void registration_system(char *packet) {
     char *msg;
     char *status = get_value_by_key(packet, "STATUS");
 
-    if (!strcmp(status, "true"))
+    if (!strcmp(status, "true")) {
+        // Redirect user to char main page.
         do_login(entryspawn, client_context->sockfd);
+    }
     else {
+        // Registration failed. - display the corresponging msg.
         msg = get_value_by_key(packet, "MSG");
         // регестрация прошла неуспешно
         // тут у пользователя должно вывестись красным msg.
-        // msg - 
-        printf(">%s\n", msg);
+        // msg - какая ошибка возникла при регистрации.
     }
 }
 
+/*
+ * Do the login of the user.
+ * Takes 'login_s' packet from the server.
+ * Depenging of status in login_s packet does login or displays
+ * error msg. in the gui.
+ */
+void login_system(char *packet) {
+    // login functional.
+}
+
+// End of system functions
 
 /*
  * Thread, which receives packets from server.
  * When packet received, it is analyzed.
- * Depending on packet gui changes.
+ * Depending on packet type, the corresponding handle function calls.
  */
 void *server_communication(void *param) {
     while(1) {
