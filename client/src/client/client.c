@@ -1,5 +1,5 @@
 #include "client.h"
-
+GtkWidget *entryspawn;
 client_context_t *client_context;
 
 static int messagenumber = 0;
@@ -17,10 +17,10 @@ void back_to_menu(GtkWidget *back, int sockfd){
 }
 
 void do_login(GtkWidget *entryspawn, int sockfd){
-    char *buffer = (char *)gtk_entry_get_text(GTK_ENTRY(login));
-    char *bufferPassword = (char *)gtk_entry_get_text(GTK_ENTRY(Password));
-    send(sockfd,buffer,sizeof(buffer),0);
-    send(sockfd,bufferPassword,sizeof(bufferPassword),0);
+    // char *buffer = (char *)gtk_entry_get_text(GTK_ENTRY(login));
+    // char *bufferPassword = (char *)gtk_entry_get_text(GTK_ENTRY(Password));
+    // send(sockfd,buffer,sizeof(buffer),0);
+    // send(sockfd,bufferPassword,sizeof(bufferPassword),0);
 
     
     //another function
@@ -230,7 +230,6 @@ static void argv_validator(int argc, char **argv) {
 }
 
 void main_menu() {
-    GtkWidget *entryspawn;
     //GtkWidget *scroll;
     //GtkWidget *view;
     grid = gtk_grid_new();
@@ -356,8 +355,8 @@ void client_context_init(int sockfd, int write_pipe, int read_pipe) {
 
 /*
  * Thread, which receives packets from server.
- * If packet was received -> write it in pipe.
- * Gui thread reads this packet on another side of pipe.
+ * When packet received, it is analyzed.
+ * Depending on packet gui changes.
  */
 void *server_communication(void *param) {
     while(1) {
@@ -374,9 +373,28 @@ void *server_communication(void *param) {
         bzero(buf, 1000);
         int status = select(FD_SETSIZE, &read_descriptors, NULL, NULL, &tv);
         if (status <= 0) continue;
+
         read(client_context->sockfd, buf, 1000);
-        printf("===%s\n", buf);
-        write(client_context->write_pipe, buf, 1000);
+        char *packet_type = get_value_by_key(buf, "TYPE");
+
+        if (!strcmp(packet_type, "reg_s")) {
+            // registration system
+            printf("reg_s packet received\n");
+            do_login(entryspawn, client_context->sockfd);
+        }
+        else if (!strcmp(packet_type, "login_s")) {
+            // login system
+            printf("login packet received\n");
+        }
+        else if (!strcmp(packet_type, "find_user_s")) {
+            // find_user system
+            printf("%s\n", "find_user packet receive");
+        }
+        else if (!strcmp(packet_type, "msg_s")) {
+            printf("%s\n", "msg packet received");
+        }
+
+
     }
     return NULL;
 }
