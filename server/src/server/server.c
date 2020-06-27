@@ -154,14 +154,14 @@ int main(int argc, char **argv) {
     foo = sqlite3_exec(db, sql, NULL, 0, &message_error);
     sql = "INSERT INTO CHATS(CHATNAME, LASTMESSAGE) VALUES('University', 'You are gay');";
     foo = sqlite3_exec(db, sql, NULL, 0, &message_error);
-    sql = "INSERT INTO USERCHAT(USERID, CHATID) VALUES('0', '2');";
+    sql = "INSERT INTO USERCHAT(USERID, CHATID) VALUES(0, 1);";
     foo = sqlite3_exec(db, sql, NULL, 0, &message_error);
 
-    // sql = "SELECT * FROM CHATS;";
+    sql = "SELECT * FROM CHATS;";
 
-    // sqlite3_exec(db, sql, mx_callback, NULL, NULL);
-    // sql = "INSERT INTO CHATS(CHATNAME, LASTMESSAGE) VALUES('University', 'You are gay');";
-    // foo = sqlite3_exec(db, sql, NULL, 0, &message_error);
+    sqlite3_exec(db, sql, mx_callback, NULL, NULL);
+    sql = "INSERT INTO CHATS(CHATNAME, LASTMESSAGE) VALUES('University', 'You are gay');";
+    foo = sqlite3_exec(db, sql, NULL, 0, &message_error);
 
     sqlite3_close(db);
     //////////////////////////////////////////////////

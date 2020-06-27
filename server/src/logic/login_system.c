@@ -54,6 +54,20 @@ static char* mx_confirm_users_password(const char* str, char* user, char* passwo
 	return "false";
 }
 
+static char* mx_get_nickname(char* login) {
+    sqlite3 *db;
+    char* sql = "SELECT NICKNAME FROM USERS WHERE LOGIN=";
+    sqlite3_stmt *res;
+    char* nickname;
+
+    sql = mx_strjoin(sql, login);
+    sql = mx_strjoin(sql, ";");
+    sqlite3_prepare_v2(db, sql, -1, &res, 0);
+    sqlite3_step(res);
+    nickname = sqlite3_column_text(res, 0);
+    return nickname;
+}
+
 char *login_system(char *packet) {
     // printf("Packet %s\n", packet);
     char *login    = get_value_by_key(packet, "LOGIN");
@@ -61,13 +75,12 @@ char *login_system(char *packet) {
 
     // char *return_status      = mx_confirm_users_password("uchat.db", login, password);
     // char *status             = mx_strjoin("STATUS:", return_status);
-    chats_t *chat = mx_get_users_chats(login);
-    while(chat != NULL) {
-        // printf("chat_name = '%s'\nlast_message = '%s'\n", chat -> chat_name, chat -> last_message);
-        chat = chat -> next;
-    }
-    // char *opened_chats       = тут должен возвращаться массив из названий и айди открытых чатов
-    // char *nickname			= тут должен быть никнейм 
+    chats_t *chat = mx_get_users_chats(login); // list чатов доступных пользователю с login (chatname, last message)
+    // while(chat -> chat_name != NULL) {
+    //     printf("chat_name = '%s'\nlast_message = '%s'\n", chat -> chat_name, chat -> last_message);
+    //     chat = chat -> next;
+    // }
+    char *nickname = mx_get_nickname(login);
     // char *sendback_packet    = json_packet_former(2, "TYPE:login_s", status);
     char   *sendback_packet = json_packet_former(2, "TYPE:login_s", "STATUS:true"); // Debug.
     return sendback_packet;

@@ -40,6 +40,14 @@ typedef struct chats {
     // chats(): next(NULL) {}
 } chats_t;
 
+// Chats messages context
+typedef struct chat_message {
+	char* sender;
+    char* time;
+    char* message;
+    struct chat_message_t* next; 
+} chat_message_t;
+
 
 
 // Server main functions.
@@ -69,4 +77,7 @@ char *registration_system(char *packet);
 chats_t* mx_get_users_chats(char* user);
 // int mx_add_message(const char *str, char* user, char* sender, char* time, char* message);
 chats_t* mx_get_users_chats(char* user);
+char* mx_send_back_packet(char* packet);
+int mx_add_message(int chat_id, char* sender, char* time, char* message);
+chat_message_t* mx_list_of_range_messages(int chat_id, int range_from, int range_to);
 

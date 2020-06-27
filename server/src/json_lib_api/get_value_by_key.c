@@ -15,7 +15,6 @@ char *get_value_by_key(char *json_str, char *key) {
     }
 
     cJSON *value = cJSON_GetObjectItemCaseSensitive(jstr, key);
-    printf("One");
     if (cJSON_IsString(value) && (value->valuestring != NULL))
         result = mx_string_copy(value->valuestring);
     cJSON_Delete(jstr);

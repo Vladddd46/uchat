@@ -54,22 +54,21 @@ void database_init() {
     dberror(db, exit, "Error to create USERS table");
 
     sql = "CREATE TABLE IF NOT EXISTS CHATS("
-        "ID     INTEGER PRIMARY KEY AUTOINCREMENT, "
-        "CHATNAME TEXT NOT NULL, " // тут должна быть какая-то шняга Влада
+        "ID          INTEGER PRIMARY KEY AUTOINCREMENT, "
+        "CHATNAME    TEXT NOT NULL, " // тут должна быть какая-то шняга Влада
         "LASTMESSAGE TEXT NOT NULL);";
     exit = sqlite3_open("uchat.db", &db);
     exit = sqlite3_exec(db, sql, NULL, 0, &message_error);
     dberror(db, exit, "Error to create CHATS table");
 
     sql = "CREATE TABLE IF NOT EXISTS USERCHAT("
-        "USERID     INTEGER, "
-        "CHATID     INTEGER);";
+        "USERID     INTEGER NOT NULL, "
+        "CHATID     INTEGER NOT NULL);";
     exit = sqlite3_open("uchat.db", &db);
     exit = sqlite3_exec(db, sql, NULL, 0, &message_error);
     dberror(db, exit, "Error to create USERCHAR table");
 
     sql = "CREATE TABLE IF NOT EXISTS MESSAGES("
-        "USER       TEXT NOT NULL, "
         "CHATID     INTEGER, " 
         "SENDER     TEXT NOT NULL, "
         "TIME       TEXT NOT NULL, "
