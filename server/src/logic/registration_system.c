@@ -28,7 +28,7 @@ char *registration_system(char *packet) {
     // char *msg              = msg_former(return_status);
 
     // char *sendback_packet  = json_packet_former(2, "TYPE:reg_s", status, msg);
-    char *sendback_packet = json_packet_former(3, "TYPE:reg_s", "STATUS:tue", "MSG:OK"); // Debug.
+    char *sendback_packet = json_packet_former(3, "TYPE:reg_s", "STATUS:true", "MSG:OK"); // Debug.
     
     return sendback_packet;
 }

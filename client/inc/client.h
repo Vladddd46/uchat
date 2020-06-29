@@ -20,51 +20,56 @@ typedef struct client_context_s {
 } client_context_t;
 
 
-static GtkWidget *grid;
 void error(char *msg, int status);
 void back_to_menu(GtkWidget *back, int sockfd);
 void main_menu();
 void do_login(GtkWidget *entryspawn, int sockfd);
 void create_row(GtkWidget *labell, gpointer data);
 void create_message(GtkWidget *newmessedgentry, gpointer data);
-
+void end_message (GtkWidget *widget, GtkWidget *message);
 // Json lib. API
 char *json_packet_former(int num, ...);
 char *get_value_by_key(char *json_str, char *key);
+void make_registration(GtkWidget *Registration, client_context_t *client_context);
 
 // Logic
 void do_registration(GtkWidget *Registration, client_context_t *client_context);
 
-
+GtkWidget *entryspawn;
 GtkWidget *login;
 GtkWidget *nickname;
 GtkWidget *Password;
 GtkWidget *SecondPassword;
 GtkWidget *Registration;
 //static GtkWidget *newbutton;
-static GtkWidget *fixed;
-static GtkWidget *window;
-static GtkWidget *grid;
-static GtkWidget *labell;
-static GtkWidget *labell2;
-static GtkWidget *labell3;
-static GtkWidget *scroll;
-static GtkWidget *listbox;
-static GtkWidget *listboxmess;
-static GtkWidget *row;
-static GtkWidget *gridmenu;
-static GtkWidget *labellmenu;
-static GtkWidget *labellmenu2;
-static GtkWidget *labellmenu3;
-static GtkWidget *icon;
-static GtkWidget *leftbox;
-static GtkWidget *rightbox;
-static GtkWidget *downbox;
-static GtkWidget *leftmenu;
-static GtkWidget *searchmenu;
-static GtkWidget *newchatbutton;
+GtkWidget *fixed;
+GtkWidget *window;
+GtkWidget *grid;
+GtkWidget *labell;
+GtkWidget *labell2;
+GtkWidget *labell3;
+GtkWidget *scroll;
+GtkWidget *listbox;
+GtkWidget *listboxmess;
+GtkWidget *row;
+GtkWidget *gridmenu;
+GtkWidget *labellmenu;
+GtkWidget *labellmenu2;
+GtkWidget *labellmenu3;
+GtkWidget *icon;
+GtkWidget *leftbox;
+GtkWidget *rightbox;
+GtkWidget *downbox;
+GtkWidget *leftmenu;
+GtkWidget *searchmenu;
+GtkWidget *newchatbutton;
 
-static GtkWidget *newmessedgentry;
-static GtkWidget *scrollmess;
-static GtkWidget *fileMenu;
-static GdkEventTouch *trigger_event;
+GtkWidget *newmessedgentry;
+GtkWidget *scrollmess;
+GtkWidget *fileMenu;
+GtkWidget *ebox;
+GtkWidget *edit;
+GtkWidget *delet;
+GtkWidget *editmessedgentry;
+GtkWidget *editbox;
+

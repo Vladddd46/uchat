@@ -1,7 +1,7 @@
 #include "client.h"
-GtkWidget *entryspawn;
 client_context_t *client_context;
 
+bool  flag = FALSE;
 static int messagenumber = 0;
 static int n = 0;
 
@@ -9,6 +9,18 @@ static void destroy(GtkWidget *widget, gpointer data){
   gtk_main_quit();
 }
 
+int show_popup(GtkWidget *widget, GdkEvent *event) {
+    const gint RIGHT_CLICK = 3;
+    
+    if (event->type == GDK_BUTTON_PRESS) {
+        GdkEventButton *bevent = (GdkEventButton *) event;
+        if (bevent->button == RIGHT_CLICK) {      
+            gtk_menu_popup_at_pointer(GTK_MENU(widget), event);
+            return TRUE;
+        }
+    }
+    return FALSE;
+}
 
 void back_to_menu(GtkWidget *back, int sockfd){
     gtk_widget_destroy(grid);
@@ -16,90 +28,56 @@ void back_to_menu(GtkWidget *back, int sockfd){
     main_menu(sockfd);
 }
 
-void do_login(GtkWidget *entryspawn, int sockfd){
-    // char *buffer = (char *)gtk_entry_get_text(GTK_ENTRY(login));
-    // char *bufferPassword = (char *)gtk_entry_get_text(GTK_ENTRY(Password));
-    // send(sockfd,buffer,sizeof(buffer),0);
-    // send(sockfd,bufferPassword,sizeof(bufferPassword),0);
-
-    
-    //another function
-
-    gtk_widget_destroy(grid);
-    scroll = gtk_scrolled_window_new(0,0);
-    gtk_fixed_put(GTK_FIXED (fixed), scroll, 0,50);
-
-    leftbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL,0);
-    gtk_widget_set_size_request(leftbox,300,50);
-    gtk_widget_set_name(leftbox,"leftbox");
-    gtk_fixed_put(GTK_FIXED (fixed), leftbox, 0,0);
-
-    leftmenu = gtk_button_new();
-    gtk_box_pack_start(GTK_BOX(leftbox), leftmenu, TRUE, TRUE, 0);
-    gtk_widget_set_name(leftmenu,"leftmenu");
-    GdkPixbuf *iconn = gdk_pixbuf_new_from_file("./media/img/menu_icon.png",NULL);
-    iconn = gdk_pixbuf_scale_simple(iconn, 32,32, GDK_INTERP_BILINEAR);
-    icon = gtk_image_new_from_pixbuf(iconn);
-    gtk_button_set_image (GTK_BUTTON (leftmenu), icon);
-
-    searchmenu = gtk_entry_new();
-    gtk_entry_set_placeholder_text(GTK_ENTRY(searchmenu),"Search");
-    gtk_widget_set_name(searchmenu,"searchmenu");
-    gtk_box_pack_start(GTK_BOX(leftbox),searchmenu, TRUE, TRUE, 10);
-    
-
-    newchatbutton = gtk_button_new();
-    gtk_box_pack_end(GTK_BOX(leftbox), newchatbutton, TRUE, TRUE, 0);
-    g_signal_connect(newchatbutton, "clicked", G_CALLBACK(create_row), NULL);
-    iconn = gdk_pixbuf_new_from_file("./media/img/plus_icon.png",NULL);
-    iconn = gdk_pixbuf_scale_simple(iconn, 32,32, GDK_INTERP_BILINEAR);
-    icon = gtk_image_new_from_pixbuf(iconn);
-    gtk_button_set_image (GTK_BUTTON (newchatbutton), icon);
-
-    rightbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL,0);
-    gtk_widget_set_size_request(rightbox,724,50);
-    gtk_widget_set_name(rightbox,"rightbox");
-    gtk_fixed_put(GTK_FIXED (fixed), rightbox, 300,0);
-
-    listbox = gtk_list_box_new();
-    gtk_widget_set_name(listbox,"listboxleft");
-    gtk_widget_set_size_request(scroll,300,718);
-    gtk_container_add(GTK_CONTAINER(scroll), listbox);
-
-    downbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL,0);
-    gtk_widget_set_size_request(downbox,724,50);
-    gtk_widget_set_name(downbox,"downbox");
-    gtk_fixed_put(GTK_FIXED (fixed), downbox, 300,718);
-
-    newmessedgentry = gtk_entry_new();
-    gtk_entry_set_placeholder_text(GTK_ENTRY(newmessedgentry),"Write a message...");
-    gtk_widget_set_name(newmessedgentry,"newmessedgentry");
-    gtk_box_pack_start(GTK_BOX(downbox),newmessedgentry, TRUE, TRUE, 0);
-    g_signal_connect(newmessedgentry, "activate", G_CALLBACK(create_message), NULL);
-
-    scrollmess = gtk_scrolled_window_new(0,0);
-    gtk_fixed_put(GTK_FIXED (fixed), scrollmess, 300,50);
-    gtk_widget_set_name(scrollmess,"scrollmess");
-    gtk_widget_set_size_request(GTK_WIDGET(scrollmess),724,668);
-
-    listboxmess = gtk_list_box_new();
-    gtk_widget_set_name(listboxmess,"listboxmess");
-    gtk_container_add(GTK_CONTAINER(scrollmess), listboxmess);
-
-     gtk_widget_show_all(window);
+void delete_message(GtkWidget *widget, GtkWidget *message){
+    if (flag == FALSE) {
+        gtk_widget_destroy(message);
+    }
 }
 
+void edit_message (GtkWidget *widget, GtkWidget *message){
+    if (flag == FALSE) {
+    char *editbuff = (char *)gtk_label_get_text(GTK_LABEL(message));
+    gtk_widget_hide(newmessedgentry);
+    editmessedgentry = gtk_entry_new();
+    gtk_entry_set_placeholder_text(GTK_ENTRY(editmessedgentry),"Write a message...");
+    gtk_widget_set_name(editmessedgentry,"newmessedgentry");
+    gtk_box_pack_start(GTK_BOX(downbox),editmessedgentry, TRUE, TRUE, 0);
+    gtk_entry_set_text(GTK_ENTRY(editmessedgentry),editbuff);
+    gtk_widget_show(editmessedgentry);
+    g_signal_connect(editmessedgentry, "activate", G_CALLBACK(end_message), message);
+    
+    editbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL,0);
+    gtk_widget_set_size_request(editbox,724,50);
+    gtk_widget_set_name(editbox,"editbox");
+    gtk_fixed_put(GTK_FIXED(fixed), editbox, 300,668);
+    
+    flag = TRUE;
+    }
+}
+
+//отправка редактируемого сообщения
+void end_message (GtkWidget *widget, GtkWidget *message){
+    
+    char *editbuff = (char *)gtk_entry_get_text(GTK_ENTRY(editmessedgentry));
+    gtk_label_set_text(GTK_LABEL(message),editbuff);
+    gtk_widget_destroy(editmessedgentry);
+    gtk_widget_show(newmessedgentry);
+    flag = FALSE;
+
+}
 
 void create_message(GtkWidget *newmessedgentry, gpointer data){
-    GtkWidget *row;
+  GtkWidget *row;
     row = gtk_list_box_row_new();
+    ebox = gtk_event_box_new();
+    gtk_container_add(GTK_CONTAINER(row), ebox);
     gtk_widget_set_name(row,"message");
     gtk_list_box_row_set_selectable (GTK_LIST_BOX_ROW(row),FALSE);
     gtk_list_box_insert (GTK_LIST_BOX(listboxmess),row,n);
     messagenumber++;
 
     gridmenu = gtk_grid_new();
-    gtk_container_add(GTK_CONTAINER(row), gridmenu);
+    gtk_container_add(GTK_CONTAINER(ebox), gridmenu);
     GdkPixbuf *iconn = gdk_pixbuf_new_from_file("./media/img/pokemon-2.png",NULL);
     iconn = gdk_pixbuf_scale_simple(iconn, 32,32, GDK_INTERP_BILINEAR);
     icon = gtk_image_new_from_pixbuf(iconn);
@@ -109,18 +87,28 @@ void create_message(GtkWidget *newmessedgentry, gpointer data){
     gtk_widget_set_name(labellmenu,"labellmenu");
     gtk_grid_attach(GTK_GRID(gridmenu), labellmenu, 1, 0, 1, 1);
 
-    labellmenu2 = gtk_label_new("Kill me please \nHello");
+    char *messageBuff = (char *)gtk_entry_get_text(GTK_ENTRY(newmessedgentry));
+    labellmenu2 = gtk_label_new(messageBuff);
     gtk_widget_set_name(labellmenu2,"labellmenu2");
     gtk_grid_attach(GTK_GRID(gridmenu), labellmenu2, 1, 1, 1, 1);
 
     labellmenu3 = gtk_label_new("Yesterday");
     gtk_grid_attach(GTK_GRID(gridmenu), labellmenu3, 2, 0, 1, 1);
     gtk_widget_set_name(labellmenu3,"labellmenu3");
-
+ //menu with edit and delete button
     fileMenu = gtk_menu_new();
-    gtk_menu_popup_at_pointer (GTK_MENU (fileMenu),trigger_event);
-    Password = gtk_button_new_with_label("fdfdf");
-    gtk_container_add(fileMenu,Password);
+    g_signal_connect_swapped(G_OBJECT(ebox), "button-press-event", G_CALLBACK(show_popup), fileMenu);
+
+    edit = gtk_menu_item_new_with_label("Edit");
+    gtk_widget_show(edit);
+    gtk_menu_shell_append(GTK_MENU_SHELL(fileMenu), edit);
+    g_signal_connect (edit, "activate", G_CALLBACK (edit_message), labellmenu2);
+
+    delet = gtk_menu_item_new_with_label("Delete");
+    gtk_widget_show (delet);
+    gtk_menu_shell_append (GTK_MENU_SHELL (fileMenu), delet);
+    g_signal_connect (delet, "activate", G_CALLBACK (delete_message), row);
+    gtk_entry_set_text(GTK_ENTRY(newmessedgentry),"");
 
     gtk_widget_show_all(window);
 }
@@ -157,10 +145,12 @@ void create_row(GtkWidget *labell, gpointer data){
 }
 
 
+
 void make_registration(GtkWidget *Registration, client_context_t *client_context){
     GtkWidget *back;
 
     gtk_widget_destroy(grid);
+
 
     grid = gtk_grid_new();
     gtk_widget_set_name(grid,"gride");
@@ -186,10 +176,12 @@ void make_registration(GtkWidget *Registration, client_context_t *client_context
     Password = gtk_entry_new();
     gtk_entry_set_placeholder_text(GTK_ENTRY(Password),"Password");
     gtk_grid_attach(GTK_GRID(grid), Password, 1, 102, 1, 1);
+    gtk_entry_set_visibility(GTK_ENTRY(Password),FALSE);
 
     SecondPassword = gtk_entry_new();
     gtk_entry_set_placeholder_text(GTK_ENTRY(SecondPassword),"Confirm your password");
     gtk_grid_attach(GTK_GRID(grid), SecondPassword, 1, 103, 1, 1);
+    gtk_entry_set_visibility(GTK_ENTRY(SecondPassword),FALSE);
 
     labell2 = gtk_label_new("");
     gtk_grid_attach(GTK_GRID(grid), labell2, 1, 104, 1, 1);
@@ -207,7 +199,7 @@ void make_registration(GtkWidget *Registration, client_context_t *client_context
     gtk_widget_set_name(back,"log");
     g_signal_connect(back, "clicked", G_CALLBACK(back_to_menu), client_context->sockfd);
     gtk_grid_attach(GTK_GRID(grid), back, 1, 107, 1, 1);
-    //gtk_fixed_put(GTK_FIXED (fixed), back, 550,540);
+   //gtk_fixed_put(GTK_FIXED (fixed), back, 550,540);
 
     gtk_widget_show_all(window);
     }
@@ -229,73 +221,7 @@ static void argv_validator(int argc, char **argv) {
     }
 }
 
-void main_menu() {
-    //GtkWidget *scroll;
-    //GtkWidget *view;
-    grid = gtk_grid_new();
-    gtk_widget_set_name(grid,"gride");
-    gtk_fixed_put(GTK_FIXED (fixed), grid, 350,175);
 
-    GdkPixbuf *iconn = gdk_pixbuf_new_from_file("./media/img/pokeball.png",NULL);
-    iconn = gdk_pixbuf_scale_simple(iconn, 128,128, GDK_INTERP_BILINEAR);
-    GtkWidget *iconnn = gtk_image_new_from_pixbuf(iconn);
-    // iconn = gtk_image_new_from_file("Unknown.jpeg");
-     gtk_widget_set_name(iconnn,"image");
-     gtk_grid_attach(GTK_GRID(grid), iconnn, 1, 98, 1, 1);
-
-    login = gtk_entry_new();
-    gtk_entry_set_placeholder_text(GTK_ENTRY(login),"Login");
-    gtk_widget_set_name(login,"login");
-    gtk_grid_attach(GTK_GRID(grid), login, 1, 99, 1, 1);
-
-    labell = gtk_label_new("");
-    gtk_grid_attach(GTK_GRID(grid), labell, 1, 100, 1, 1);
-
-    Password = gtk_entry_new();
-    gtk_entry_set_placeholder_text(GTK_ENTRY(Password),"Password");
-    gtk_widget_set_name(Password,"Password");
-    gtk_grid_attach(GTK_GRID(grid), Password, 1, 101, 1, 1);
-    
-    labell2 = gtk_label_new("");
-    gtk_grid_attach(GTK_GRID(grid), labell2, 1, 102, 1, 1);
-
-    entryspawn = gtk_button_new_with_label("Login");
-    gtk_widget_set_name(entryspawn,"log");
-    g_signal_connect(entryspawn, "clicked", G_CALLBACK(do_login), client_context->sockfd);
-    gtk_grid_attach(GTK_GRID(grid), entryspawn, 1, 103, 1, 1);
-
-    labell3 = gtk_label_new("");
-    gtk_grid_attach(GTK_GRID(grid), labell3, 1, 104, 1, 1);
-
-    Registration = gtk_button_new_with_label("Sign In");
-    gtk_widget_set_name(Registration,"reg");
-    g_signal_connect(Registration, "clicked", G_CALLBACK(make_registration), client_context);
-    gtk_grid_attach(GTK_GRID(grid), Registration, 1, 105, 1, 1);
-
-    gtk_widget_set_size_request(GTK_WIDGET(window),1024,768);
-    //gtk_window_set_resizable(GTK_WIDGET(window), FALSE);
-    gtk_widget_show_all(window);
-
-    // fd_set read_descriptors;
-    // FD_ZERO(&read_descriptors);
-    // FD_SET(client_context->read_pipe, &read_descriptors);
-    // struct timeval tv;
-    // tv.tv_sec  = 1; // seconds.
-    // tv.tv_usec = 0; // mili-seconds.
-    // int status = select(FD_SETSIZE, &read_descriptors, NULL, NULL, &tv);
-    // // if no sockets are availabe => continue loop.
-    // if (status > 0) {
-    //     char buf[1000];
-    //     bzero(buf, 1000);
-    //     read(client_context->read_pipe, buf, 1000);
-    //     printf(">>>>%s\n", buf);
-    //     bzero(buf, 1000);
-    // }
-    // else {
-    //     printf("%d\n", status);
-    // }
-
-}
 
 // Main window init.
 void gui(int argc, char **argv, client_context_t *client_context) {
@@ -309,6 +235,9 @@ void gui(int argc, char **argv, client_context_t *client_context) {
 
     window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
     g_signal_connect(window,"destroy",G_CALLBACK(gtk_main_quit), NULL);
+    gtk_window_set_resizable(GTK_WINDOW(window),FALSE);
+    //window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
+    //gtk_window_set_position(GTK_WINDOW(window), GTK_WIN_POS_CENTER);
 
     fixed = gtk_fixed_new();
     gtk_container_add(GTK_CONTAINER(window), fixed);
@@ -353,12 +282,6 @@ void client_context_init(int sockfd, int write_pipe, int read_pipe) {
     client_context->read_pipe  = read_pipe;
 }
 
-
-// System functions block. (PS. they must be moved in new folder + one file for each func.)
-// System functions are functions, which handle packets received from server.
-// Each function already takes packet of needed type. (packet type is checked if server_communication func. (received packets from server))
-// Further login is being done in *_system functions.
-
 /*
  * Make registration of the user.
  * Takes packet of type 'reg_s' from server.
@@ -394,10 +317,11 @@ void login_system(char *packet) {
 
 // End of system functions
 
+
 /*
  * Thread, which receives packets from server.
  * When packet received, it is analyzed.
- * Depending on packet type, the corresponding handle function calls.
+ * Depending on packet gui changes.
  */
 void *server_communication(void *param) {
     while(1) {
@@ -410,16 +334,18 @@ void *server_communication(void *param) {
         tv.tv_sec  = 1; // seconds.
         tv.tv_usec = 0; // mili-seconds.
 
-        char packet[1000];
-        bzero(packet, 1000);
+        char buf[1000];
+        bzero(buf, 1000);
         int status = select(FD_SETSIZE, &read_descriptors, NULL, NULL, &tv);
         if (status <= 0) continue;
 
-        read(client_context->sockfd, packet, 1000);
-        char *packet_type = get_value_by_key(packet, "TYPE");
+        read(client_context->sockfd, buf, 1000);
+        char *packet_type = get_value_by_key(buf, "TYPE");
 
-        if (!strcmp(packet_type, "reg_s"))
-            registration_system(packet);
+        if (!strcmp(packet_type, "reg_s")) {
+            printf("reg_s packet received\n");
+            registration_system(buf);
+        }
         else if (!strcmp(packet_type, "login_s")) {
             // login system
             printf("login packet received\n");
