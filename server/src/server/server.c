@@ -103,7 +103,7 @@ static void *handle_server(void *param) {
                 char *send_packet = mx_database_communication(buffer);
                 // if (send_packet == NULL) // Connection was closed but update has not been made yet.
                     // continue;
-                printf(">%s\n", send_packet);
+                printf(">%s\n", buffer);
                 /* 
                  * Retrieves user`s login from packet. Packet will be send on this login,
                  * if user with this login is connected to the server.
@@ -116,7 +116,7 @@ static void *handle_server(void *param) {
                 
                 for (connected_client_list_t *s = ctx.head.next; s != NULL; s = s->next) {
                     if (s->is_logged) { // && !strcmp(client_login, s->login)
-                        send(s->sock_fd, buffer, buf_len, 0);
+                        send(s->sock_fd, send_packet, buf_len, 0);
                         printf("Sending of %d bytes\n",buf_len); // Debug.
                     }
                 }                    
@@ -132,39 +132,12 @@ static void *handle_server(void *param) {
     return NULL;
 }
 
-static int mx_callback(void* not_used, int argc, char** argv, char** az_con_name) {
-    for(int i = 0; i < argc; i++) {
-        printf("%s: %s\n", az_con_name[i], argv[i]);
-    }
-    return 0;
-}
-
 
 int main(int argc, char **argv) {
     argv_validator(argc);
     int port             = get_port(argv);
     int listening_socket = listening_socket_init(port);
-    database_init(); 
-    //////////////////////////////////////////////////
-    sqlite3* db;
-    int foo = sqlite3_open("uchat.db", &db);
-    char *message_error;
-    char *sql = "INSERT INTO CHATS(CHATNAME, LASTMESSAGE) VALUES('Ucode', 'Hello word');";
-
-    foo = sqlite3_exec(db, sql, NULL, 0, &message_error);
-    sql = "INSERT INTO CHATS(CHATNAME, LASTMESSAGE) VALUES('University', 'You are gay');";
-    foo = sqlite3_exec(db, sql, NULL, 0, &message_error);
-    sql = "INSERT INTO USERCHAT(USERID, CHATID) VALUES(0, 1);";
-    foo = sqlite3_exec(db, sql, NULL, 0, &message_error);
-
-    sql = "SELECT * FROM CHATS;";
-
-    sqlite3_exec(db, sql, mx_callback, NULL, NULL);
-    sql = "INSERT INTO CHATS(CHATNAME, LASTMESSAGE) VALUES('University', 'You are gay');";
-    foo = sqlite3_exec(db, sql, NULL, 0, &message_error);
-
-    sqlite3_close(db);
-    //////////////////////////////////////////////////
+    database_init();
     server_context_init();
 
     /* 

@@ -3,7 +3,9 @@ SRV		=	./server
 LIBMX		= 	./libs/libmx
 CJSON 		= 	./libs/cjson
 
-all:
+all: clean install
+
+install:
 	@make -sC $(LIBMX)
 	@make -sC $(CJSON)
 	@make -sC $(CLN)

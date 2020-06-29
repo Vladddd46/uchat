@@ -14,11 +14,6 @@
 #include "libmx.h"
 #include "cJSON.h"
 
-#define CHILD 0
-
-#define LOGIN_SUCCESS 			1
-#define LOGIN_FAIL  	     	2
-
 // Linked list with opened sockets.
 typedef struct socket_list {
 	int sock_fd;
@@ -48,8 +43,6 @@ typedef struct chat_message {
     struct chat_message_t* next; 
 } chat_message_t;
 
-
-
 // Server main functions.
 int  get_port(char **argv);
 int  listening_socket_init(int port);
@@ -75,9 +68,4 @@ char *json_packet_former(int num, ...);
 char *login_system(char *packet);
 char *registration_system(char *packet);
 chats_t* mx_get_users_chats(char* user);
-// int mx_add_message(const char *str, char* user, char* sender, char* time, char* message);
-chats_t* mx_get_users_chats(char* user);
-char* mx_send_back_packet(char* packet);
-int mx_add_message(int chat_id, char* sender, char* time, char* message);
-chat_message_t* mx_list_of_range_messages(int chat_id, int range_from, int range_to);
 

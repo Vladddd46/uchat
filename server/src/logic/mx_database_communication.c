@@ -11,7 +11,6 @@ char *mx_database_communication(char *packet) {
     if (!strcmp(packet, ""))
         return NULL;
     char *packet_type = get_value_by_key(packet, "TYPE");
-    printf(">>%s\n", packet_type);
     char *send_back_packet = NULL;
 
     if (!strcmp(packet_type, "login_c")) {
@@ -24,11 +23,11 @@ char *mx_database_communication(char *packet) {
     }
     else if (!strcmp(packet_type, "find_user_c")) {
         printf("\n\nfind_user_c packet received\n\n");
-        // send_back_packet = find_user(); // принимает ники от кого и (login, nickname) кому, возвращает список рользователей 
+        // send_back_packet = find_user();
     }
     else if (!strcmp(packet_type, "msg_c")) {
         printf("\n\nmsg_c packet received\n\n");
-        // send_back_packet = msg();  // сообщения от кого куда, когда, сообщение
+        // send_back_packet = msg();
     }
     // free(packet_type); // почему - то иногда выдает ошибку malloc error
     return send_back_packet;

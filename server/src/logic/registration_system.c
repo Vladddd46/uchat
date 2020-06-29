@@ -82,16 +82,12 @@ static int mx_add_user(const char *str, char* login, char* password, char* nickn
     char* sql = mx_insert_all_args(login, password, nickname);
 
     exit = sqlite3_exec(db, sql, NULL, 0, &message_error);
-    if(exit != SQLITE_OK) {
-    	printf("\n%s\n\n", message_error);
+    if(exit != SQLITE_OK)
     	sqlite3_free(message_error);
-    }
-
     return 1;
 }
 char *registration_system(char *packet) {
     char *login    = get_value_by_key(packet, "LOGIN");
-    printf("\n%s\n\n", login);
     char *password = get_value_by_key(packet, "PASSWORD");
     char *nickname = get_value_by_key(packet, "NICKNAME");
 
