@@ -14,5 +14,6 @@ char *mx_array_joiner(char **arr) {
             index++;
         }
     }
+
     return joined_str;
 }

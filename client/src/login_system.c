@@ -51,7 +51,6 @@ int login_system(int socket, char *user_login, char *user_password) {
     // bzero(buffer,256);
     // recv(socket, buffer, 255, 0);
     // int result = atoi(buffer);
-    
+
     return 0;
 }
-

@@ -1,18 +1,39 @@
-CLN		=	./client
-SRV		=	./server
-LIBMX		= 	./libs/libmx
-CJSON 		= 	./libs/cjson
+NAME = uchat
+SERVER_DIR = server
+CLIENT_DIR = client
+LIBMX_DIR		= libs/libmx
+LIBCJSON_DIR	= libs/cjson
 
-all:
-	@make -sC $(LIBMX)
-	@make -sC $(CJSON)
-	@make -sC $(CLN)
-	@make -sC $(SRV)
+
+MAKE_M = make -sf Makefile -C
+RM = /bin/rm -rf
+
+all: $(LIBMX_DIR) $(LIBCJSON_DIR) $(SERVER_DIR) $(CLIENT_DIR)
+
+$(SERVER_DIR):
+	@$(MAKE_M) $@
+
+$(CLIENT_DIR):
+	@$(MAKE_M) $@
+
+$(LIBMX_DIR):
+	@$(MAKE_M) $@
+
+$(LIBCJSON_DIR):
+	@$(MAKE_M) $@
 
 clean:
-	rm -rf ./server/server
-	rm -rf ./client/client
-	rm -rf ./libs/libmx/libmx.a
-	rm -rf ./libs/libmx/obj
-	rm -rf ./libs/cjson/cJSON.a
-	rm -rf ./libs/cjson/obj
+	@$(MAKE_M) $(SERVER_DIR) $@
+	@$(MAKE_M) $(CLIENT_DIR) $@
+	@$(MAKE_M) $(LIBMX_DIR) $@
+	@$(MAKE_M) $(LIBCJSON_DIR) $@
+
+uninstall:
+	@$(MAKE_M) $(SERVER_DIR) $@
+	@$(MAKE_M) $(CLIENT_DIR) $@
+	@$(MAKE_M) $(LIBMX_DIR) $@
+	@$(MAKE_M) $(LIBCJSON_DIR) $@
+
+reinstall: uninstall all
+
+.PHONY: all clean uninstall reinstall
