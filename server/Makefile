@@ -51,11 +51,11 @@ RM			= /bin/rm -rf
 
 all: $(LIB_LIST) $(NAME)
 
-$(NAME): $(OBJ_DIR) $(OBJ)
+$(NAME): $(OBJ_DIR) $(OBJ) $(LIB_BIN)
 	@$(COMPILE) $(OBJ) -lmx -o $(NAME)
 	@printf "\r\33[2K$@ \033[32;1mcreated\033[0m\n"
 
-$(LIB_LIST):
+$(LIB_LIST): $(LIB_DIRS)
 	@$(MAKE_M) $(LIB_DIR)/$@
 
 $(OBJ_DIR):
