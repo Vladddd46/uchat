@@ -1,10 +1,26 @@
 #include "client.h"
 
-void do_login(GtkWidget *entryspawn, int sockfd){
-    
-    //another function
+bool flage = FALSE;
 
-    gtk_widget_destroy(grid);
+gboolean my_keypress_function (GtkWidget *widget, GdkEventKey *event, gpointer data) {
+
+    if (event->keyval == 65293 && flage == TRUE){
+            create_message(newmessedgentry,NULL);
+        }
+    if (event->keyval == 65507){
+        flage = TRUE;
+    }
+    else{
+        flage = FALSE;
+    }
+    return FALSE;
+}
+
+void do_login(GtkWidget *entryspawn, int sockfd){
+    gtk_widget_destroy(fixed);
+    fixed = gtk_fixed_new();
+    gtk_container_add(GTK_CONTAINER(window), fixed);
+    //gtk_widget_destroy(grid);
     scroll = gtk_scrolled_window_new(0,0);
     gtk_fixed_put(GTK_FIXED (fixed), scroll, 0,50);
 
@@ -21,8 +37,9 @@ void do_login(GtkWidget *entryspawn, int sockfd){
     icon = gtk_image_new_from_pixbuf(iconn);
     gtk_button_set_image (GTK_BUTTON (leftmenu), icon);
 
-    searchmenu = gtk_entry_new();
-    gtk_entry_set_placeholder_text(GTK_ENTRY(searchmenu),"Search");
+    searchmenu = gtk_text_view_new ();
+    gtk_widget_set_size_request(searchmenu,150,50);
+    //gtk_entry_set_placeholder_text(GTK_ENTRY(searchmenu),"Search");
     gtk_widget_set_name(searchmenu,"searchmenu");
     gtk_box_pack_start(GTK_BOX(leftbox),searchmenu, TRUE, TRUE, 10);
     
@@ -50,11 +67,12 @@ void do_login(GtkWidget *entryspawn, int sockfd){
     gtk_widget_set_name(downbox,"downbox");
     gtk_fixed_put(GTK_FIXED (fixed), downbox, 300,718);
 
-    newmessedgentry = gtk_entry_new();
-    gtk_entry_set_placeholder_text(GTK_ENTRY(newmessedgentry),"Write a message...");
+    newmessedgentry = gtk_text_view_new_with_buffer(textbuffer);
+    //gtk_entry_set_placeholder_text(GTK_ENTRY(newmessedgentry),"Write a message...");
     gtk_widget_set_name(newmessedgentry,"newmessedgentry");
     gtk_box_pack_start(GTK_BOX(downbox),newmessedgentry, TRUE, TRUE, 0);
-    g_signal_connect(newmessedgentry, "activate", G_CALLBACK(create_message), NULL);
+    g_signal_connect (G_OBJECT (newmessedgentry), "key_press_event", G_CALLBACK (my_keypress_function), NULL);
+    //g_signal_connect(newmessedgentry, "activate", G_CALLBACK(create_message), NULL);
 
     scrollmess = gtk_scrolled_window_new(0,0);
     gtk_fixed_put(GTK_FIXED (fixed), scrollmess, 300,50);

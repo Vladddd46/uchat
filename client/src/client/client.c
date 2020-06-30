@@ -5,6 +5,16 @@ bool  flag = FALSE;
 static int messagenumber = 0;
 static int n = 0;
 
+
+char *get_text_of_textview(GtkWidget *text_view) {
+    GtkTextIter start, end;
+    GtkTextBuffer *buffer = gtk_text_view_get_buffer((GtkTextView *)text_view);
+    gchar *text;
+    gtk_text_buffer_get_bounds(buffer, &start, &end);
+    text = gtk_text_buffer_get_text(buffer, &start, &end, FALSE);
+    return text;
+}
+
 static void destroy(GtkWidget *widget, gpointer data){
   gtk_main_quit();
 }
@@ -87,7 +97,7 @@ void create_message(GtkWidget *newmessedgentry, gpointer data){
     gtk_widget_set_name(labellmenu,"labellmenu");
     gtk_grid_attach(GTK_GRID(gridmenu), labellmenu, 1, 0, 1, 1);
 
-    char *messageBuff = (char *)gtk_entry_get_text(GTK_ENTRY(newmessedgentry));
+    char *messageBuff = get_text_of_textview(newmessedgentry);
     labellmenu2 = gtk_label_new(messageBuff);
     gtk_widget_set_name(labellmenu2,"labellmenu2");
     gtk_grid_attach(GTK_GRID(gridmenu), labellmenu2, 1, 1, 1, 1);
@@ -108,7 +118,7 @@ void create_message(GtkWidget *newmessedgentry, gpointer data){
     gtk_widget_show (delet);
     gtk_menu_shell_append (GTK_MENU_SHELL (fileMenu), delet);
     g_signal_connect (delet, "activate", G_CALLBACK (delete_message), row);
-    gtk_entry_set_text(GTK_ENTRY(newmessedgentry),"");
+    gtk_text_view_set_buffer(GTK_TEXT_VIEW(newmessedgentry),textbuffer);
 
     gtk_widget_show_all(window);
 }
@@ -309,7 +319,7 @@ void *server_communication(void *param) {
         if (!strcmp(packet_type, "reg_s")) {
             // registration system
             printf("reg_s packet received\n");
-            do_login(NULL, client_context->sockfd);
+            do_login(entryspawn, client_context->sockfd);
         }
         else if (!strcmp(packet_type, "login_s")) {
             // login system

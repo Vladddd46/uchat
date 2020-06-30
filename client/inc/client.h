@@ -27,6 +27,7 @@ void do_login(GtkWidget *entryspawn, int sockfd);
 void create_row(GtkWidget *labell, gpointer data);
 void create_message(GtkWidget *newmessedgentry, gpointer data);
 void end_message (GtkWidget *widget, GtkWidget *message);
+char *get_text_of_textview(GtkWidget *text_view);
 // Json lib. API
 char *json_packet_former(int num, ...);
 char *get_value_by_key(char *json_str, char *key);
@@ -43,6 +44,7 @@ GtkWidget *SecondPassword;
 GtkWidget *Registration;
 //static GtkWidget *newbutton;
 GtkWidget *fixed;
+GtkTextBuffer *textbuffer;
 GtkWidget *window;
 GtkWidget *grid;
 GtkWidget *labell;
