@@ -27,7 +27,7 @@ char *registration_system(char *packet) {
     // char *status           = status_converter(return_status);
     // char *msg              = msg_former(return_status);
     // char *sendback_packet  = json_packet_former(2, "TYPE:reg_s", status, msg);
-    char *not_terminated_packet = json_packet_former(3, "TYPE:reg_s", "STATUS:true", "MSG:OK"); // Debug.
+    char *not_terminated_packet = json_packet_former(2, "TYPE:reg_s", "STATUS:success"); // Debug.
     char *sendback_packet       = mx_char_to_str_add(not_terminated_packet, 20);
     free(not_terminated_packet);
     return sendback_packet;

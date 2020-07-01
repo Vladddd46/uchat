@@ -1,0 +1,4 @@
+1. Functions, which names start with do_ perform the formation of packet
+and sending it to the server.
+2. Functions, which names end with _system are in charge of analyzing
+received packets and changing gui depending on received packet.

@@ -306,11 +306,13 @@ void *server_communication(void *param) {
         int status = select(FD_SETSIZE, &read_descriptors, NULL, NULL, &tv);
         if (status <= 0) continue;
 
+        // Determining the length of incomming packet.
         char buf[8];
         bzero(buf, 8);
         recv(client_context->sockfd, buf, 8, 0);
         int packet_len = atoi(buf);
 
+        // Allocate mem. for packet and receiving it.
         char *packet = mx_strnew(packet_len);
         int index = 0;
         while(index < packet_len) {
@@ -319,11 +321,9 @@ void *server_communication(void *param) {
         }
 
         char *packet_type = get_value_by_key(packet, "TYPE");
-
         if (!strcmp(packet_type, "reg_s")) {
-            // registration system
             printf("reg_s packet received\n");
-            do_login(entryspawn, client_context->sockfd);
+            registration_system(client_context->sockfd, packet);
         }
         else if (!strcmp(packet_type, "login_s")) {
             // login system

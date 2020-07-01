@@ -33,6 +33,7 @@ char *get_value_by_key(char *json_str, char *key);
 
 // Logic
 void do_registration(GtkWidget *Registration, client_context_t *client_context);
+void registration_system(int socket, char *packet);
 
 // help functions
 char *packet_len_prefix_adder(char *packet);
