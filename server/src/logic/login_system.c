@@ -62,45 +62,33 @@ static char* mx_get_nickname(char* login) {
     return nickname;
 }
 
-static char *json_packet_former_from_list(chats_t *chat, char *status) {
-    char *key;
-    char *value;
-    cJSON *packet     = cJSON_CreateObject();
-    char  *packet_str = NULL;
+int mx_list_len(chats_t* chat) {
+    int len = 0;
+    chats_t* head = chat;
 
-    printf("\nSEGMENTATION ERROR HERE 1 -> \n\n");
-    key = "STATUS";
-    value = status;
-    cJSON *json_value = cJSON_CreateString(value);
-    cJSON_AddItemToObject(packet, key, json_value);
-    if(mx_strcmp(status, "true") == 0) {
-        while (chat -> chat_name != NULL) {
-            if(chat -> last_message != NULL) {
-                key   = "LASTMESSAGE";
-                value = mx_strncpy(chat -> last_message);
-                printf("Error founder here 0 - %s\n", value);
-                json_value = cJSON_CreateString(value);
-                printf("Error founder here 1\n");
-                cJSON_AddItemToObject(packet, key, json_value);
-            }
-            printf("Error founder here 2\n");
-            key   = "CHATNAME";
-            value = chat -> chat_name;
-            printf("Error founder here 3 - %s\n", value);
-            json_value = cJSON_CreateString(value);
-            printf("Error founder here 4\n");
-            cJSON_AddItemToObject(packet, key, json_value);
-            printf("Error founder here 5\n");
-            if (json_error(json_value)) {
-                printf("Error founder here 6\n");
-                return NULL;
-            }
-            chat = chat -> next;
-        }
+    while(chat -> chat_name != NULL) {
+        chat = chat -> next;
+        len++;
     }
-    // printf("\nSEGMENTATION ERROR HERE 7 -> \n\n");
+    head = chat;
+    return len;
+}
+
+static char *json_packet_former_from_list(chats_t *chat, char *status) {
+    int list_len = mx_list_len(chat);
+    cJSON *packet = cJSON_CreateObject();
+    char* packet_str = NULL;
+    cJSON *json_value = cJSON_CreateString(status);
+    cJSON_AddItemToObject(packet, "STATUS", json_value);
+
+    printf("status = %s\n", status);
+    for(int i = 0; i < list_len; i++) {
+        json_value = cJSON_CreateString(chat -> chat_name);
+        cJSON_AddItemToObject(packet, "CHATNAME", json_value);
+        json_value = cJSON_CreateString(chat -> last_message);
+        cJSON_AddItemToObject(packet, "CHATNAME", json_value);
+    }
     packet_str = cJSON_Print(packet);
-    // cJSON_Delete(packet); // ??? after 5 iterations there was malloc error.
     return packet_str;
 }
 
@@ -110,12 +98,14 @@ char *login_system(char *packet) {
     char *return_status = mx_confirm_users_password(login, password);
     // printf("\nSEGMENTATION ERROR HERE -1 -> \n\n");
     chats_t *chat = mx_get_users_chats(login); // list чатов доступных пользователю с login (chatname, last message)
-    chats_t* copy = chat;
-    while(copy -> chat_name) {
-        printf("name: %s\n", copy -> chat_name);
-        copy = copy -> next;
+    // chats_t* copy = chat;
+    if(mx_strcmp(return_status, "false") == 0) {
+        chat -> chat_name = NULL;
     }
-    printf("FOUNDED !!!!\n");
+    // while(copy -> chat_name) {
+    //     printf("name: %s\n", copy -> chat_name);
+    //     copy = copy -> next;
+    // }
     char *nickname = mx_get_nickname(login);
     // printf("\nSEGMENTATION ERROR HERE 0 -> \n\n");
     // printf("\nSEGMENTATION ERROR HERE 0 %s-> \n\n", return_status);
@@ -124,5 +114,5 @@ char *login_system(char *packet) {
 
     printf("\nPacket shmaket: %s\n\n", sendback_packet);
     // char   *sendback_packet = json_packet_former(2, "TYPE:login_s", "STATUS:true"); // Debug.
-    return sendback_packet;
+    return NULL;
 }

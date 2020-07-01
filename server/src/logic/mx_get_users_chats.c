@@ -58,41 +58,41 @@ static void dberror(sqlite3 *db, int status, char *msg) {
 chats_t* mx_get_users_chats(char* user) {
 	sqlite3 *db;
 	sqlite3_open("uchat.db", &db);
-    char* sql = "SELECT ID FROM USERS WHERE USER=";
+    char sql[120];
     sqlite3_stmt *res;
     sqlite3_stmt *res1;
-    int user_id;
-    chats_t *chat = malloc(sizeof(chats_t*));
+    char* user_id;
+    chats_t *chat = malloc(sizeof(chats_t));
     chats_t *head = chat;
     int user_chat[1024];
     int len = 0;
     char* identifier;
+    sqlite3_stmt *res2;
 
     // mx_get_data("uchat.db");
-
-    user = mx_pack_string_in_double_dots(user);
-    sql = mx_strjoin(sql, user);
-    sql = mx_strjoin(sql, ";");
+    sprintf(sql, "SELECT ID FROM USERS WHERE LOGIN='%s';", user);
     int check = sqlite3_prepare_v2(db, sql, -1, &res, 0);
-    // dberror(db, check, "Can't find this user");
+    dberror(db, check, "Error select ID from LOGIN");
     sqlite3_step(res);
-    user_id = (int)sqlite3_column_text(res, 0);
-    sql = mx_strjoin("SELECT CHATID FROM USERCHAT WHERE USERID=", mx_itoa(user_id));
-    sql = mx_strjoin(sql, ";");
-    sqlite3_prepare_v2(db, sql, -1, &res1, 0);
+    user_id = sqlite3_column_text(res, 0);
+    sprintf(sql, "SELECT CHATID FROM USERCHAT WHERE USERID=%s;", user_id);
+    printf("User ID = %s\n", user_id);
+    check = sqlite3_prepare_v2(db, sql, -1, &res1, 0);
+    dberror(db, check, "Error select CHATID from USERCHAT");
     sqlite3_step(res1);
     for(; sqlite3_column_text(res1, 0) != NULL; len++) {
-        sqlite3_stmt *res2;
         identifier = sqlite3_column_text(res1, 0);
-        sql = mx_strjoin("SELECT CHATNAME, LASTMESSAGE FROM CHATS WHERE ID=", identifier);
-        sql = mx_strjoin(sql, ";");
-        sqlite3_prepare_v2(db, sql, -1, &res2, 0);
-        sqlite3_step(res1);
+        sprintf(sql, "SELECT CHATNAME, LASTMESSAGE FROM CHATS WHERE ID=%s;", identifier);
+        // printf("SQL string: %s\n", sql);
+        check = sqlite3_prepare_v2(db, sql, -1, &res2, 0);
+        dberror(db, check, "Error select CHATNAME, LASTMESSAGE from CHATs");
         sqlite3_step(res2);
 
-        chat -> chat_name = sqlite3_column_text(res2, 0); 
-        chat -> last_message = sqlite3_column_text(res2, 1);
-        chat -> next = malloc(sizeof(chats_t*));
+        chat -> chat_name = mx_stringcopy(sqlite3_column_text(res2, 0));
+        // printf("%d Len -- chat_name = %s\n", len, sqlite3_column_text(res2, 0));
+        chat -> last_message = mx_stringcopy(sqlite3_column_text(res2, 1));
+        // printf("%d Len -- last_message = %s\n\n", len, chat -> last_message);
+        chat -> next = malloc(sizeof(chats_t));
         chat = chat -> next;
         chat -> chat_name = NULL;
         chat -> last_message = NULL;
@@ -104,7 +104,8 @@ chats_t* mx_get_users_chats(char* user) {
     sqlite3_finalize(res);
     sqlite3_finalize(res1);
     sqlite3_close(db);
-    chat = head;
+    // chat = head;
+    // printf("\nHELLO FORM HERE!!!!!!%s\n\n", sql);
     // printf("table for %s\n", user);
     // while(chat -> chat_name != NULL) {
     //     printf("chatname: %s\nlast message: %s\n\n", chat -> chat_name, chat -> last_message);
