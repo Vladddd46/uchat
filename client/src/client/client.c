@@ -1,10 +1,10 @@
 #include "client.h"
+
 client_context_t *client_context;
 
 bool  flag = FALSE;
 static int messagenumber = 0;
 static int n = 0;
-
 
 char *get_text_of_textview(GtkWidget *text_view) {
     GtkTextIter start, end;
@@ -123,7 +123,6 @@ void create_message(GtkWidget *newmessedgentry, gpointer data){
     gtk_widget_show_all(window);
 }
 
-
 void create_row(GtkWidget *labell, gpointer data){
     GtkWidget *row;
     row = gtk_list_box_row_new();
@@ -153,8 +152,6 @@ void create_row(GtkWidget *labell, gpointer data){
 
     gtk_widget_show_all(window);
 }
-
-
 
 void make_registration(GtkWidget *Registration, client_context_t *client_context){
     GtkWidget *back;
@@ -212,7 +209,8 @@ void make_registration(GtkWidget *Registration, client_context_t *client_context
    //gtk_fixed_put(GTK_FIXED (fixed), back, 550,540);
 
     gtk_widget_show_all(window);
-    }
+}
+
 // Checks, wether user specified input correctly.
 static void argv_validator(int argc, char **argv) {
     char *msg;
@@ -230,8 +228,6 @@ static void argv_validator(int argc, char **argv) {
         exit(1);
     }
 }
-
-
 
 // Main window init.
 void gui(int argc, char **argv, client_context_t *client_context) {
@@ -280,16 +276,15 @@ static struct sockaddr_in client_address_describer(int port) {
     return client_addr;
 }
 
-void client_context_init(int sockfd, int write_pipe, int read_pipe) {
+void client_context_init(int sockfd) {
     client_context = (client_context_t *)malloc(sizeof(client_context_t));
     if (client_context == NULL) {
         char *msg = "Client context malloc error\n";
         write(2, msg, (int)strlen(msg));
         exit(1);
     }
-    client_context->sockfd     = sockfd;
-    client_context->write_pipe = write_pipe;
-    client_context->read_pipe  = read_pipe;
+
+    client_context->sockfd = sockfd;
 }
 
 /*
@@ -353,16 +348,14 @@ int main(int argc, char **argv) {
     int sockfd                     = Socket();
     struct sockaddr_in client_addr = client_address_describer(port);
 
-    int pipefd[2];
-    pipe(pipefd);
-
     // Do the connect to the server.
     int res = connect(sockfd, (struct sockaddr *)&client_addr, sizeof(client_addr));
     error("Error while connection", res);
 
-    client_context_init(sockfd, pipefd[1], pipefd[0]);
+    client_context_init(sockfd);
     pthread_t client_thread;
     int err = pthread_create(&client_thread, NULL, server_communication, NULL);
+    error("Error while creating new thread.", err);
 
     // Gui initialization
     gui(argc, argv, client_context);

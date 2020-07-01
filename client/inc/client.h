@@ -12,14 +12,11 @@
 #include "cJSON.h"
 #include "libmx.h"
 
-
 typedef struct client_context_s {
 	int sockfd;
-	int write_pipe;
-	int read_pipe;
 } client_context_t;
 
-
+// какие то непонятные функции Дениса. PS. структурируй их пожалуйста.
 void error(char *msg, int status);
 void back_to_menu(GtkWidget *back, int sockfd);
 void main_menu();
@@ -28,10 +25,11 @@ void create_row(GtkWidget *labell, gpointer data);
 void create_message(GtkWidget *newmessedgentry, gpointer data);
 void end_message (GtkWidget *widget, GtkWidget *message);
 char *get_text_of_textview(GtkWidget *text_view);
+void make_registration(GtkWidget *Registration, client_context_t *client_context);
+
 // Json lib. API
 char *json_packet_former(int num, ...);
 char *get_value_by_key(char *json_str, char *key);
-void make_registration(GtkWidget *Registration, client_context_t *client_context);
 
 // Logic
 void do_registration(GtkWidget *Registration, client_context_t *client_context);

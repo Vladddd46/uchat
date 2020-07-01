@@ -35,7 +35,6 @@ void error(char *msg, int status);
 
 // Database functions.
 void    database_init();
-char    *mx_database_communication(char *packet);
 sqlite3 *opening_db();
 
 // Socket list.
@@ -49,6 +48,7 @@ char *get_value_by_key(char *json_str, char *key);
 char *json_packet_former(int num, ...);
 
 // Logic
+char *mx_database_communication(char *packet);
 char *login_system(char *packet);
 char *registration_system(char *packet);
 

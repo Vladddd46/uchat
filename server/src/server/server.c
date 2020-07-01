@@ -8,10 +8,8 @@
  * b. connected_client_list_t list - linked list of connected client sockets.
  */
 static server_context_t ctx;
-
 // Initialize mutex with default settings.
 static pthread_mutex_t ctx_mutex = PTHREAD_MUTEX_INITIALIZER;
-
 // if quit == true, server exits.
 static bool quit = false; 
 
@@ -68,8 +66,6 @@ static struct timeval wait_time() {
 
 static void *handle_server(void *param) {
     int status;
-    char buffer[256];
-    bzero(buffer,256);
     int buf_len;
     fd_set read_descriptors;
     // Setting waiting time for select.
@@ -105,14 +101,12 @@ static void *handle_server(void *param) {
                     buf_len = recv(p->sock_fd, &packet[index], 1, 0);
                     index++;
                 }
-                printf("There was received %d bytes from socket %d\n", buf_len, p->sock_fd); // Debug.
                 if (buf_len < 0) continue;
 
                 // Modify db and forms packet, which must be send to specified in packet client(login).
                 char *send_packet = mx_database_communication(packet);
-                // if (send_packet == NULL) // Connection was closed but update has not been made yet.
-                    // continue;
-
+                if (send_packet == NULL) // Connection was closed but update has not been made yet.
+                    continue;
                 /* 
                  * Retrieves user`s login from packet. Packet will be send on this login,
                  * if user with this login is connected to the server.
@@ -126,12 +120,10 @@ static void *handle_server(void *param) {
                 for (connected_client_list_t *s = ctx.head.next; s != NULL; s = s->next) {
                     if (s->is_logged) { // && !strcmp(client_login, s->login)
                         send(s->sock_fd, send_packet, (int)strlen(send_packet), 0);
-                        printf("Sending of %d bytes\n",buf_len); // Debug.
+                        printf("Sending of %d bytes\n", buf_len); // Debug.
                     }
                 }                    
-                // refreshing buffer.
-                bzero(buffer,256);
-                // free(send_packet);
+                free(send_packet);
                 // free(client_login)
             }            
         }
