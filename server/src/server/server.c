@@ -113,17 +113,21 @@ static void *handle_server(void *param) {
                  */
                 // char *client_login = get_value_buy_key(send_packet, "TO");
 
+
                 /* Makes user logged in. */
-                // if (send_packet && !strcmp(get_value_buy_key(send_packet, "TYPE"), "login_s") && !strcmp(get_value_buy_key(send_packet, "STATUS"), "true"))
+                if (send_packet && (!strcmp(get_value_by_key(send_packet, "TYPE"), "login_s") || !strcmp(get_value_by_key(send_packet, "TYPE"), "reg_s")) && !strcmp(get_value_by_key(send_packet, "STATUS"), "success"))
                     p->is_logged = true;
-                
+
+                char *send_back_packet_prefixed =  packet_len_prefix_adder(send_packet);
+                free(send_packet);
+                printf("==>%s\n", send_back_packet_prefixed);
                 for (connected_client_list_t *s = ctx.head.next; s != NULL; s = s->next) {
                     if (s->is_logged) { // && !strcmp(client_login, s->login)
-                        send(s->sock_fd, send_packet, (int)strlen(send_packet), 0);
+                        send(s->sock_fd, send_back_packet_prefixed, (int)strlen(send_back_packet_prefixed), 0);
                         printf("Sending of %d bytes\n", buf_len); // Debug.
                     }
                 }                    
-                free(send_packet);
+                free(send_back_packet_prefixed);
                 // free(client_login)
             }            
         }

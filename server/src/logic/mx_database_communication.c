@@ -30,9 +30,6 @@ char *mx_database_communication(char *packet) {
         // send_back_packet = msg();
     }
     // free(packet_type); // почему - то иногда выдает ошибку malloc error
-
-    char *send_back_packet_prefixed =  packet_len_prefix_adder(send_back_packet);
-    free(send_back_packet);
-    return send_back_packet_prefixed;
+    return send_back_packet;
 }
 
