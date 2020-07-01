@@ -280,7 +280,7 @@ static struct sockaddr_in client_address_describer(int port) {
     return client_addr;
 }
 
-void client_context_init(int sockfd, int write_pipe, int read_pipe) {
+void client_context_init(int sockfd) {
     client_context = (client_context_t *)malloc(sizeof(client_context_t));
     if (client_context == NULL) {
         char *msg = "Client context malloc error\n";
@@ -288,8 +288,6 @@ void client_context_init(int sockfd, int write_pipe, int read_pipe) {
         exit(1);
     }
     client_context->sockfd     = sockfd;
-    client_context->write_pipe = write_pipe;
-    client_context->read_pipe  = read_pipe;
 }
 
 /*
@@ -351,7 +349,7 @@ int main(int argc, char **argv) {
     int res = connect(sockfd, (struct sockaddr *)&client_addr, sizeof(client_addr));
     error("Error while connection", res);
 
-    client_context_init(sockfd, pipefd[1], pipefd[0]);
+    client_context_init(sockfd);
     pthread_t client_thread;
     int err = pthread_create(&client_thread, NULL, server_communication, NULL);
 
