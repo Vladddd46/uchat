@@ -9,6 +9,13 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <gtk/gtk.h>
+#include "cJSON.h"
+#include "libmx.h"
+
+typedef struct client_context_s {
+	int sockfd;
+} client_context_t;
+
 
 #define CHILD 0
 static GtkWidget *grid;

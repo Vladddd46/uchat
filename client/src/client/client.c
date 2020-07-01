@@ -21,10 +21,10 @@ static void destroy(GtkWidget *widget, gpointer data){
 
 int show_popup(GtkWidget *widget, GdkEvent *event) {
     const gint RIGHT_CLICK = 3;
-    
+
     if (event->type == GDK_BUTTON_PRESS) {
         GdkEventButton *bevent = (GdkEventButton *) event;
-        if (bevent->button == RIGHT_CLICK) {      
+        if (bevent->button == RIGHT_CLICK) {
             gtk_menu_popup_at_pointer(GTK_MENU(widget), event);
             return TRUE;
         }
@@ -55,19 +55,19 @@ void edit_message (GtkWidget *widget, GtkWidget *message){
     gtk_entry_set_text(GTK_ENTRY(editmessedgentry),editbuff);
     gtk_widget_show(editmessedgentry);
     g_signal_connect(editmessedgentry, "activate", G_CALLBACK(end_message), message);
-    
+
     editbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL,0);
     gtk_widget_set_size_request(editbox,724,50);
     gtk_widget_set_name(editbox,"editbox");
     gtk_fixed_put(GTK_FIXED(fixed), editbox, 300,668);
-    
+
     flag = TRUE;
     }
 }
 
 //отправка редактируемого сообщения
 void end_message (GtkWidget *widget, GtkWidget *message){
-    
+
     char *editbuff = (char *)gtk_entry_get_text(GTK_ENTRY(editmessedgentry));
     gtk_label_set_text(GTK_LABEL(message),editbuff);
     gtk_widget_destroy(editmessedgentry);
@@ -280,7 +280,7 @@ static struct sockaddr_in client_address_describer(int port) {
     return client_addr;
 }
 
-void client_context_init(int sockfd, int write_pipe, int read_pipe) {
+void client_context_init(int sockfd) {
     client_context = (client_context_t *)malloc(sizeof(client_context_t));
     if (client_context == NULL) {
         char *msg = "Client context malloc error\n";
@@ -288,8 +288,6 @@ void client_context_init(int sockfd, int write_pipe, int read_pipe) {
         exit(1);
     }
     client_context->sockfd     = sockfd;
-    client_context->write_pipe = write_pipe;
-    client_context->read_pipe  = read_pipe;
 }
 
 /*
@@ -351,7 +349,7 @@ int main(int argc, char **argv) {
     int res = connect(sockfd, (struct sockaddr *)&client_addr, sizeof(client_addr));
     error("Error while connection", res);
 
-    client_context_init(sockfd, pipefd[1], pipefd[0]);
+    client_context_init(sockfd);
     pthread_t client_thread;
     int err = pthread_create(&client_thread, NULL, server_communication, NULL);
 
@@ -360,8 +358,3 @@ int main(int argc, char **argv) {
     free(client_context);
     return 0;
 }
-
-
-
-
-
