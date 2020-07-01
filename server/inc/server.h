@@ -27,6 +27,22 @@ typedef struct {
 	connected_client_list_t head;
 } server_context_t;
 
+// Chats context
+typedef struct chats {
+    char* chat_name;
+    char* last_message;
+    struct chats_t* next;
+    // chats(): next(NULL) {}
+} chats_t;
+
+// Chats messages context
+typedef struct chat_message {
+	char* sender;
+    char* time;
+    char* message;
+    struct chat_message_t* next; 
+} chat_message_t;
+
 // Server main functions.
 int  get_port(char **argv);
 int  listening_socket_init(int port);
@@ -51,4 +67,4 @@ char *json_packet_former(int num, ...);
 // Logic
 char *login_system(char *packet);
 char *registration_system(char *packet);
-
+chats_t* mx_get_users_chats(char* user);
