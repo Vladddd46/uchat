@@ -287,55 +287,69 @@ void client_context_init(int sockfd) {
     client_context->sockfd = sockfd;
 }
 
+// Read first 8 bytes from packet. (They represent the length of the packet.)
+static int packet_length_determine(void) {
+    char buf[8];
+    bzero(buf, 8);
+    recv(client_context->sockfd, buf, 8, 0);
+    int packet_len = atoi(buf);
+
+    return packet_len;
+}
+
+// Receiving packet from the socket.
+static char *packet_receive(void) {
+    int  packet_len = packet_length_determine();
+    char *packet = mx_strnew(packet_len);
+    int  index = 0;
+
+    while(index < packet_len) {
+        recv(client_context->sockfd, &packet[index], 1, 0);
+        index++;
+    }
+    return packet;
+}
+
+// Set time select must wait for incomming packets.
+static struct timeval set_wait_time(void) {
+    struct timeval tv;
+    tv.tv_sec  = 1; // seconds.
+    tv.tv_usec = 0; // mili-seconds.
+    return tv;
+}
+
+static void received_packet_analyzer(char *packet_type, char *packet) {
+    if (!strcmp(packet_type, "reg_s"))
+        registration_system(client_context->sockfd, packet);
+    else if (!strcmp(packet_type, "login_s"))
+        printf("login packet received\n");
+    else if (!strcmp(packet_type, "find_user_s"))
+        printf("%s\n", "find_user packet receive");
+    else if (!strcmp(packet_type, "msg_s"))
+        printf("%s\n", "msg packet received");
+}
+
 /*
  * Thread, which receives packets from server.
  * When packet received, it is analyzed.
  * Depending on packet gui changes.
  */
 void *server_communication(void *param) {
+    fd_set read_descriptors;
+    struct timeval tv = set_wait_time();
+    int status;
+    char *packet;
+    char *packet_type;
+
     while(1) {
-        fd_set read_descriptors;
         FD_ZERO(&read_descriptors);
         FD_SET(client_context->sockfd, &read_descriptors);
-
-        // Set time select must wait for incomming packets.
-        struct timeval tv;
-        tv.tv_sec  = 1; // seconds.
-        tv.tv_usec = 0; // mili-seconds.
-
-        int status = select(FD_SETSIZE, &read_descriptors, NULL, NULL, &tv);
+        status = select(FD_SETSIZE, &read_descriptors, NULL, NULL, &tv);
         if (status <= 0) continue;
-
-        // Determining the length of incomming packet.
-        char buf[8];
-        bzero(buf, 8);
-        recv(client_context->sockfd, buf, 8, 0);
-        int packet_len = atoi(buf);
-
-        // Allocate mem. for packet and receiving it.
-        char *packet = mx_strnew(packet_len);
-        int index = 0;
-        while(index < packet_len) {
-            recv(client_context->sockfd, &packet[index], 1, 0);
-            index++;
-        }
-
-        char *packet_type = get_value_by_key(packet, "TYPE");
-        if (!strcmp(packet_type, "reg_s")) {
-            printf("reg_s packet received\n");
-            registration_system(client_context->sockfd, packet);
-        }
-        else if (!strcmp(packet_type, "login_s")) {
-            // login system
-            printf("login packet received\n");
-        }
-        else if (!strcmp(packet_type, "find_user_s")) {
-            // find_user system
-            printf("%s\n", "find_user packet receive");
-        }
-        else if (!strcmp(packet_type, "msg_s")) {
-            printf("%s\n", "msg packet received");
-        }
+        // Receive packet from the server.
+        packet      = packet_receive();
+        packet_type = get_value_by_key(packet, "TYPE");
+        received_packet_analyzer(packet_type, packet);
         free(packet_type);
         free(packet);
     }
