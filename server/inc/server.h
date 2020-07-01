@@ -31,7 +31,7 @@ typedef struct {
 typedef struct chats {
     char* chat_name;
     char* last_message;
-    struct chats_t* next;
+    struct chats *next;
     // chats(): next(NULL) {}
 } chats_t;
 
@@ -40,7 +40,7 @@ typedef struct chat_message {
 	char* sender;
     char* time;
     char* message;
-    struct chat_message_t* next; 
+    struct chat_message *next; 
 } chat_message_t;
 
 // Server main functions.
