@@ -54,26 +54,13 @@ static int validate(char *input_login, char *input_nick, char *input_password, c
     int validate_nick_status  = nick_validator(input_nick);
     int validate_pass_status  = pass_validator(input_password, input_password_confirm);
 
-    if (validate_login_status == LOGIN_FORBIDDEN_SYMBOLS)
-        printf("Forbidden symbols in login\n");
-    if (validate_nick_status == NICK_FORBIDDEN_SYMBOLS)
-        printf("Forbidden symbols in nickname\n");
-    if (validate_pass_status == PASS_FORBIDDEN_SYMBOLS)
-        printf("Forbidden symbols in password\n");
-    if (validate_pass_status == PASS_DIFFERENT)
-        printf("Passwords are different\n");
-    if (validate_nick_status == NICKNAME_IS_EMPTY)
-        printf("Nickname box is empty");
-    if (validate_login_status == LOGIN_IS_EMPTY)
-        printf("Login box is empty\n");
-    if (validate_pass_status == PASSWORD_1_IS_EMPTY)
-        printf("Password1 box is empty\n");
-    if (validate_pass_status == PASSWORD_2_IS_EMPTY)
-        printf("Password2 box is empty\n");
-
-    if (validate_login_status == OKEY && validate_nick_status == OKEY && validate_pass_status == OKEY)
-        return 0;
-    return 1;
+    if (validate_login_status != OKEY)
+        return validate_login_status;
+    else if (validate_nick_status != OKEY)
+        return validate_nick_status;
+    else if (validate_pass_status != OKEY)
+        return validate_pass_status;
+    return OKEY;
 }
 
 static char *make_packet(char *input_login, char *input_nick, char *input_password) {
@@ -95,16 +82,18 @@ void do_registration(GtkWidget *Registration, client_context_t *client_context) 
     char *input_password_confirm = (char *)gtk_entry_get_text(GTK_ENTRY(SecondPassword));
 
     // Input values validation
-    if (validate(input_login, input_nick, input_password, input_password_confirm)) {
+    int status = validate(input_login, input_nick, input_password, input_password_confirm);
+    if (status != OKEY) {
         write(2, "Error while validate", 22);
+        // printf(status);
         // тут должен быть функционал, который   выводит пользователю сообщение об неправильном инпуте.
     }
     else {
         char *packet             = make_packet(input_login, input_nick, input_password);
         char *packet_with_prefix = packet_len_prefix_adder(packet);
-        free(packet);
         send(client_context->sockfd, packet_with_prefix, (int)strlen(packet_with_prefix), 0); // sending registration packet to the server.
-        // free(packet);
+        free(packet);
+        free(packet_with_prefix);
     }
 }
 

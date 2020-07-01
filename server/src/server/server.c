@@ -99,12 +99,17 @@ static void *handle_server(void *param) {
                 recv(p->sock_fd, len, 8, 0);
                 int packet_len = atoi(len);
                 
-                buf_len = recv(p->sock_fd, buffer, 255, 0);
+                char *packet = mx_strnew(packet_len);
+                int index = 0;
+                while(index < packet_len) {
+                    buf_len = recv(p->sock_fd, &packet[index], 1, 0);
+                    index++;
+                }
                 printf("There was received %d bytes from socket %d\n", buf_len, p->sock_fd); // Debug.
                 if (buf_len < 0) continue;
 
                 // Modify db and forms packet, which must be send to specified in packet client(login).
-                char *send_packet = mx_database_communication(buffer);
+                char *send_packet = mx_database_communication(packet);
                 // if (send_packet == NULL) // Connection was closed but update has not been made yet.
                     // continue;
 
@@ -120,7 +125,7 @@ static void *handle_server(void *param) {
                 
                 for (connected_client_list_t *s = ctx.head.next; s != NULL; s = s->next) {
                     if (s->is_logged) { // && !strcmp(client_login, s->login)
-                        send(s->sock_fd, send_packet, buf_len, 0);
+                        send(s->sock_fd, send_packet, (int)strlen(send_packet), 0);
                         printf("Sending of %d bytes\n",buf_len); // Debug.
                     }
                 }                    
