@@ -308,13 +308,22 @@ void *server_communication(void *param) {
         tv.tv_sec  = 1; // seconds.
         tv.tv_usec = 0; // mili-seconds.
 
-        char buf[1000];
-        bzero(buf, 1000);
         int status = select(FD_SETSIZE, &read_descriptors, NULL, NULL, &tv);
         if (status <= 0) continue;
 
-        read(client_context->sockfd, buf, 1000);
-        char *packet_type = get_value_by_key(buf, "TYPE");
+        char buf[8];
+        bzero(buf, 8);
+        recv(client_context->sockfd, buf, 8, 0);
+        int packet_len = atoi(buf);
+
+        char *packet = mx_strnew(packet_len);
+        int index = 0;
+        while(index < packet_len) {
+            recv(client_context->sockfd, &packet[index], 1, 0);
+            index++;
+        }
+
+        char *packet_type = get_value_by_key(packet, "TYPE");
 
         if (!strcmp(packet_type, "reg_s")) {
             // registration system
@@ -332,8 +341,8 @@ void *server_communication(void *param) {
         else if (!strcmp(packet_type, "msg_s")) {
             printf("%s\n", "msg packet received");
         }
-
-
+        free(packet_type);
+        free(packet);
     }
     return NULL;
 }

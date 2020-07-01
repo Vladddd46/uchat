@@ -52,3 +52,8 @@ char *json_packet_former(int num, ...);
 char *login_system(char *packet);
 char *registration_system(char *packet);
 
+// help funcs
+char *packet_len_prefix_adder(char *packet);
+
+
+
