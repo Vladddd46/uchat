@@ -115,11 +115,14 @@ static void *handle_server(void *param) {
 
 
                 /* Makes user logged in. */
-                if (send_packet && (!strcmp(get_value_by_key(send_packet, "TYPE"), "login_s") || !strcmp(get_value_by_key(send_packet, "TYPE"), "reg_s")) && !strcmp(get_value_by_key(send_packet, "STATUS"), "success"))
+                if (send_packet && (!strcmp(get_value_by_key(send_packet, "TYPE"), "login_s") || !strcmp(get_value_by_key(send_packet, "TYPE"), "reg_s")) && !strcmp(get_value_by_key(send_packet, "STATUS"), "success")) {
+
                     p->is_logged = true;
+                }
 
                 char *send_back_packet_prefixed =  packet_len_prefix_adder(send_packet);
                 free(send_packet);
+                free(packet);
 
                 for (connected_client_list_t *s = ctx.head.next; s != NULL; s = s->next) {
                     if (s->is_logged) { // && !strcmp(client_login, s->login)
