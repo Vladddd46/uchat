@@ -41,7 +41,7 @@ static bool update_connections(fd_set *descriptors) {
     if (descriptors == NULL) return false;
 
     pthread_mutex_lock(&ctx_mutex);
-    for (socket_list_t *s = ctx.head.next; s != NULL; s = s->next) {
+    for (connected_client_list_t *s = ctx.head.next; s != NULL; s = s->next) {
         if (recv(s->sock_fd, buffer, sizeof(buffer), MSG_PEEK | MSG_DONTWAIT) == 0) {
             printf("Connection on socket with socket fd %d was closed\n", s->sock_fd);
             close(s->sock_fd);
@@ -73,34 +73,17 @@ static void *handle_server(void *param) {
 
     while(!quit) {
         update_connections(&read_descriptors);
-
-        // <del> добавляем stdin в список отслеживаемых дескрипторов.
-        FD_SET(0,&read_descriptors);
-
         printf("wait for incomming packets...\n");
-        tv.tv_sec = 1;
         status = select(FD_SETSIZE, &read_descriptors, NULL, NULL, &tv);
         // if no sockets are availabe => continue loop.
         if (status <= 0) continue;
 
-        // if stdin is active => checking it`s input. if input == 'q', stop server. // debug
-        if (FD_ISSET(0, &read_descriptors)) {
-            int s = getchar();
-            if (s == 'q') {
-                printf("Force QUIT\n");
-                pid_t pid = getpid();
-                kill(pid, SIGCHLD);
-                sleep(1);
-                continue;
-            }
-        }
-
         pthread_mutex_lock(&ctx_mutex);
         /*
          * Going through each opened socket and determine, whether socket is active.
-         * if socket is active => receive packet from it => alalyze this packet =>
-         * change db if it`s needed => if this packet must be sent to another user => form new packet,
-         * go through linked list with opened sockets(connected clients) and check,
+         * if true => receive packet from socket => alalyze this packet =>
+         * change db if it`s needed and form new packet to send.
+         * Go through linked list with opened sockets(connected clients) and check,
          * whether socket node has the same attribute(user_login) as specified in new packet.
          * if node was found -> send packet to socket, specified in it. Otherwise, just
          * change db depending on packet => as user is getting logged, all new data retrieves
@@ -121,8 +104,11 @@ static void *handle_server(void *param) {
                 if (buf_len < 0) continue;
 
                 // Modify db and forms packet, which must be send to specified in packet client(login).
-                char *send_packet = mx_database_communication(buffer);
-                /* Retrieves user`s login from packet. Packet will be send on this login,
+                char *send_packet = mx_database_communication(packet);
+                if (send_packet == NULL) // Connection was closed but update has not been made yet.
+                    continue;
+                /*
+                 * Retrieves user`s login from packet. Packet will be send on this login,
                  * if user with this login is connected to the server.
                  */
                 // char *client_login = get_value_buy_key(send_packet, "TO");
@@ -132,15 +118,16 @@ static void *handle_server(void *param) {
                 if (send_packet && (!strcmp(get_value_by_key(send_packet, "TYPE"), "login_s") || !strcmp(get_value_by_key(send_packet, "TYPE"), "reg_s")) && !strcmp(get_value_by_key(send_packet, "STATUS"), "success"))
                     p->is_logged = true;
 
+                char *send_back_packet_prefixed =  packet_len_prefix_adder(send_packet);
+                free(send_packet);
+
                 for (connected_client_list_t *s = ctx.head.next; s != NULL; s = s->next) {
                     if (s->is_logged) { // && !strcmp(client_login, s->login)
                         send(s->sock_fd, send_back_packet_prefixed, (int)strlen(send_back_packet_prefixed), 0);
                         printf("Sending of %d bytes\n", buf_len); // Debug.
                     }
                 }
-                // refreshing buffer.
-                bzero(buffer,256);
-                // free(send_packet);
+                free(send_back_packet_prefixed);
                 // free(client_login)
             }
         }
@@ -161,7 +148,6 @@ int main(int argc, char **argv) {
     /*
      * Making sockfd listening for incomming requests.
      * The second argument - number of max. number of requests.
-     * If more - incomming requests must que.
      */
     listen(listening_socket, 128);
 

@@ -70,4 +70,3 @@ unsigned long mx_hex_to_nbr(char *hex);
 double 		  mx_pow(double n, unsigned int pow);
 t_list 		  *mx_create_node(void *data);
 t_list 	  	  *mx_sort_list(t_list *lst, bool (*cmp)(void *, void *));
-

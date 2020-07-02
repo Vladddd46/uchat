@@ -1,40 +1,100 @@
-NAME	=	cjson.a
-CFLG	=	-fPIC -pedantic -Wall -Werror -Wstrict-prototypes -Wwrite-strings -Wshadow -Winit-self -Wcast-align -Wformat=2 -Wmissing-prototypes -Wstrict-overflow=2 -Wcast-qual -Wc++-compat -Wundef -Wswitch-default -Wconversion
-SRCD	=	src
-INCD	=	inc
-OBJD	=	obj
-INC		=	cJSON.h
-INCS	=	$(addprefix $(INCD)/, $(INC))
 
-SRC		=	cJSON.c
+# имя библиотеки
+NAME = cjson.a
 
+# папка с исходниками
+SRC_DIR = src
 
-SRCS	=	$(addprefix $(SRCD)/, $(SRC))
-OBJS	=	$(addprefix $(OBJD)/, $(SRC:%.c=%.o))
+# папка, куда будут складываться объектные файлы
+OBJ_DIR = obj
 
-all: install
+# папка с хедерами
+INC_DIR = inc
 
-install: $(NAME)
+# сделать список всех файлов в папке src, которые имеют расширение .с
+# формат каждой записи src/<file_name>.c
+SRC_FILES = $(wildcard $(SRC_DIR)/*.c)
 
-$(NAME): $(OBJS)
-	@ar rcs $@ $^
-	@printf "\r\33[2K$@ \033[32;1mcreated\033[0m\n"
+# добавить префикс obj/ к каждой записи из SRC_FILES, в который убрали
+# путь (до notdir src/<file_name>.c, после <file_name>.c) и изменить
+# расширение с .с на .о
+# результат выполнения src/<file_name>.o  --> obj/<file_name>.o
+# о всех манипуляциях с именами можно почитать тут
+# https://www.gnu.org/software/make/manual/html_node/File-Name-Functions.html
+OBJ_FILES = $(addprefix $(OBJ_DIR)/, $(notdir $(SRC_FILES:%.c=%.o)))
 
-$(OBJD)/%.o: $(SRCD)/%.c $(INCS)
-	@clang $(CFLG) -c $< -o $@ -I$(INCD)
-	@printf "\r\33[2K$(NAME) \033[33;1mcompile \033[0m$(<:$(SRCD)/%.c=%) "
+# сделать список всех файлов в папке inc, которые имеют расширение .h
+# формат каждой записи inc/<file_name>.h
+INC_FILES = $(wildcard $(INC_DIR)/*.h)
 
-$(OBJS): | $(OBJD)
+# компилятор для создания o-файлов
+CC = clang
 
-$(OBJD):
-	@mkdir -p $@
+# флаги для компилятора (добабить префикс -W ко всем записям после
+# запятой)
+CFLAGS = -std=c11 $(addprefix -W, all extra error pedantic) -g
+# специфические флаги для конкретной библиотеки
+SFLAGS = -fPIC -pedantic -Wstrict-prototypes -Wwrite-strings -Wshadow \
+		 -Winit-self -Wcast-align -Wformat=2 -Wmissing-prototypes \
+		 -Wstrict-overflow=2 -Wcast-qual -Wc++-compat -Wundef \
+		 -Wswitch-default -Wconversion
 
+# архиватор для формирования библиотеки из о-файлов
+AR = ar
+
+#флаги для архиватора
+AFLAGS = rcs
+
+MKDIR = mkdir -p
+RM = rm -rf
+
+# главная цель, при ее вызове вызывается цель libmx.a
+all: $(NAME)
+
+# цель зависит от времени создания o-файлов, т.е если находится какой-то
+# о-файл время последней модификации которого позже, чем время последней
+# модификации файла libmx.a, то будут запущены инструкции в этой цели
+# $@ - переменная, которая означает имя цели
+# $^ - переменная, которая означает все зависимости текущей цели
+# просто для красивой оригинальной записи ;)
+$(NAME): $(OBJ_FILES)
+	@$(AR) $(AFLAGS) $@ $^
+	@printf "\r\33[2K$@\t \033[32;1mcreated\033[0m\n"
+
+# перед компиляцией o-файлов создаем папку obj, про пайпы в мейкафайле
+# https://www.gnu.org/software/make/manual/html_node/Prerequisite-Types.html
+$(OBJ_FILES): | $(OBJ_DIR)
+
+# сравниваем время последней модификации по одному каждого о-файла
+# с с-файлом c точно таким же именем и h-файлами. Если дата последней
+# модицикации o-файла раньше, то будет перекомпилирован только этот
+# с-файл и библиотека будет пересобрана. в случае с h-файлом будут
+# перекомпилированы все c-файлы, т.к. это изменение касается каждого
+# файла
+# $< - переменная, которая означает имя первой зависимости цели
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.c $(INC_FILES)
+	@$(CC) $(CFLAGS) -c $< -o $@ -I $(INC_DIR)
+	@printf "\r\33[2K$(NAME)\033[33;1m\t compile \033[0m$(<:$(SRC_DIR)/%.c=%)\r"
+
+# создается папка obj
+$(OBJ_DIR):
+	@$(MKDIR) $@
+
+# удаляем папку с о-файлами
 clean:
-	@rm -rf $(OBJD)
-	@printf "$(OBJD)\t   \033[31;1mdeleted\033[0m\n"
+	@$(RM) $(OBJ_DIR)
+	@printf "$(OBJ_DIR) in $(NAME)\t \033[31;1mdeleted\033[0m\n"
 
-uninstall: clean
-	@rm -rf $(NAME)
-	@printf "$(NAME) \033[31;1muninstalled\033[0m\n"
+# полностью удаляем результат работы мейкфайла
+uninstall:
+	@$(RM) $(OBJ_DIR)
+	@$(RM) $(NAME)
+	@@printf "$(NAME)\t \033[31;1muninstalled\033[0m\n"
 
-reinstall: uninstall install
+# удаляем и заново собираем библиотеку
+reinstall: uninstall all
+
+# .PHONY - это явное указание имен целей мейкфайла, например, если
+# в папке будет файл clean и попытаться выполнить команду make clean,
+# то make попытается выполнить файл clean, а не цель clean
+.PHONY: all uninstall clean reinstall

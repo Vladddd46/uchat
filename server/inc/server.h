@@ -13,11 +13,8 @@
 #include <stdbool.h>
 #include "libmx.h"
 #include "cJSON.h"
-#include "socket_list.h"
 #include <sys/types.h>
 #include <sys/stat.h>
-
-#define CHILD 0
 
 // Linked list with opened sockets.
 typedef struct socket_list {
@@ -32,34 +29,12 @@ typedef struct {
 	connected_client_list_t head;
 } server_context_t;
 
-// Chats context
-typedef struct chats {
-    char* chat_name;
-    char* last_message;
-    struct chats *next;
-    // chats(): next(NULL) {}
-} chats_t;
-
-// Chats messages context
-typedef struct chat_message {
-	char* sender;
-    char* time;
-    char* message;
-    struct chat_message *next;
-} chat_message_t;
-
 // Server main functions.
 int  get_port(char **argv);
 int  listening_socket_init(int port);
 void argv_validator(int argc);
 void error(char *msg, int status);
 
-void mx_deamon_start(void);
-
-// Sending email function
-
-
-char *login_determiner(char *send_packet);
 // Database functions.
 void    database_init();
 sqlite3 *opening_db();

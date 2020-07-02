@@ -11,14 +11,14 @@ int mx_binary_search(char **arr, int size, char *s, int *count){
 
     while (start <= end) {
         mid = start + (end - start) / 2;
-        
+
         if (mx_strcmp(arr[mid], s) < 0){
             *count += 1;
             start = mid + 1;
         }
         else if (mx_strcmp(arr[mid], s) > 0){
             *count += 1;
-            end = mid - 1;  
+            end = mid - 1;
         }
         else if (mx_strcmp(arr[mid], s) == 0){
             *count += 1;

@@ -1,30 +1,28 @@
 # name of binary
 NAME		= uchat_server
 
-# add your new dir_name and file included it (without any extansions)
-db_functions = database_init mx_database_communication opening_db
-
-help_functions = error json_packet_former
-
-logic = handle_client login_determiner login socket_list
-
-server = deamon listening_socket_init server
-# add dir new <dir_name> in src/<dir_name>, if you`ve created newone
-dirs		= db_functions help_functions logic server
-
+# main dir for source files
 SRC_DIR		= src/
+# main dir for obj files
 OBJ_DIR		= obj/
+# main dir for header files
 INC_DIR		= inc/
+# list of subdirs in src/
+DIRS		= $(notdir $(wildcard $(SRC_DIR)*))
+# list of only source C-files without extansions
+FILES		= $(foreach dir, $(DIRS), $(basename $(wildcard \
+			  $(SRC_DIR)$(dir)/*.c)))
+# adding extansions .c to FILES
+SRC			= $(FILES:%=%.c)
+# adding extansions .o to FILES
+OBJ			= $(SRC:src/%.c=$(OBJ_DIR)%.o)
+# list of header files
+INC_H		= $(wildcard $(INC_DIR)*.h)
 
-FILES		= $(foreach dir, $(dirs), $($(dir):%=$(dir)/%))
-SRC			= $(FILES:%=$(SRC_DIR)%.c)
-OBJ			= $(FILES:%=$(OBJ_DIR)%.o)
-
-# library list
+# main dir with any libraries
 LIB_DIR		= ../libs
-# add lib folder in ../libs/
-# (the <lib_name>.a and the ../lib/<lib_fol der_name> must be the same)
-LIB_LIST	= libmx cjson
+# list of all names of libraries in LIB_DIR
+LIB_LIST	= $(notdir $(wildcard $(LIB_DIR)/*))
 # make path to library ../libs/<lib_name>/
 LIB_DIRS	= $(foreach libdirs, $(LIB_LIST), $(LIB_DIR)/$(libdirs)/)
 # make path to ../libs/<lib_name>/<lib_name>.a
@@ -49,19 +47,24 @@ MAKE_M		= make -sf Makefile -C
 MKDIR		= mkdir -p
 RM			= /bin/rm -rf
 
+# checking if libs are up to date
 all: $(LIB_LIST) $(NAME)
 
+# LIB_BIN for libs dependency
 $(NAME): $(OBJ_DIR) $(OBJ) $(LIB_BIN)
 	@$(COMPILE) $(OBJ) -lmx -o $(NAME)
 	@printf "\r\33[2K$@ \033[32;1mcreated\033[0m\n"
 
+# make for all libs
 $(LIB_LIST): $(LIB_DIRS)
 	@$(MAKE_M) $(LIB_DIR)/$@
 
+# make dirs for obj files
 $(OBJ_DIR):
-	@$(MKDIR) $@ $(foreach dir, $(dirs), $@/$(dir))
+	@$(MKDIR) $@ $(foreach dir, $(DIRS), $@/$(dir))
 
-$(OBJ_DIR)%.o: $(SRC_DIR)%.c
+# comling obj files
+$(OBJ_DIR)%.o: $(SRC_DIR)%.c $(INC_H)
 	@$(COMPILE) -o $@ -c $<
 	@printf "\r\33[2K$(NAME) \033[33;1mcompile \033[0m$(<:$(SRC_DIR)/%.c=%) "
 
@@ -71,7 +74,6 @@ clean:
 
 uninstall:
 	@$(RM) $(OBJ_DIR) $(NAME)
-	@printf "$(OBJ_DIR)\t   \033[31;1mdeleted\033[0m\n"
 	@printf "$(NAME) \033[31;1muninstalled\033[0m\n"
 
 reinstall: uninstall all
