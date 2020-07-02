@@ -7,6 +7,8 @@ int socket_list_free(connected_client_list_t *head) {
     while (head->next != NULL) {
         del = head->next;
         head->next = del->next;
+        if (del->login != NULL)
+            free(del->login);
         free(del);
     }
     return 0;

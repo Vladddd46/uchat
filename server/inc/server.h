@@ -18,6 +18,7 @@
 typedef struct socket_list {
 	int sock_fd;
 	bool is_logged;
+	char *login;
 	struct socket_list *next;
 } connected_client_list_t;
 
