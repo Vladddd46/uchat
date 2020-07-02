@@ -9,6 +9,7 @@
 #define LOGIN_IS_EMPTY            6
 #define PASSWORD_1_IS_EMPTY       7
 #define PASSWORD_2_IS_EMPTY       8
+#define PASSWORD_TOO_SHORT        9
 
 // Validates syntax of login input.
 static int login_validator(char *input_login) {
@@ -45,37 +46,36 @@ static int pass_validator(char *password_1, char *password_2) {
         return PASSWORD_1_IS_EMPTY;
     if ((int)strlen(password_2) == 0)
         return PASSWORD_2_IS_EMPTY;
+    if ((int)strlen(password_1) < 8)
+        return PASSWORD_TOO_SHORT;
     return OKEY;
 }
 
-// Makes validation of all inputed data.
+/*
+ * Makes validation of all inputed data.
+ * Returns status macro.
+ */
 static int validate(char *input_login, char *input_nick, char *input_password, char *input_password_confirm) {
     int validate_login_status = login_validator(input_login);
     int validate_nick_status  = nick_validator(input_nick);
     int validate_pass_status  = pass_validator(input_password, input_password_confirm);
 
-    if (validate_login_status == LOGIN_FORBIDDEN_SYMBOLS)
-        printf("Forbidden symbols in login\n");
-    if (validate_nick_status == NICK_FORBIDDEN_SYMBOLS)
-        printf("Forbidden symbols in nickname\n");
-    if (validate_pass_status == PASS_FORBIDDEN_SYMBOLS)
-        printf("Forbidden symbols in password\n");
-    if (validate_pass_status == PASS_DIFFERENT)
-        printf("Passwords are different\n");
-    if (validate_nick_status == NICKNAME_IS_EMPTY)
-        printf("Nickname box is empty");
-    if (validate_login_status == LOGIN_IS_EMPTY)
-        printf("Login box is empty\n");
-    if (validate_pass_status == PASSWORD_1_IS_EMPTY)
-        printf("Password1 box is empty\n");
-    if (validate_pass_status == PASSWORD_2_IS_EMPTY)
-        printf("Password2 box is empty\n");
-
-    if (validate_login_status == OKEY && validate_nick_status == OKEY && validate_pass_status == OKEY)
-        return 0;
-    return 1;
+    if (validate_login_status != OKEY)
+        return validate_login_status;
+    else if (validate_nick_status != OKEY)
+        return validate_nick_status;
+    else if (validate_pass_status != OKEY)
+        return validate_pass_status;
+    return OKEY;
 }
 
+/*
+ * Create json packet with values: 
+ * TYPE, 
+ * USER LOGIN, 
+ * USER PASS, 
+ * USER NICK.
+ */
 static char *make_packet(char *input_login, char *input_nick, char *input_password) {
     char *login_pair = mx_strjoin("LOGIN:", input_login);
     char *pass_pair  = mx_strjoin("PASSWORD:", input_password);
@@ -95,15 +95,21 @@ void do_registration(GtkWidget *Registration, client_context_t *client_context) 
     char *input_password_confirm = (char *)gtk_entry_get_text(GTK_ENTRY(SecondPassword));
 
     // Input values validation
-    if (validate(input_login, input_nick, input_password, input_password_confirm)) {
-        write(2, "Error while validate", 22);
-        // тут должен быть функционал, который   выводит пользователю сообщение об неправильном инпуте.
+    int status = validate(input_login, input_nick, input_password, input_password_confirm);
+    if (status != OKEY) {
+        write(2, "Error while validate\n", 22);
+        
+        /* Денис:
+         * Тут должен быть функционал, который выводит пользователю в gui уведомление об
+         * неправильном инпуте. Тип ошибки можно определить с помощью макросов обьявленных
+         * в начале файла.
+         */
     }
     else {
-        char *packet = make_packet(input_login, input_nick, input_password);
-        send(client_context->sockfd, packet, (int)strlen(packet), 0); // sending registration packet to the server.
+        char *packet             = make_packet(input_login, input_nick, input_password);
+        char *packet_with_prefix = packet_len_prefix_adder(packet);
+        send(client_context->sockfd, packet_with_prefix, (int)strlen(packet_with_prefix), 0); // sending registration packet to the server.
         free(packet);
+        free(packet_with_prefix);
     }
 }
-
-

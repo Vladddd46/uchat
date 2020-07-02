@@ -5,7 +5,7 @@ bool flage = FALSE;
 gboolean my_keypress_function (GtkWidget *widget, GdkEventKey *event, gpointer data) {
 
     if (event->keyval == 65293 && flage == TRUE){
-            create_message(newmessedgentry,NULL);
+            create_message(newmessedgentry, NULL);
         }
     if (event->keyval == 65507){
         flage = TRUE;
@@ -85,3 +85,4 @@ void do_login(GtkWidget *entryspawn, int sockfd){
 
      gtk_widget_show_all(window);
 }
+

@@ -8,10 +8,8 @@
  * b. connected_client_list_t list - linked list of connected client sockets.
  */
 static server_context_t ctx;
-
 // Initialize mutex with default settings.
 static pthread_mutex_t ctx_mutex = PTHREAD_MUTEX_INITIALIZER;
-
 // if quit == true, server exits.
 static bool quit = false;
 
@@ -68,8 +66,6 @@ static struct timeval wait_time() {
 
 static void *handle_server(void *param) {
     int status;
-    char buffer[256];
-    bzero(buffer,256);
     int buf_len;
     fd_set read_descriptors;
     // Setting waiting time for select.
@@ -112,8 +108,16 @@ static void *handle_server(void *param) {
          */
         for (connected_client_list_t *p = ctx.head.next; p != NULL; p = p->next) {
             if (FD_ISSET(p->sock_fd, &read_descriptors)) {
-                buf_len = recv(p->sock_fd, buffer, 255, 0);
-                printf("There was received %d bytes from socket %d\n", buf_len, p->sock_fd); // Debug.
+                char len[8];
+                recv(p->sock_fd, len, 8, 0);
+                int packet_len = atoi(len);
+
+                char *packet = mx_strnew(packet_len);
+                int index = 0;
+                while(index < packet_len) {
+                    buf_len = recv(p->sock_fd, &packet[index], 1, 0);
+                    index++;
+                }
                 if (buf_len < 0) continue;
 
                 // Modify db and forms packet, which must be send to specified in packet client(login).
@@ -123,14 +127,15 @@ static void *handle_server(void *param) {
                  */
                 // char *client_login = get_value_buy_key(send_packet, "TO");
 
+
                 /* Makes user logged in. */
-                // if (send_packet && !strcmp(get_value_buy_key(send_packet, "TYPE"), "login_s") && !strcmp(get_value_buy_key(send_packet, "STATUS"), "true"))
+                if (send_packet && (!strcmp(get_value_by_key(send_packet, "TYPE"), "login_s") || !strcmp(get_value_by_key(send_packet, "TYPE"), "reg_s")) && !strcmp(get_value_by_key(send_packet, "STATUS"), "success"))
                     p->is_logged = true;
 
                 for (connected_client_list_t *s = ctx.head.next; s != NULL; s = s->next) {
                     if (s->is_logged) { // && !strcmp(client_login, s->login)
-                        send(s->sock_fd, send_packet, buf_len, 0);
-                        printf("Sending of %d bytes\n",buf_len); // Debug.
+                        send(s->sock_fd, send_back_packet_prefixed, (int)strlen(send_back_packet_prefixed), 0);
+                        printf("Sending of %d bytes\n", buf_len); // Debug.
                     }
                 }
                 // refreshing buffer.

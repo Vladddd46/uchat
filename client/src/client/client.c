@@ -1,10 +1,10 @@
 #include "client.h"
+
 client_context_t *client_context;
 
 bool  flag = FALSE;
 static int messagenumber = 0;
 static int n = 0;
-
 
 char *get_text_of_textview(GtkWidget *text_view) {
     GtkTextIter start, end;
@@ -123,7 +123,6 @@ void create_message(GtkWidget *newmessedgentry, gpointer data){
     gtk_widget_show_all(window);
 }
 
-
 void create_row(GtkWidget *labell, gpointer data){
     GtkWidget *row;
     row = gtk_list_box_row_new();
@@ -153,8 +152,6 @@ void create_row(GtkWidget *labell, gpointer data){
 
     gtk_widget_show_all(window);
 }
-
-
 
 void make_registration(GtkWidget *Registration, client_context_t *client_context){
     GtkWidget *back;
@@ -212,7 +209,8 @@ void make_registration(GtkWidget *Registration, client_context_t *client_context
    //gtk_fixed_put(GTK_FIXED (fixed), back, 550,540);
 
     gtk_widget_show_all(window);
-    }
+}
+
 // Checks, wether user specified input correctly.
 static void argv_validator(int argc, char **argv) {
     char *msg;
@@ -230,8 +228,6 @@ static void argv_validator(int argc, char **argv) {
         exit(1);
     }
 }
-
-
 
 // Main window init.
 void gui(int argc, char **argv, client_context_t *client_context) {
@@ -287,7 +283,50 @@ void client_context_init(int sockfd) {
         write(2, msg, (int)strlen(msg));
         exit(1);
     }
-    client_context->sockfd     = sockfd;
+
+    client_context->sockfd = sockfd;
+}
+
+// Read first 8 bytes from packet. (They represent the length of the packet.)
+static int packet_length_determine(void) {
+    char buf[8];
+    bzero(buf, 8);
+    recv(client_context->sockfd, buf, 8, 0);
+    int packet_len = atoi(buf);
+
+    return packet_len;
+}
+
+// Receiving packet from the socket.
+static char *packet_receive(void) {
+    int  packet_len = packet_length_determine();
+    char *packet = mx_strnew(packet_len);
+    int  index = 0;
+
+    while(index < packet_len) {
+        recv(client_context->sockfd, &packet[index], 1, 0);
+        index++;
+    }
+    return packet;
+}
+
+// Set time select must wait for incomming packets.
+static struct timeval set_wait_time(void) {
+    struct timeval tv;
+    tv.tv_sec  = 1; // seconds.
+    tv.tv_usec = 0; // mili-seconds.
+    return tv;
+}
+
+static void received_packet_analyzer(char *packet_type, char *packet) {
+    if (!strcmp(packet_type, "reg_s"))
+        registration_system(client_context->sockfd, packet);
+    else if (!strcmp(packet_type, "login_s"))
+        printf("login packet received\n");
+    else if (!strcmp(packet_type, "find_user_s"))
+        printf("%s\n", "find_user packet receive");
+    else if (!strcmp(packet_type, "msg_s"))
+        printf("%s\n", "msg packet received");
 }
 
 /*
@@ -296,42 +335,23 @@ void client_context_init(int sockfd) {
  * Depending on packet gui changes.
  */
 void *server_communication(void *param) {
+    fd_set read_descriptors;
+    struct timeval tv = set_wait_time();
+    int status;
+    char *packet;
+    char *packet_type;
+
     while(1) {
-        fd_set read_descriptors;
         FD_ZERO(&read_descriptors);
         FD_SET(client_context->sockfd, &read_descriptors);
-
-        // Set time select must wait for incomming packets.
-        struct timeval tv;
-        tv.tv_sec  = 1; // seconds.
-        tv.tv_usec = 0; // mili-seconds.
-
-        char buf[1000];
-        bzero(buf, 1000);
-        int status = select(FD_SETSIZE, &read_descriptors, NULL, NULL, &tv);
+        status = select(FD_SETSIZE, &read_descriptors, NULL, NULL, &tv);
         if (status <= 0) continue;
-
-        read(client_context->sockfd, buf, 1000);
-        char *packet_type = get_value_by_key(buf, "TYPE");
-
-        if (!strcmp(packet_type, "reg_s")) {
-            // registration system
-            printf("reg_s packet received\n");
-            do_login(entryspawn, client_context->sockfd);
-        }
-        else if (!strcmp(packet_type, "login_s")) {
-            // login system
-            printf("login packet received\n");
-        }
-        else if (!strcmp(packet_type, "find_user_s")) {
-            // find_user system
-            printf("%s\n", "find_user packet receive");
-        }
-        else if (!strcmp(packet_type, "msg_s")) {
-            printf("%s\n", "msg packet received");
-        }
-
-
+        // Receive packet from the server.
+        packet      = packet_receive();
+        packet_type = get_value_by_key(packet, "TYPE");
+        received_packet_analyzer(packet_type, packet);
+        free(packet_type);
+        free(packet);
     }
     return NULL;
 }
@@ -342,9 +362,6 @@ int main(int argc, char **argv) {
     int sockfd                     = Socket();
     struct sockaddr_in client_addr = client_address_describer(port);
 
-    int pipefd[2];
-    pipe(pipefd);
-
     // Do the connect to the server.
     int res = connect(sockfd, (struct sockaddr *)&client_addr, sizeof(client_addr));
     error("Error while connection", res);
@@ -352,6 +369,7 @@ int main(int argc, char **argv) {
     client_context_init(sockfd);
     pthread_t client_thread;
     int err = pthread_create(&client_thread, NULL, server_communication, NULL);
+    error("Error while creating new thread.", err);
 
     // Gui initialization
     gui(argc, argv, client_context);
