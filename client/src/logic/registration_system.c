@@ -9,6 +9,7 @@ void registration_system(int socket, char *packet) {
         do_login(entryspawn, client_context);
     }
     else {
+        printf("%s\n", status);
        /* Денис:
         * Тут регестрация прошла неуспешно.
         * Пользователю должно вывестись уведомление о неуспешной регестрации

@@ -27,6 +27,21 @@ typedef struct {
 	connected_client_list_t head;
 } server_context_t;
 
+// Chats context
+typedef struct chats {
+    char* chat_name;
+    char* last_message;
+    struct chats *next;
+} chats_t;
+
+// Chats messages context
+typedef struct chat_message {
+	char *sender;
+    char *time;
+    char *message;
+    struct chat_message *next; 
+} chat_message_t;
+
 // Server main functions.
 int  get_port(char **argv);
 int  listening_socket_init(int port);
