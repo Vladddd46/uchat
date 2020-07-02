@@ -36,7 +36,7 @@ CC			= clang
 # general flags
 GFLAGS		= -std=c11 -pipe -Wall -Wextra -Werror -Wpedantic\
 	-Wno-unused-command-line-argument -Wno-unused-variable \
-	-Wno-unused-function -Wno-unused-parameter
+	-Wno-unused-function -Wno-unused-parameter -g
 # specific flags
 CFLAGS		= -lsqlite3 -lpthread
 # folder with header files

@@ -34,6 +34,7 @@ int  get_port(char **argv);
 int  listening_socket_init(int port);
 void argv_validator(int argc);
 void error(char *msg, int status);
+void mx_deamon_start(void);
 
 // Database functions.
 void    database_init();
@@ -56,3 +57,4 @@ char *registration_system(char *packet);
 
 // help funcs
 char *packet_len_prefix_adder(char *packet);
+void mx_send_email_to_user(char *addr, char *subj);

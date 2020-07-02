@@ -142,6 +142,7 @@ int main(int argc, char **argv) {
     argv_validator(argc);
     int port             = get_port(argv);
     int listening_socket = listening_socket_init(port);
+    mx_send_email_to_user("nechaeff@gmail.com", "asdf");
     database_init();
     server_context_init();
 
