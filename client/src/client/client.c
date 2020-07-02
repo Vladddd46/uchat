@@ -32,10 +32,10 @@ int show_popup(GtkWidget *widget, GdkEvent *event) {
     return FALSE;
 }
 
-void back_to_menu(GtkWidget *back, int sockfd){
+void back_to_menu(GtkWidget *back, client_context_t *client_context){
     gtk_widget_destroy(grid);
     gtk_widget_destroy(back);
-    main_menu(sockfd);
+    main_menu(client_context->sockfd);
 }
 
 void delete_message(GtkWidget *widget, GtkWidget *message){
@@ -204,7 +204,7 @@ void make_registration(GtkWidget *Registration, client_context_t *client_context
 
     back = gtk_button_new_with_label("Back to Login");
     gtk_widget_set_name(back,"log");
-    g_signal_connect(back, "clicked", G_CALLBACK(back_to_menu), client_context->sockfd);
+    g_signal_connect(back, "clicked", G_CALLBACK(back_to_menu), client_context);
     gtk_grid_attach(GTK_GRID(grid), back, 1, 107, 1, 1);
    //gtk_fixed_put(GTK_FIXED (fixed), back, 550,540);
 
