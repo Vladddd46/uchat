@@ -1,4 +1,4 @@
-#include "server.h"
+#include "utils.h"
 
 /*
  * Adds 8 bytes to the packet.

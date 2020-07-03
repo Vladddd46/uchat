@@ -19,3 +19,6 @@ char *get_value_by_key(char *json_str, char *key);
 
 void error(char *msg, int status);
 
+// Packet formation functions.
+char *packet_len_prefix_adder(char *packet);
+

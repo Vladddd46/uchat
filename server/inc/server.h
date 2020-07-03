@@ -65,8 +65,6 @@ char *login_system(char *packet);
 char *registration_system(char *packet);
 chats_t *mx_get_users_chats(char *user);
 
-// help funcs
-char *packet_len_prefix_adder(char *packet);
 
 
 
