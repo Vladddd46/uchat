@@ -13,6 +13,7 @@
 #include <stdbool.h>
 #include "libmx.h"
 #include "cJSON.h"
+#include "utils.h"
 
 // Linked list with opened sockets.
 typedef struct socket_list {
@@ -60,8 +61,8 @@ int socket_list_remove(connected_client_list_t *head, int sock_fd);
 connected_client_list_t *socket_list_find(connected_client_list_t *head, int sock_fd);
 
 // Json
-char *get_value_by_key(char *json_str, char *key);
-char *json_packet_former(int num, ...);
+// char *get_value_by_key(char *json_str, char *key);
+// char *json_packet_former(int num, ...);
 
 // Logic
 char *mx_database_communication(char *packet);

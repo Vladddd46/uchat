@@ -1,4 +1,4 @@
-#include "server.h"
+#include "utils.h"
 
 /*
  * Creates json string by given values.
