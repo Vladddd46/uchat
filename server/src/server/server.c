@@ -56,14 +56,6 @@ static bool update_connections(fd_set *descriptors) {
     return status;
 }
 
-// Determines how much time select will wait for incomming connections.
-static struct timeval wait_time() {
-    struct timeval tv;
-    tv.tv_sec  = 1; // seconds.
-    tv.tv_usec = 0; // mili-seconds.
-    return tv;
-}
-
 static void *handle_server(void *param) {
     int status;
     int buf_len;

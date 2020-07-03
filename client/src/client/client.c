@@ -317,14 +317,6 @@ static char *packet_receive(void) {
     return packet;
 }
 
-// Set time select must wait for incomming packets.
-static struct timeval set_wait_time(void) {
-    struct timeval tv;
-    tv.tv_sec  = 1; // seconds.
-    tv.tv_usec = 0; // mili-seconds.
-    return tv;
-}
-
 static void received_packet_analyzer(char *packet_type, char *packet) {
     if (!strcmp(packet_type, "reg_s"))
         registration_system(client_context->sockfd, packet);
@@ -343,7 +335,7 @@ static void received_packet_analyzer(char *packet_type, char *packet) {
  */
 void *server_communication(void *param) {
     fd_set read_descriptors;
-    struct timeval tv = set_wait_time();
+    struct timeval tv = wait_time();
     int status;
     char *packet;
     char *packet_type;

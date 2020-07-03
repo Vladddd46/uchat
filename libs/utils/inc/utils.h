@@ -22,3 +22,5 @@ void error(char *msg, int status);
 // Packet formation functions.
 char *packet_len_prefix_adder(char *packet);
 
+// Sets time select must wait.
+struct timeval wait_time();

@@ -10,6 +10,7 @@ SRC		=	get_value_by_key.c\
 			json_packet_former.c\
 			error.c\
 			packet_len_prefix_adder.c\
+			wait_time.c\
 			
 SRCS	=	$(addprefix $(SRCD)/, $(SRC))
 OBJS	=	$(addprefix $(OBJD)/, $(SRC:%.c=%.o))
