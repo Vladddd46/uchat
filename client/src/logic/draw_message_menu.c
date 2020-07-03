@@ -1,17 +1,21 @@
 #include "client.h"
 
-bool flage = FALSE;
+static bool release_button = FALSE;
 
 gboolean my_keypress_function (GtkWidget *widget, GdkEventKey *event, gpointer data) {
-
-    if (event->keyval == 65293 && flage == TRUE){
-            create_message(newmessedgentry, NULL);
-        }
-    if (event->keyval == 65507){
-        flage = TRUE; 
+    if (event->keyval == 65505 || event->keyval == 65507) {
+        release_button = TRUE;
     }
-    else{
-        flage = FALSE;
+    if (event->keyval == 65293 && release_button == FALSE){
+            create_message(newmessedgentry, NULL);
+            gtk_text_buffer_set_text (GTK_TEXT_BUFFER(textbuffer),"",-1);
+        }
+    return FALSE;
+}
+
+gboolean button_release (GtkWidget *widget, GdkEventKey *event, gpointer data) {
+    if (event->keyval == 65505) {
+        release_button = FALSE;
     }
     return FALSE;
 }
@@ -70,12 +74,12 @@ void draw_message_menu(GtkWidget *entryspawn, client_context_t *client_context){
     gtk_widget_set_name(downbox,"downbox");
     gtk_container_add(GTK_CONTAINER(scrollnewmess), downbox);
 
-
+    textbuffer = gtk_text_buffer_new(NULL);
     newmessedgentry = gtk_text_view_new_with_buffer(textbuffer);
     gtk_widget_set_name(newmessedgentry,"newmessedgentry");
     gtk_box_pack_start(GTK_BOX(downbox),newmessedgentry, TRUE, TRUE, 0);
+    g_signal_connect (G_OBJECT (newmessedgentry), "key_release_event", G_CALLBACK (button_release), NULL);
     g_signal_connect (G_OBJECT (newmessedgentry), "key_press_event", G_CALLBACK (my_keypress_function), NULL);
-
     scrollmess = gtk_scrolled_window_new(0,0);
     gtk_fixed_put(GTK_FIXED (fixed), scrollmess, 300,50);
     gtk_widget_set_name(scrollmess,"scrollmess");
