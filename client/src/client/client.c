@@ -326,7 +326,6 @@ static struct timeval set_wait_time(void) {
 }
 
 static void received_packet_analyzer(char *packet_type, char *packet) {
-    printf("===>%s\n", packet);
     if (!strcmp(packet_type, "reg_s"))
         registration_system(client_context->sockfd, packet);
     else if (!strcmp(packet_type, "login_s"))
@@ -356,6 +355,8 @@ void *server_communication(void *param) {
         if (status <= 0) continue;
         // Receive packet from the server.
         packet      = packet_receive();
+        if (packet == NULL)
+            exit(1);
         packet_type = get_value_by_key(packet, "TYPE");
         received_packet_analyzer(packet_type, packet);
         free(packet_type);

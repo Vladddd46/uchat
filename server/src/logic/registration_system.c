@@ -33,7 +33,8 @@ char *registration_system(char *packet) {
     char *password = get_value_by_key(packet, "PASSWORD");
     char *nickname = get_value_by_key(packet, "NICKNAME");
     char *return_status   = mx_add_user(login, password, nickname);
-    char *sendback_packet = json_packet_former(2, "TYPE:reg_s", return_status); // Debug.
+    char *to = mx_strjoin("TO:", login);
+    char *sendback_packet = json_packet_former(3, "TYPE:reg_s", return_status, to); // Debug.
     
     printf("Packet to client %s", sendback_packet);
     return sendback_packet;

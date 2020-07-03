@@ -125,7 +125,7 @@ static void *handle_server(void *param) {
                 free(packet);
 
                 for (connected_client_list_t *s = ctx.head.next; s != NULL; s = s->next) {
-                    if (s->is_logged) { // && !strcmp(client_login, s->login)
+                    if (s->is_logged && !strcmp(client_login, s->login)) { 
                         send(s->sock_fd, send_back_packet_prefixed, (int)strlen(send_back_packet_prefixed), 0);
                         printf("Sending of %d bytes\n", buf_len); // Debug.
                     }
