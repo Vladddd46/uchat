@@ -32,7 +32,7 @@ void main_menu() {
 
     entryspawn = gtk_button_new_with_label("Login");
     gtk_widget_set_name(entryspawn,"log");
-    g_signal_connect(entryspawn, "clicked", G_CALLBACK(do_login), client_context);
+    g_signal_connect(entryspawn, "clicked", G_CALLBACK(draw_message_menu), client_context);
     gtk_grid_attach(GTK_GRID(grid), entryspawn, 1, 103, 1, 1);
 
     labell3 = gtk_label_new("");

@@ -16,7 +16,7 @@ gboolean my_keypress_function (GtkWidget *widget, GdkEventKey *event, gpointer d
     return FALSE;
 }
 
-void do_login(GtkWidget *entryspawn, client_context_t *client_context){
+void draw_message_menu(GtkWidget *entryspawn, client_context_t *client_context){
     gtk_widget_destroy(fixed);
     fixed = gtk_fixed_new();
     gtk_container_add(GTK_CONTAINER(window), fixed); 

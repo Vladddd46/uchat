@@ -21,7 +21,7 @@ typedef struct client_context_s {
 void error(char *msg, int status);
 void back_to_menu(GtkWidget *back, client_context_t *client_context);
 void main_menu();
-void do_login(GtkWidget *entryspawn, client_context_t *client_context);
+void draw_message_menu(GtkWidget *entryspawn, client_context_t *client_context);
 void create_row(GtkWidget *labell, gpointer data);
 void create_message(GtkWidget *newmessedgentry, gpointer data);
 void end_message (GtkWidget *widget, GtkWidget *message);
