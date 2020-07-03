@@ -48,7 +48,6 @@ typedef struct chat_message {
 int  get_port(char **argv);
 int  listening_socket_init(int port);
 void argv_validator(int argc);
-void error(char *msg, int status);
 
 // Database functions.
 void    database_init();
@@ -59,10 +58,6 @@ int socket_list_add(connected_client_list_t    *head, int new_sock_fd);
 int socket_list_free(connected_client_list_t   *head);
 int socket_list_remove(connected_client_list_t *head, int sock_fd);
 connected_client_list_t *socket_list_find(connected_client_list_t *head, int sock_fd);
-
-// Json
-// char *get_value_by_key(char *json_str, char *key);
-// char *json_packet_former(int num, ...);
 
 // Logic
 char *mx_database_communication(char *packet);

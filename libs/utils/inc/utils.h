@@ -17,3 +17,5 @@
 char *json_packet_former(int num, ...);
 char *get_value_by_key(char *json_str, char *key);
 
+void error(char *msg, int status);
+

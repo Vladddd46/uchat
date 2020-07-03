@@ -8,6 +8,7 @@ INCS	=	$(addprefix $(INCD)/, $(INC))
 
 SRC		=	get_value_by_key.c\
 			json_packet_former.c\
+			error.c\
 
 SRCS	=	$(addprefix $(SRCD)/, $(SRC))
 OBJS	=	$(addprefix $(OBJD)/, $(SRC:%.c=%.o))
