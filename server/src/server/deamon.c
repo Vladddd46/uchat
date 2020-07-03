@@ -25,8 +25,6 @@ void mx_deamon_start(void) {
     else {
         deamon_successfull_output(getpid()); //useful output about deamon
         umask(0);   //make files available to read/write
-        //SOLVE or DEL next before finishing, cause with it deamon don't start
-        // chdir("/");  //avoid problem with dir tree in oracle mac os
         close(STDIN_FILENO);    //close input from terminal
         close(STDOUT_FILENO);   //close output to terminal
         close(STDERR_FILENO);   //close error stream

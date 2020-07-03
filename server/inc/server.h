@@ -57,4 +57,4 @@ char *registration_system(char *packet);
 
 // help funcs
 char *packet_len_prefix_adder(char *packet);
-void mx_send_email_to_user(char *addr, char *subj);
+void mx_send_email_to_user(char *addr, char *pass, char cases);
