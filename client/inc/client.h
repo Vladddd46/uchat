@@ -54,6 +54,7 @@ GtkWidget *labell2;
 GtkWidget *labell3;
 GtkWidget *scroll;
 GtkWidget *listbox;
+GtkWidget *scrollnewmess;
 GtkWidget *listboxmess;
 GtkWidget *row;
 GtkWidget *gridmenu;
@@ -67,7 +68,8 @@ GtkWidget *downbox;
 GtkWidget *leftmenu;
 GtkWidget *searchmenu;
 GtkWidget *newchatbutton;
-
+GtkWidget *verticalbox;
+GtkWidget *horizontalbox;
 GtkWidget *newmessedgentry;
 GtkWidget *scrollmess;
 GtkWidget *fileMenu;

@@ -86,25 +86,32 @@ void create_message(GtkWidget *newmessedgentry, gpointer data){
     gtk_list_box_insert (GTK_LIST_BOX(listboxmess),row,n);
     messagenumber++;
 
-    gridmenu = gtk_grid_new();
-    gtk_container_add(GTK_CONTAINER(ebox), gridmenu);
+    horizontalbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL,0);
+    //gtk_widget_set_name(gridmenu,"messagegrid");
+    gtk_container_add(GTK_CONTAINER(ebox), horizontalbox);
     GdkPixbuf *iconn = gdk_pixbuf_new_from_file("./media/img/pokemon-2.png",NULL);
     iconn = gdk_pixbuf_scale_simple(iconn, 32,32, GDK_INTERP_BILINEAR);
     icon = gtk_image_new_from_pixbuf(iconn);
-    gtk_grid_attach(GTK_GRID(gridmenu), icon, 0, 0, 1, 2);
+    gtk_box_pack_start(GTK_BOX(horizontalbox),icon, FALSE, FALSE, 0);
+
+    verticalbox = gtk_box_new(GTK_ORIENTATION_VERTICAL,0);
+    gtk_box_pack_start(GTK_BOX(horizontalbox),verticalbox, FALSE, FALSE, 0);
 
     labellmenu = gtk_label_new("Vlad");
     gtk_widget_set_name(labellmenu,"labellmenu");
-    gtk_grid_attach(GTK_GRID(gridmenu), labellmenu, 1, 0, 1, 1);
+    gtk_box_pack_start(GTK_BOX(verticalbox),labellmenu, FALSE, FALSE, 0);
 
     char *messageBuff = get_text_of_textview(newmessedgentry);
     labellmenu2 = gtk_label_new(messageBuff);
     gtk_widget_set_name(labellmenu2,"labellmenu2");
-    gtk_grid_attach(GTK_GRID(gridmenu), labellmenu2, 1, 1, 1, 1);
+    gtk_box_pack_start(GTK_BOX(verticalbox),labellmenu2, FALSE, FALSE, 0);
 
     labellmenu3 = gtk_label_new("Yesterday");
-    gtk_grid_attach(GTK_GRID(gridmenu), labellmenu3, 2, 0, 1, 1);
-    gtk_widget_set_name(labellmenu3,"labellmenu3");
+    //gtk_grid_attach(GTK_GRID(gridmenu), labellmenu3, 2, 1, 1, 1);
+    gtk_box_pack_start(GTK_BOX(horizontalbox),labellmenu3, FALSE, FALSE, 0);
+
+
+
  //menu with edit and delete button
     fileMenu = gtk_menu_new();
     g_signal_connect_swapped(G_OBJECT(ebox), "button-press-event", G_CALLBACK(show_popup), fileMenu);
