@@ -8,7 +8,7 @@ gboolean my_keypress_function (GtkWidget *widget, GdkEventKey *event, gpointer d
             create_message(newmessedgentry, NULL);
         }
     if (event->keyval == 65507){
-        flage = TRUE;
+        flage = TRUE; 
     }
     else{
         flage = FALSE;

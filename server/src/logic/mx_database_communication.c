@@ -15,7 +15,8 @@ char *mx_database_communication(char *packet) {
 
     if (!strcmp(packet_type, "login_c")) {
         printf("\n\nLogin packet received\n\n");
-        send_back_packet = login_system(packet);
+        printf("%s\n",packet );
+        // send_back_packet = login_system(packet);
     }
     else if (!strcmp(packet_type, "reg_c"))
         send_back_packet = registration_system(packet);
