@@ -68,4 +68,5 @@ char *json_packet_former(int num, ...);
 char *login_system(char *packet);
 char *registration_system(char *packet);
 chats_t* mx_get_users_chats(char* user);
+char* mx_get_message(char* packet);
 

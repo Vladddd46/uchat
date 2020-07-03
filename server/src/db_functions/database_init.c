@@ -94,6 +94,39 @@ void database_init() {
 
         // printf("%s", sqlite3_column_text(res2, 0));
 
+    /* добавляем сообщения в чат */
+    sql = "INSERT INTO MESSAGES (CHATID, SENDER, TIME, MESSAGE) VALUES(1, 'Yura', '12:42', 'Hello');";
+    exit = sqlite3_exec(db, sql, NULL, 0, &message_error);
+    sql = "INSERT INTO MESSAGES (CHATID, SENDER, TIME, MESSAGE) VALUES(1, 'Vlad', '12:42','Hi');";
+    exit = sqlite3_exec(db, sql, NULL, 0, &message_error);
+    sql = "INSERT INTO MESSAGES (CHATID, SENDER, TIME, MESSAGE) VALUES(1, 'Yura', '12:42','How are you?');";
+    exit = sqlite3_exec(db, sql, NULL, 0, &message_error);
+    sql = "INSERT INTO MESSAGES (CHATID, SENDER, TIME, MESSAGE) VALUES(1, 'Vlad', '12:42','Im fine');";
+    exit = sqlite3_exec(db, sql, NULL, 0, &message_error);
+    sql = "INSERT INTO MESSAGES (CHATID, SENDER, TIME, MESSAGE) VALUES(1, 'Vlad', '12:43','And you?');";
+    exit = sqlite3_exec(db, sql, NULL, 0, &message_error);
+    sql = "INSERT INTO MESSAGES (CHATID, SENDER, TIME, MESSAGE) VALUES(1, 'Yura', '12:43','Im okay');";
+    exit = sqlite3_exec(db, sql, NULL, 0, &message_error);
+    sql = "INSERT INTO MESSAGES (CHATID, SENDER, TIME, MESSAGE) VALUES(1, 'Yura', '12:43','How do you fell to play golf?');";
+    exit = sqlite3_exec(db, sql, NULL, 0, &message_error);
+    sql = "INSERT INTO MESSAGES (CHATID, SENDER, TIME, MESSAGE) VALUES(1, 'Vlad', '12:44','Its going to be rain today');";
+    exit = sqlite3_exec(db, sql, NULL, 0, &message_error);
+    sql = "INSERT INTO MESSAGES (CHATID, SENDER, TIME, MESSAGE) VALUES(1, 'Vlad', '12:44','I think we can play on Saturday');";
+    exit = sqlite3_exec(db, sql, NULL, 0, &message_error);
+    sql = "INSERT INTO MESSAGES (CHATID, SENDER, TIME, MESSAGE) VALUES(1, 'Yura', '12:44','Nice');";
+    exit = sqlite3_exec(db, sql, NULL, 0, &message_error);
+    sql = "INSERT INTO MESSAGES (CHATID, SENDER, TIME, MESSAGE) VALUES(1, 'Yura', '12:45','Where will we meet?');";
+    exit = sqlite3_exec(db, sql, NULL, 0, &message_error);
+    sql = "INSERT INTO MESSAGES (CHATID, SENDER, TIME, MESSAGE) VALUES(1, 'Vlad', '12:45','I think near Unit City!');";
+    exit = sqlite3_exec(db, sql, NULL, 0, &message_error);
+    sql = "INSERT INTO MESSAGES (CHATID, SENDER, TIME, MESSAGE) VALUES(1, 'Yura', '12:45','Well, i wiil see you there');";
+    exit = sqlite3_exec(db, sql, NULL, 0, &message_error);
+    sql = "INSERT INTO MESSAGES (CHATID, SENDER, TIME, MESSAGE) VALUES(1, 'Yura', '12:46','bye');";
+    exit = sqlite3_exec(db, sql, NULL, 0, &message_error);
+    sql = "INSERT INTO MESSAGES (CHATID, SENDER, TIME, MESSAGE) VALUES(1, 'Vlad', '12:46','good bye');";
+    exit = sqlite3_exec(db, sql, NULL, 0, &message_error);
+    dberror(db, exit, "Error inserting message to MESSAGES table");
+    /*-----------------------------------------------------*/
 
     sql = "INSERT INTO USERCHAT (USERID, CHATID) VALUES(1, 1);";
     exit = sqlite3_exec(db, sql, NULL, 0, &message_error);
