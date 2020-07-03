@@ -111,12 +111,12 @@ static void *handle_server(void *param) {
                  * Retrieves user`s login from packet. Packet will be send on this login,
                  * if user with this login is connected to the server.
                  */
-                // char *client_login = get_value_buy_key(send_packet, "TO");
+                char *client_login = get_value_by_key(send_packet, "TO");
 
 
                 /* Makes user logged in. */
                 if (send_packet && (!strcmp(get_value_by_key(send_packet, "TYPE"), "login_s") || !strcmp(get_value_by_key(send_packet, "TYPE"), "reg_s")) && !strcmp(get_value_by_key(send_packet, "STATUS"), "success")) {
-                    p->login = mx_string_copy("login_test");
+                    p->login = mx_string_copy(client_login);
                     p->is_logged = true;
                 }
 
@@ -128,7 +128,6 @@ static void *handle_server(void *param) {
                     if (s->is_logged) { // && !strcmp(client_login, s->login)
                         send(s->sock_fd, send_back_packet_prefixed, (int)strlen(send_back_packet_prefixed), 0);
                         printf("Sending of %d bytes\n", buf_len); // Debug.
-                        printf(">>%s\n", s->login);
                     }
                 }                    
                 free(send_back_packet_prefixed);

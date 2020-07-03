@@ -68,6 +68,7 @@ connected_client_list_t *socket_list_find(connected_client_list_t *head, int soc
 char *mx_database_communication(char *packet);
 char *login_system(char *packet);
 char *registration_system(char *packet);
+chats_t *mx_get_users_chats(char *user);
 
 // help funcs
 char *packet_len_prefix_adder(char *packet);
