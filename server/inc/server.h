@@ -40,7 +40,7 @@ typedef struct chat_message {
 	char* sender;
     char* time;
     char* message;
-    struct chat_message_t* next; 
+    struct chat_message* next; 
 } chat_message_t;
 
 // Server main functions.

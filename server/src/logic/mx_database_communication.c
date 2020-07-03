@@ -35,18 +35,19 @@ char *mx_database_communication(char *packet) {
         printf("\n\nfind_user_c packet received\n\n");
         // send_back_packet = find_user();
     }
-    else if (!strcmp(packet_type, "msg_c")) {
+    else if (!strcmp(packet_type, "add_msg_c")) {
         printf("\n\nmsg_c packet received\n\n");
+        send_back_packet = mx_add_message_by_id(packet);
         // send_back_packet = msg();
     }
 
-    sqlite3 *db;
-    int exit = sqlite3_open("uchat.db", &db);
+    // sqlite3 *db;
+    // int exit = sqlite3_open("uchat.db", &db);
 
-    char* sql = "SELECT * FROM USERS;";
+    // char* sql = "SELECT * FROM USERS;";
 
-    sqlite3_exec(db, sql, mx_callback, NULL, NULL);
-    return 0;
+    // sqlite3_exec(db, sql, mx_callback, NULL, NULL);
+    // return 0;
     // free(packet_type); // почему - то иногда выдает ошибку malloc error
     return send_back_packet;
 }
