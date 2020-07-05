@@ -142,7 +142,8 @@ int main(int argc, char **argv) {
     argv_validator(argc);
     int port             = get_port(argv);
     int listening_socket = listening_socket_init(port);
-    mx_deamon_start();
+    // mx_deamon_start();
+    mx_write_to_log("adsf", 1);
     database_init();
     server_context_init();
 

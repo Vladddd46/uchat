@@ -1,8 +1,16 @@
 #include "server.h"
 
-static void deamon_failed_output(void) {
-    write(2, "error: deamon launch failed\n", 28);
-    exit(EXIT_FAILURE);
+static void deamon_failed_output(int cases) {
+    if (cases == 1) {
+        write(2, "error: deamon launch failed\n", 28);
+        write(2, "forking error\n", 15);
+        exit(EXIT_FAILURE);
+    }
+    if (cases == 2) {
+        write(2, "error: deamon launch failed\n", 28);
+        write(2, "writting log error\n", 19);
+        exit(EXIT_FAILURE);
+    }
 }
 
 static void deamon_successfull_output(pid_t pid) {
@@ -19,7 +27,7 @@ void mx_deamon_start(void) {
     //forking child process of server
     pid = fork();
     if (pid < 0) //if forking failed
-        deamon_failed_output();
+        deamon_failed_output(1);
     if (pid > 0 ) //if forking successful, exit from parent process
         exit(EXIT_SUCCESS);
     else {
