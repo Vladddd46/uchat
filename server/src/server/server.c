@@ -61,7 +61,7 @@ static void *handle_server(void *param) {
     int buf_len;
     fd_set read_descriptors;
     // Setting waiting time for select.
-    struct timeval tv = wait_time();
+    struct timeval tv = wait_time(1, 0);
 
     while(!quit) {    
         update_connections(&read_descriptors);

@@ -335,7 +335,7 @@ static void received_packet_analyzer(char *packet_type, char *packet) {
  */
 void *server_communication(void *param) {
     fd_set read_descriptors;
-    struct timeval tv = wait_time();
+    struct timeval tv = wait_time(1, 0);
     int status;
     char *packet;
     char *packet_type;
