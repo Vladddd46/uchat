@@ -294,19 +294,9 @@ void client_context_init(int sockfd) {
     client_context->sockfd = sockfd;
 }
 
-// Read first 8 bytes from packet. (They represent the length of the packet.)
-static int packet_length_determine(void) {
-    char buf[8];
-    bzero(buf, 8);
-    recv(client_context->sockfd, buf, 8, 0);
-    int packet_len = atoi(buf);
-
-    return packet_len;
-}
-
 // Receiving packet from the socket.
 static char *packet_receive(void) {
-    int  packet_len = packet_length_determine();
+    int  packet_len = packet_length_determine(client_context->sockfd);
     char *packet = mx_strnew(packet_len);
     int  index = 0;
 

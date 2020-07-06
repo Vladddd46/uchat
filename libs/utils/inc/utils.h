@@ -21,6 +21,7 @@ void error(char *msg, int status);
 
 // Packet formation functions.
 char *packet_len_prefix_adder(char *packet);
+int packet_length_determine(int socket);
 
 // Sets time select must wait.
 struct timeval wait_time(int sec, int msec);

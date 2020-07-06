@@ -83,9 +83,7 @@ static void *handle_server(void *param) {
          */
         for (connected_client_list_t *p = ctx.head.next; p != NULL; p = p->next) {
             if (FD_ISSET(p->sock_fd, &read_descriptors)) {
-                char len[8];
-                recv(p->sock_fd, len, 8, 0);
-                int packet_len = atoi(len);
+                int packet_len = packet_length_determine(p->sock_fd);
                 
                 char *packet = mx_strnew(packet_len);
                 int index = 0;
