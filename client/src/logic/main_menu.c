@@ -11,6 +11,8 @@ void main_menu() {
      gtk_widget_set_name(iconnn,"image");
      gtk_grid_attach(GTK_GRID(grid), iconnn, 1, 98, 1, 1);
 
+
+
     login = gtk_entry_new();
     gtk_entry_set_placeholder_text(GTK_ENTRY(login),"Login");
     gtk_widget_set_name(login,"login");
@@ -30,7 +32,7 @@ void main_menu() {
 
     entryspawn = gtk_button_new_with_label("Login");
     gtk_widget_set_name(entryspawn,"log");
-    g_signal_connect(entryspawn, "clicked", G_CALLBACK(do_login), client_context->sockfd);
+    g_signal_connect(entryspawn, "clicked", G_CALLBACK(do_login), client_context);
     gtk_grid_attach(GTK_GRID(grid), entryspawn, 1, 103, 1, 1);
 
     labell3 = gtk_label_new("");

@@ -17,6 +17,7 @@ int socket_list_add(connected_client_list_t *head, int new_sock_fd) {
     if (p == NULL) return -1;
     p->sock_fd = new_sock_fd;
     p->is_logged = false;
+    p->login = NULL;
     p->next = NULL;
     prev->next = p;
     return 0;

@@ -13,14 +13,10 @@ char *mx_database_communication(char *packet) {
     char *packet_type = get_value_by_key(packet, "TYPE");
     char *send_back_packet = NULL;
 
-    if (!strcmp(packet_type, "login_c")) {
-        printf("\n\nLogin packet received\n\n");
+    if (!strcmp(packet_type, "login_c"))
         send_back_packet = login_system(packet);
-    }
-    else if (!strcmp(packet_type, "reg_c")) {
-        printf("\n\nReg packet received\n\n");
+    else if (!strcmp(packet_type, "reg_c"))
         send_back_packet = registration_system(packet);
-    }
     else if (!strcmp(packet_type, "find_user_c")) {
         printf("\n\nfind_user_c packet received\n\n");
         // send_back_packet = find_user();
@@ -29,7 +25,7 @@ char *mx_database_communication(char *packet) {
         printf("\n\nmsg_c packet received\n\n");
         // send_back_packet = msg();
     }
-    // free(packet_type); // почему - то иногда выдает ошибку malloc error
+    free(packet_type); // почему - то иногда выдает ошибку malloc error
     return send_back_packet;
 }
 

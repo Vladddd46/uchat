@@ -1,97 +1,94 @@
-NAME	=	libmx.a
-CFLG	=	-std=c11 $(addprefix -W, all extra error pedantic) -g
-SRCD	=	src
-INCD	=	inc
-OBJD	=	obj
-INC		=	libmx.h
-INCS	=	$(addprefix $(INCD)/, $(INC))
+# имя библиотеки
+NAME = libmx.a
 
-SRC		=	mx_array_joiner.c\
-		mx_binary_search.c\
-		mx_bubble_sort.c\
-		mx_count_substr.c\
-		mx_count_words.c\
-		mx_create_node.c\
-		mx_del_extra_spaces.c\
-		mx_del_strarr.c\
-		mx_file_to_str.c\
-		mx_foreach.c\
-		mx_get_char_index.c\
-		mx_get_substr_index.c\
-		mx_hex_to_nbr.c\
-		mx_itoa.c\
-		mx_list_size.c\
-		mx_memccpy.c\
-		mx_memchr.c\
-		mx_memcmp.c\
-		mx_memcpy.c\
-		mx_memmem.c\
-		mx_memmove.c\
-		mx_memrchr.c\
-		mx_memset.c\
-		mx_nbr_to_hex.c\
-		mx_new_strarr.c\
-		mx_pop_back.c\
-		mx_pop_front.c\
-		mx_pow.c\
-		mx_print_strarr.c\
-		mx_print_unicode.c\
-		mx_printchar.c\
-		mx_printint.c\
-		mx_printstr.c\
-		mx_push_back.c\
-		mx_push_front.c\
-		mx_quicksort.c\
-		mx_realloc.c\
-		mx_replace_substr.c\
-		mx_sort_list.c\
-		mx_sqrt.c\
-		mx_str_reverse.c\
-		mx_strcat.c\
-		mx_strcmp.c\
-		mx_strcpy.c\
-		mx_strdel.c\
-		mx_strdup.c\
-		mx_string_copy.c\
-		mx_strjoin.c\
-		mx_strlen.c\
-		mx_strncpy.c\
-		mx_strndup.c\
-		mx_strnew.c\
-		mx_strsplit.c\
-		mx_strstr.c\
-		mx_strtrim.c\
-		mx_swap_char.c\
-		mx_is_in_str.c\
-		mx_symbols_in_str.c\
+# папка с исходниками
+SRC_DIR = src
 
+# папка, куда будут складываться объектные файлы
+OBJ_DIR = obj
 
-SRCS	=	$(addprefix $(SRCD)/, $(SRC))
-OBJS	=	$(addprefix $(OBJD)/, $(SRC:%.c=%.o))
+# папка с хедерами
+INC_DIR = inc
 
-all: install
+# сделать список всех файлов в папке src, которые имеют расширение .с
+# формат каждой записи src/<file_name>.c
+SRC_FILES = $(wildcard $(SRC_DIR)/*.c)
 
-install: $(NAME)
+# добавить префикс obj/ к каждой записи из SRC_FILES, в который убрали
+# путь (до notdir src/<file_name>.c, после <file_name>.c) и изменить
+# расширение с .с на .о
+# результат выполнения src/<file_name>.o  --> obj/<file_name>.o
+# о всех манипуляциях с именами можно почитать тут
+# https://www.gnu.org/software/make/manual/html_node/File-Name-Functions.html
+OBJ_FILES = $(addprefix $(OBJ_DIR)/, $(notdir $(SRC_FILES:%.c=%.o)))
 
-$(NAME): $(OBJS)
-	@ar rcs $@ $^
-	@printf "\r\33[2K$@ \033[32;1mcreated\033[0m\n"
+# сделать список всех файлов в папке inc, которые имеют расширение .h
+# формат каждой записи inc/<file_name>.h
+INC_FILES = $(wildcard $(INC_DIR)/*.h)
 
-$(OBJD)/%.o: $(SRCD)/%.c $(INCS)
-	@clang $(CFLG) -c $< -o $@ -I$(INCD)
-	@printf "\r\33[2K$(NAME) \033[33;1mcompile \033[0m$(<:$(SRCD)/%.c=%) "
+# компилятор для создания o-файлов
+CC = clang
 
-$(OBJS): | $(OBJD)
+# флаги для компилятора (добабить префикс -W ко всем записям после
+# запятой)
+CFLAGS = -std=c11 $(addprefix -W, all extra error pedantic) -g
 
-$(OBJD):
-	@mkdir -p $@
+# архиватор для формирования библиотеки из о-файлов
+AR = ar
 
+#флаги для архиватора
+AFLAGS = rcs
+
+MKDIR = mkdir -p
+RM = rm -rf
+
+# главная цель, при ее вызове вызывается цель libmx.a
+all: $(NAME)
+
+# цель зависит от времени создания o-файлов, т.е если находится какой-то
+# о-файл время последней модификации которого позже, чем время последней
+# модификации файла libmx.a, то будут запущены инструкции в этой цели
+# $@ - переменная, которая означает имя цели
+# $^ - переменная, которая означает все зависимости текущей цели
+# просто для красивой оригинальной записи ;)
+$(NAME): $(OBJ_FILES)
+	@$(AR) $(AFLAGS) $@ $^
+	@printf "\r\33[2K$@\t \033[32;1mcreated\033[0m\n"
+
+# перед компиляцией o-файлов создаем папку obj, про пайпы в мейкафайле
+# https://www.gnu.org/software/make/manual/html_node/Prerequisite-Types.html
+$(OBJ_FILES): | $(OBJ_DIR)
+
+# сравниваем время последней модификации по одному каждого о-файла
+# с с-файлом c точно таким же именем и h-файлами. Если дата последней
+# модицикации o-файла раньше, то будет перекомпилирован только этот
+# с-файл и библиотека будет пересобрана. в случае с h-файлом будут
+# перекомпилированы все c-файлы, т.к. это изменение касается каждого
+# файла
+# $< - переменная, которая означает имя первой зависимости цели
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.c $(INC_FILES)
+	@$(CC) $(CFLAGS) -c $< -o $@ -I $(INC_DIR)
+	@printf "\r\33[2K$(NAME)\033[33;1m\t compile \033[0m$(<:$(SRC_DIR)/%.c=%)\r"
+
+# создается папка obj
+$(OBJ_DIR):
+	@$(MKDIR) $@
+
+# удаляем папку с о-файлами
 clean:
-	@rm -rf $(OBJD)
-	@printf "$(OBJD)\t   \033[31;1mdeleted\033[0m\n"
+	@$(RM) $(OBJ_DIR)
+	@printf "$(OBJ_DIR) in $(NAME)\t \033[31;1mdeleted\033[0m\n"
 
-uninstall: clean
-	@rm -rf $(NAME)
-	@printf "$(NAME) \033[31;1muninstalled\033[0m\n"
+# полностью удаляем результат работы мейкфайла
+uninstall:
+	@$(RM) $(OBJ_DIR)
+	@$(RM) $(NAME)
+	@@printf "$(NAME)\t \033[31;1muninstalled\033[0m\n"
 
-reinstall: uninstall install
+# удаляем и заново собираем библиотеку
+reinstall: uninstall all
+
+# .PHONY - это явное указание имен целей мейкфайла, например, если
+# в папке будет файл clean и попытаться выполнить команду make clean,
+# то make попытается выполнить файл clean, а не цель clean
+.PHONY: all uninstall clean reinstall

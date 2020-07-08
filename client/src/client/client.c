@@ -1,9 +1,19 @@
 #include "client.h"
+
 client_context_t *client_context;
 
 bool  flag = FALSE;
 static int messagenumber = 0;
 static int n = 0;
+
+char *get_text_of_textview(GtkWidget *text_view) {
+    GtkTextIter start, end;
+    GtkTextBuffer *buffer = gtk_text_view_get_buffer((GtkTextView *)text_view);
+    gchar *text;
+    gtk_text_buffer_get_bounds(buffer, &start, &end);
+    text = gtk_text_buffer_get_text(buffer, &start, &end, FALSE);
+    return text;
+}
 
 static void destroy(GtkWidget *widget, gpointer data){
   gtk_main_quit();
@@ -22,10 +32,10 @@ int show_popup(GtkWidget *widget, GdkEvent *event) {
     return FALSE;
 }
 
-void back_to_menu(GtkWidget *back, int sockfd){
+void back_to_menu(GtkWidget *back, client_context_t *client_context){
     gtk_widget_destroy(grid);
     gtk_widget_destroy(back);
-    main_menu(sockfd);
+    main_menu(client_context->sockfd);
 }
 
 void delete_message(GtkWidget *widget, GtkWidget *message){
@@ -76,25 +86,32 @@ void create_message(GtkWidget *newmessedgentry, gpointer data){
     gtk_list_box_insert (GTK_LIST_BOX(listboxmess),row,n);
     messagenumber++;
 
-    gridmenu = gtk_grid_new();
-    gtk_container_add(GTK_CONTAINER(ebox), gridmenu);
+    horizontalbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL,0);
+    //gtk_widget_set_name(gridmenu,"messagegrid");
+    gtk_container_add(GTK_CONTAINER(ebox), horizontalbox);
     GdkPixbuf *iconn = gdk_pixbuf_new_from_file("./media/img/pokemon-2.png",NULL);
     iconn = gdk_pixbuf_scale_simple(iconn, 32,32, GDK_INTERP_BILINEAR);
     icon = gtk_image_new_from_pixbuf(iconn);
-    gtk_grid_attach(GTK_GRID(gridmenu), icon, 0, 0, 1, 2);
+    gtk_box_pack_start(GTK_BOX(horizontalbox),icon, FALSE, FALSE, 0);
+
+    verticalbox = gtk_box_new(GTK_ORIENTATION_VERTICAL,0);
+    gtk_box_pack_start(GTK_BOX(horizontalbox),verticalbox, FALSE, FALSE, 0);
 
     labellmenu = gtk_label_new("Vlad");
     gtk_widget_set_name(labellmenu,"labellmenu");
-    gtk_grid_attach(GTK_GRID(gridmenu), labellmenu, 1, 0, 1, 1);
+    gtk_box_pack_start(GTK_BOX(verticalbox),labellmenu, FALSE, FALSE, 0);
 
-    char *messageBuff = (char *)gtk_entry_get_text(GTK_ENTRY(newmessedgentry));
+    char *messageBuff = get_text_of_textview(newmessedgentry);
     labellmenu2 = gtk_label_new(messageBuff);
     gtk_widget_set_name(labellmenu2,"labellmenu2");
-    gtk_grid_attach(GTK_GRID(gridmenu), labellmenu2, 1, 1, 1, 1);
+    gtk_box_pack_start(GTK_BOX(verticalbox),labellmenu2, FALSE, FALSE, 0);
 
     labellmenu3 = gtk_label_new("Yesterday");
-    gtk_grid_attach(GTK_GRID(gridmenu), labellmenu3, 2, 0, 1, 1);
-    gtk_widget_set_name(labellmenu3,"labellmenu3");
+    //gtk_grid_attach(GTK_GRID(gridmenu), labellmenu3, 2, 1, 1, 1);
+    gtk_box_pack_start(GTK_BOX(horizontalbox),labellmenu3, FALSE, FALSE, 0);
+
+ 
+
  //menu with edit and delete button
     fileMenu = gtk_menu_new();
     g_signal_connect_swapped(G_OBJECT(ebox), "button-press-event", G_CALLBACK(show_popup), fileMenu);
@@ -108,14 +125,16 @@ void create_message(GtkWidget *newmessedgentry, gpointer data){
     gtk_widget_show (delet);
     gtk_menu_shell_append (GTK_MENU_SHELL (fileMenu), delet);
     g_signal_connect (delet, "activate", G_CALLBACK (delete_message), row);
-    gtk_entry_set_text(GTK_ENTRY(newmessedgentry),"");
+    gtk_text_view_set_buffer(GTK_TEXT_VIEW(newmessedgentry),textbuffer);
 
     gtk_widget_show_all(window);
 }
 
-
-void create_row(GtkWidget *labell, gpointer data){
+gboolean create_row(gpointer data, struct struct_type parm){
+    char *chatname = get_value_by_key(parm.pack,mx_strjoin("CHATNAME=",mx_itoa(n)));
+    char *lastmessage = get_value_by_key(parm.pack,mx_strjoin("LASTMESSAGE=",mx_itoa(n)));
     GtkWidget *row;
+
     row = gtk_list_box_row_new();
     gtk_widget_set_name(row,"chatrow");
     gtk_list_box_row_set_selectable (GTK_LIST_BOX_ROW(row),FALSE);
@@ -129,22 +148,21 @@ void create_row(GtkWidget *labell, gpointer data){
     icon = gtk_image_new_from_pixbuf(iconn);
     gtk_grid_attach(GTK_GRID(gridmenu), icon, 0, 0, 1, 2);
 
-    labellmenu = gtk_label_new("Vlad");
+    labellmenu = gtk_label_new(chatname);
     gtk_widget_set_name(labellmenu,"labellmenu");
     gtk_grid_attach(GTK_GRID(gridmenu), labellmenu, 1, 0, 1, 1);
 
-    labellmenu2 = gtk_label_new("Kill me please");
+    labellmenu2 = gtk_label_new(lastmessage);
     gtk_widget_set_name(labellmenu2,"labellmenu2");
     gtk_grid_attach(GTK_GRID(gridmenu), labellmenu2, 1, 1, 1, 1);
 
-    labellmenu3 = gtk_label_new("Yesterday");
-    gtk_grid_attach(GTK_GRID(gridmenu), labellmenu3, 2, 0, 1, 1);
-    gtk_widget_set_name(labellmenu3,"labellmenu3");
+    // labellmenu3 = gtk_label_new("Yesterday");
+    // gtk_grid_attach(GTK_GRID(gridmenu), labellmenu3, 2, 0, 1, 1);
+    // gtk_widget_set_name(labellmenu3,"labellmenu3");
 
     gtk_widget_show_all(window);
+    return 0;
 }
-
-
 
 void make_registration(GtkWidget *Registration, client_context_t *client_context){
     GtkWidget *back;
@@ -197,12 +215,13 @@ void make_registration(GtkWidget *Registration, client_context_t *client_context
 
     back = gtk_button_new_with_label("Back to Login");
     gtk_widget_set_name(back,"log");
-    g_signal_connect(back, "clicked", G_CALLBACK(back_to_menu), client_context->sockfd);
+    g_signal_connect(back, "clicked", G_CALLBACK(back_to_menu), client_context);
     gtk_grid_attach(GTK_GRID(grid), back, 1, 107, 1, 1);
    //gtk_fixed_put(GTK_FIXED (fixed), back, 550,540);
 
     gtk_widget_show_all(window);
-    }
+}
+
 // Checks, wether user specified input correctly.
 static void argv_validator(int argc, char **argv) {
     char *msg;
@@ -220,8 +239,6 @@ static void argv_validator(int argc, char **argv) {
         exit(1);
     }
 }
-
-
 
 // Main window init.
 void gui(int argc, char **argv, client_context_t *client_context) {
@@ -270,16 +287,49 @@ static struct sockaddr_in client_address_describer(int port) {
     return client_addr;
 }
 
-void client_context_init(int sockfd, int write_pipe, int read_pipe) {
+void client_context_init(int sockfd) {
     client_context = (client_context_t *)malloc(sizeof(client_context_t));
     if (client_context == NULL) {
         char *msg = "Client context malloc error\n";
         write(2, msg, (int)strlen(msg));
         exit(1);
     }
-    client_context->sockfd     = sockfd;
-    client_context->write_pipe = write_pipe;
-    client_context->read_pipe  = read_pipe;
+
+    client_context->sockfd = sockfd;
+}
+
+// Read first 8 bytes from packet. (They represent the length of the packet.)
+static int packet_length_determine(void) {
+    char buf[8];
+    bzero(buf, 8);
+    recv(client_context->sockfd, buf, 8, 0);
+    int packet_len = atoi(buf);
+
+    return packet_len;
+}
+
+// Receiving packet from the socket.
+static char *packet_receive(void) {
+    int  packet_len = packet_length_determine();
+    char *packet = mx_strnew(packet_len);
+    int  index = 0;
+
+    while(index < packet_len) {
+        recv(client_context->sockfd, &packet[index], 1, 0);
+        index++;
+    }
+    return packet;
+}
+
+static void received_packet_analyzer(char *packet_type, char *packet) {
+    if (!strcmp(packet_type, "reg_s"))
+        registration_system(client_context->sockfd, packet);
+    else if (!strcmp(packet_type, "login_s"))
+        login_system(client_context, packet);
+    else if (!strcmp(packet_type, "find_user_s"))
+        printf("%s\n", "find_user packet receive");
+    else if (!strcmp(packet_type, "msg_s"))
+        printf("%s\n", "msg packet received");
 }
 
 /*
@@ -288,42 +338,25 @@ void client_context_init(int sockfd, int write_pipe, int read_pipe) {
  * Depending on packet gui changes.
  */
 void *server_communication(void *param) {
+    fd_set read_descriptors;
+    struct timeval tv = wait_time(1, 0);
+    int status;
+    char *packet;
+    char *packet_type;
+
     while(1) {
-        fd_set read_descriptors;
         FD_ZERO(&read_descriptors);
         FD_SET(client_context->sockfd, &read_descriptors);
-
-        // Set time select must wait for incomming packets.
-        struct timeval tv;
-        tv.tv_sec  = 1; // seconds.
-        tv.tv_usec = 0; // mili-seconds.
-
-        char buf[1000];
-        bzero(buf, 1000);
-        int status = select(FD_SETSIZE, &read_descriptors, NULL, NULL, &tv);
+        status = select(FD_SETSIZE, &read_descriptors, NULL, NULL, &tv);
         if (status <= 0) continue;
-
-        read(client_context->sockfd, buf, 1000);
-        char *packet_type = get_value_by_key(buf, "TYPE");
-
-        if (!strcmp(packet_type, "reg_s")) {
-            // registration system
-            printf("reg_s packet received\n");
-            do_login(NULL, client_context->sockfd);
-        }
-        else if (!strcmp(packet_type, "login_s")) {
-            // login system
-            printf("login packet received\n");
-        }
-        else if (!strcmp(packet_type, "find_user_s")) {
-            // find_user system
-            printf("%s\n", "find_user packet receive");
-        }
-        else if (!strcmp(packet_type, "msg_s")) {
-            printf("%s\n", "msg packet received");
-        }
-
-
+        // Receive packet from the server.
+        packet      = packet_receive();
+        if (packet == NULL)
+            exit(1);
+        packet_type = get_value_by_key(packet, "TYPE");
+        received_packet_analyzer(packet_type, packet);
+        free(packet_type);
+        free(packet);
     }
     return NULL;
 }
@@ -334,16 +367,14 @@ int main(int argc, char **argv) {
     int sockfd                     = Socket();
     struct sockaddr_in client_addr = client_address_describer(port);
 
-    int pipefd[2];
-    pipe(pipefd);
-
     // Do the connect to the server.
     int res = connect(sockfd, (struct sockaddr *)&client_addr, sizeof(client_addr));
     error("Error while connection", res);
 
-    client_context_init(sockfd, pipefd[1], pipefd[0]);
+    client_context_init(sockfd);
     pthread_t client_thread;
     int err = pthread_create(&client_thread, NULL, server_communication, NULL);
+    error("Error while creating new thread.", err);
 
     // Gui initialization
     gui(argc, argv, client_context);

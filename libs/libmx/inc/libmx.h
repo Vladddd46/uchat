@@ -1,3 +1,4 @@
+#pragma once
 #include <stdio.h>
 #include <unistd.h>
 #include <stdlib.h>
@@ -43,6 +44,7 @@ char 		  *mx_itoa(int number);
 char 		  *mx_nbr_to_hex(unsigned long nbr);
 char 		  *mx_array_joiner(char **arr);
 char 		  *mx_strcpy(char *dst,  char *src);
+char 		  *mx_char_to_str_add(char *str, char c);
 char 		  **mx_new_strarr(int size);
 void 		  mx_foreach(int *arr, int size, void (*f)(int));
 void 		  mx_printchar(char c);
