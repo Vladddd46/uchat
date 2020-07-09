@@ -28,7 +28,7 @@ static int mx_get_last_message_id(int chat_id) {
     dberror(db, exit, "Error inserting to table");
 	sqlite3_step(res);
 	if((sqlite3_column_text(res, 0)) != NULL)
-        last_message_id = atoi(sqlite3_column_text(res, 0));
+        last_message_id = atoi((const char*)sqlite3_column_text(res, 0));
     sqlite3_finalize(res);
     sqlite3_close(db);
     return last_message_id;
@@ -56,7 +56,7 @@ static void mx_add_last_message(int chat_id, char* message, char* time, char* se
 }
 
 static void mx_add_message_with_id(int message_id, int chat_id, char* message) {
-	sqlite3 *db;
+	sqlite3 *db = NULL;
     char *message_error;
     char sql[500];
     int check;

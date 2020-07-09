@@ -1,16 +1,5 @@
 #include "client.h"
 
-/*
- * This is registration module.
- * It is called, when user press register. button on reg. page.
- * This functional:
- *      1. Reads all data from input boxes on reg. page.
- *      2. Validates read data. (checks, whether input was an empty str or
- *          any of forbidden chars were used.)
- *      3. Froms reg_c packet and sends it to the server.
- */
-
-
 #define OKEY                      0
 #define PASS_FORBIDDEN_SYMBOLS    1
 #define PASS_DIFFERENT            2
@@ -20,7 +9,7 @@
 #define LOGIN_IS_EMPTY            6
 #define PASSWORD_1_IS_EMPTY       7
 #define PASSWORD_2_IS_EMPTY       8
-
+#define PASSWORD_TOO_SHORT        9
 
 // Validates syntax of login input.
 static int login_validator(char *input_login) {
@@ -57,10 +46,15 @@ static int pass_validator(char *password_1, char *password_2) {
         return PASSWORD_1_IS_EMPTY;
     if ((int)strlen(password_2) == 0)
         return PASSWORD_2_IS_EMPTY;
+    if ((int)strlen(password_1) < 8)
+        return PASSWORD_TOO_SHORT;
     return OKEY;
 }
 
-// Makes validation of all inputed data.
+/*
+ * Makes validation of all inputed data.
+ * Returns status macro.
+ */
 static int validate(char *input_login, char *input_nick, char *input_password, char *input_password_confirm) {
     int validate_login_status = login_validator(input_login);
     int validate_nick_status  = nick_validator(input_nick);
@@ -75,6 +69,13 @@ static int validate(char *input_login, char *input_nick, char *input_password, c
     return OKEY;
 }
 
+/*
+ * Create json packet with values: 
+ * TYPE, 
+ * USER LOGIN, 
+ * USER PASS, 
+ * USER NICK.
+ */
 static char *make_packet(char *input_login, char *input_nick, char *input_password) {
     char *login_pair = mx_strjoin("LOGIN:", input_login);
     char *pass_pair  = mx_strjoin("PASSWORD:", input_password);
@@ -88,24 +89,27 @@ static char *make_packet(char *input_login, char *input_nick, char *input_passwo
 }
 
 void do_registration(GtkWidget *Registration, client_context_t *client_context) {
-    // Getting data from input boxes.
     char *input_login            = (char *)gtk_entry_get_text(GTK_ENTRY(login));
     char *input_nick             = (char *)gtk_entry_get_text(GTK_ENTRY(nickname));
     char *input_password         = (char *)gtk_entry_get_text(GTK_ENTRY(Password));
     char *input_password_confirm = (char *)gtk_entry_get_text(GTK_ENTRY(SecondPassword));
 
-
     // Input values validation
-    char *packet;
-    int validate_status = validate(input_login, input_nick, input_password, input_password_confirm);
-    if (validate_status != OKEY) {
-        // тут должен быть функционал, который выводит пользователю сообщение (validate_status) об неправильном синтаксисе инпута.
+    int status = validate(input_login, input_nick, input_password, input_password_confirm);
+    if (status != OKEY) {
+        write(2, "Error while validate\n", 22);
+        
+        /* Денис:
+         * Тут должен быть функционал, который выводит пользователю в gui уведомление об
+         * неправильном инпуте. Тип ошибки можно определить с помощью макросов обьявленных
+         * в начале файла.
+         */
     }
     else {
-        packet = make_packet(input_login, input_nick, input_password);
-        send(client_context->sockfd, packet, (int)strlen(packet), 0); // sending registration packet to the server.
+        char *packet             = make_packet(input_login, input_nick, input_password);
+        char *packet_with_prefix = packet_len_prefix_adder(packet);
+        send(client_context->sockfd, packet_with_prefix, (int)strlen(packet_with_prefix), 0); // sending registration packet to the server.
         free(packet);
+        free(packet_with_prefix);
     }
 }
-
-

@@ -23,9 +23,9 @@ static chat_message_t* mx_fill_list(int chat_id, int from, int to) {
     sqlite3_step(res);
     for(int i = from, j = 0; i < to && sqlite3_column_text(res, 0) != NULL; i++) {
         // printf("Value = %s -- %d\n", sqlite3_column_text(res, 2), i);
-        list -> sender = mx_string_copy(sqlite3_column_text(res, 0));
-        list -> time = mx_string_copy(sqlite3_column_text(res, 1));
-        list -> message = mx_string_copy(sqlite3_column_text(res, 2));
+        list -> sender = mx_string_copy((char*)sqlite3_column_text(res, 0));
+        list -> time = mx_string_copy((char*)sqlite3_column_text(res, 1));
+        list -> message = mx_string_copy((char*)sqlite3_column_text(res, 2));
         list -> next = (chat_message_t*)malloc(sizeof(chat_message_t));
         list = list -> next;
         list -> sender = NULL;

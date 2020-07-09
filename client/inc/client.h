@@ -11,60 +11,76 @@
 #include <gtk/gtk.h>
 #include "cJSON.h"
 #include "libmx.h"
-
+#include "utils.h"
 
 typedef struct client_context_s {
 	int sockfd;
-	int write_pipe;
-	int read_pipe;
 } client_context_t;
 
+struct struct_type {
+	char *pack;
+	};
 
-static GtkWidget *grid;
-void error(char *msg, int status);
-void back_to_menu(GtkWidget *back, int sockfd);
+// какие то непонятные функции Дениса. PS. структурируй их пожалуйста.
+void back_to_menu(GtkWidget *back, client_context_t *client_context);
 void main_menu();
-void do_login(GtkWidget *entryspawn, int sockfd);
-void create_row(GtkWidget *labell, gpointer data);
+void draw_message_menu(GtkWidget *entryspawn, client_context_t *client_context);
+gboolean create_row(gpointer data, struct struct_type parm);
 void create_message(GtkWidget *newmessedgentry, gpointer data);
+void end_message (GtkWidget *widget, GtkWidget *message);
+char *get_text_of_textview(GtkWidget *text_view);
+void make_registration(GtkWidget *Registration, client_context_t *client_context);
+void do_login(GtkWidget *entryspawn, client_context_t *client_context);
+void take_index(GtkWidget *row, gpointer data);
 
 // Json lib. API
-char *json_packet_former(int num, ...);
-char *get_value_by_key(char *json_str, char *key);
+// char *json_packet_former(int num, ...);
+// char *get_value_by_key(char *json_str, char *key);
 
 // Logic
 void do_registration(GtkWidget *Registration, client_context_t *client_context);
+void registration_system(int socket, char *packet);
+void login_system(client_context_t *client_context, char *packet);
 
-
+GtkWidget *row;
+GtkWidget *entryspawn;
 GtkWidget *login;
 GtkWidget *nickname;
 GtkWidget *Password;
 GtkWidget *SecondPassword;
 GtkWidget *Registration;
 //static GtkWidget *newbutton;
-static GtkWidget *fixed;
-static GtkWidget *window;
-static GtkWidget *grid;
-static GtkWidget *labell;
-static GtkWidget *labell2;
-static GtkWidget *labell3;
-static GtkWidget *scroll;
-static GtkWidget *listbox;
-static GtkWidget *listboxmess;
-static GtkWidget *row;
-static GtkWidget *gridmenu;
-static GtkWidget *labellmenu;
-static GtkWidget *labellmenu2;
-static GtkWidget *labellmenu3;
-static GtkWidget *icon;
-static GtkWidget *leftbox;
-static GtkWidget *rightbox;
-static GtkWidget *downbox;
-static GtkWidget *leftmenu;
-static GtkWidget *searchmenu;
-static GtkWidget *newchatbutton;
+GtkWidget *fixed;
+GtkTextBuffer *textbuffer;
+GtkWidget *window;
+GtkWidget *grid;
+GtkWidget *labell;
+GtkWidget *labell2;
+GtkWidget *labell3;
+GtkWidget *scroll;
+GtkWidget *listbox;
+GtkWidget *scrollnewmess;
+GtkWidget *listboxmess;
+GtkWidget *row;
+GtkWidget *gridmenu;
+GtkWidget *labellmenu;
+GtkWidget *labellmenu2;
+GtkWidget *labellmenu3;
+GtkWidget *icon;
+GtkWidget *leftbox;
+GtkWidget *rightbox;
+GtkWidget *downbox;
+GtkWidget *leftmenu;
+GtkWidget *searchmenu;
+GtkWidget *newchatbutton;
+GtkWidget *verticalbox;
+GtkWidget *horizontalbox;
+GtkWidget *newmessedgentry;
+GtkWidget *scrollmess;
+GtkWidget *fileMenu;
+GtkWidget *ebox;
+GtkWidget *edit;
+GtkWidget *delet;
+GtkWidget *editmessedgentry;
+GtkWidget *editbox;
 
-static GtkWidget *newmessedgentry;
-static GtkWidget *scrollmess;
-static GtkWidget *fileMenu;
-static GdkEventTouch *trigger_event;

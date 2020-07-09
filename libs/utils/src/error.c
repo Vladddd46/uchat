@@ -1,8 +1,6 @@
-#include "client.h"
+#include "utils.h"
 
-/*
- * Prints error msg, if status - negativ number(commonly -1)
- */
+// Prints error msg, if status - negativ number(commonly -1)
 void error(char *msg, int status) {
     if (status < 0) {
         perror(msg);
