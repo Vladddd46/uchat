@@ -61,21 +61,28 @@ static char *mx_json_packet_former_from_list(chat_message_t* chat, int from) {
     int list_len = mx_list_len(chat);
     cJSON *packet = cJSON_CreateObject();
     char* packet_str = NULL;
-    cJSON *json_value = cJSON_CreateString("msg_c");
+    cJSON *json_value = cJSON_CreateString("msg_s");
 
     cJSON_AddItemToObject(packet, "TYPE", json_value);
     for(int i = 0; i < list_len; i++, from++) {
+        char packet_former[100];
+
+        sprintf(packet_former, "ID%d", i);
         json_value = cJSON_CreateString(mx_itoa(from));
-        cJSON_AddItemToObject(packet, "ID", json_value);
+        cJSON_AddItemToObject(packet, packet_former, json_value);
         json_value = cJSON_CreateString(chat -> sender);
-        cJSON_AddItemToObject(packet, "SENDER", json_value);
+        sprintf(packet_former, "SENDER%d", i);
+        cJSON_AddItemToObject(packet, packet_former, json_value);
         json_value = cJSON_CreateString(chat -> time);
-        cJSON_AddItemToObject(packet, "TIME", json_value);
+        sprintf(packet_former, "TIME%d", i);
+        cJSON_AddItemToObject(packet, packet_former, json_value);
         json_value = cJSON_CreateString(chat -> message);
-        cJSON_AddItemToObject(packet, "MESSAGE", json_value);
+        sprintf(packet_former, "MESSAGE%d", i);
+        cJSON_AddItemToObject(packet, packet_former, json_value);
         chat = chat -> next;
     }
     packet_str = cJSON_Print(packet);
+    
     return packet_str;
 }
 

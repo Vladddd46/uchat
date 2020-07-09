@@ -40,6 +40,10 @@ char *mx_database_communication(char *packet) {
         send_back_packet = mx_add_message_by_id(packet);
         // send_back_packet = msg();
     }
+    // else if (!strcmp(packet_type, "search_c")) {
+    //     printf("\n\nmsg_c packet received\n\n");
+    //     // send_back_packet = mx_search_all(packet);
+    // }
 
     // sqlite3 *db;
     // int exit = sqlite3_open("uchat.db", &db);
