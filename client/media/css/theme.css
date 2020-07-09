@@ -43,6 +43,7 @@ window{
 #chatrow{
   background-color:#fbfafa;
   border: 1px solid #ecebeb;
+  color:black;
 }
 #listboxleft{
   background-color:#fbfafa;
@@ -75,4 +76,5 @@ border: none;
 }
 #message{
   background-color: #ffffff;
+  border-radius: 15px;
 }

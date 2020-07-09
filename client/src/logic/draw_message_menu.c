@@ -6,16 +6,18 @@ gboolean my_keypress_function (GtkWidget *widget, GdkEventKey *event, gpointer d
     if (event->keyval == 65505 || event->keyval == 65507) {
         release_button = TRUE;
     }
-    if (event->keyval == 65293 && release_button == FALSE){
-            create_message(newmessedgentry, NULL);
-            gtk_text_buffer_set_text (GTK_TEXT_BUFFER(textbuffer),"",-1);
-        }
+    if (event->keyval == 65293 && release_button == FALSE)
+        create_message(newmessedgentry, NULL);
     return FALSE;
 }
 
 gboolean button_release (GtkWidget *widget, GdkEventKey *event, gpointer data) {
     if (event->keyval == 65505) {
         release_button = FALSE;
+    }
+    if (event->keyval == 65293 && release_button == FALSE)
+    {
+        gtk_text_buffer_set_text (GTK_TEXT_BUFFER(textbuffer),"",-1);
     }
     return FALSE;
 }
@@ -64,10 +66,11 @@ void draw_message_menu(GtkWidget *entryspawn, client_context_t *client_context){
     gtk_widget_set_name(listbox,"listboxleft");
     gtk_widget_set_size_request(scroll,300,718);
     gtk_container_add(GTK_CONTAINER(scroll), listbox);
+    g_signal_connect(listbox,"row-activated", G_CALLBACK(take_index), NULL);
 
-    scrollnewmess = gtk_scrolled_window_new(0,0);
-    gtk_fixed_put(GTK_FIXED (fixed), scrollnewmess, 300,718);
-    gtk_widget_set_size_request(scrollnewmess,724,50);
+     scrollnewmess = gtk_scrolled_window_new(0,0);
+     gtk_fixed_put(GTK_FIXED (fixed), scrollnewmess, 300,718);
+     gtk_widget_set_size_request(scrollnewmess,724,50);
 
     downbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL,0);
     gtk_widget_set_size_request(downbox,724,50);
@@ -80,6 +83,7 @@ void draw_message_menu(GtkWidget *entryspawn, client_context_t *client_context){
     gtk_box_pack_start(GTK_BOX(downbox),newmessedgentry, TRUE, TRUE, 0);
     g_signal_connect (G_OBJECT (newmessedgentry), "key_release_event", G_CALLBACK (button_release), NULL);
     g_signal_connect (G_OBJECT (newmessedgentry), "key_press_event", G_CALLBACK (my_keypress_function), NULL);
+    
     scrollmess = gtk_scrolled_window_new(0,0);
     gtk_fixed_put(GTK_FIXED (fixed), scrollmess, 300,50);
     gtk_widget_set_name(scrollmess,"scrollmess");

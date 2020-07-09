@@ -1,10 +1,22 @@
 #include "client.h"
-
 client_context_t *client_context;
 
 bool  flag = FALSE;
 static int messagenumber = 0;
 static int n = 0;
+
+static char *mx_str_copy(char *str) {
+    int len = (int)strlen(str);
+    char *new = (char *)malloc(len + 1);
+    bzero(new, len + 1);
+
+    int i = 0;
+    while(str[i]) {
+        new[i] = str[i];
+        i++;
+    }
+    return new;
+}
 
 char *get_text_of_textview(GtkWidget *text_view) {
     GtkTextIter start, end;
@@ -78,24 +90,32 @@ void end_message (GtkWidget *widget, GtkWidget *message){
 
 void create_message(GtkWidget *newmessedgentry, gpointer data){
   GtkWidget *row;
+  GtkAdjustment *adj;
+    adj = gtk_adjustment_new(10000, 10000, 1, 10000, 10000, 100000);
     row = gtk_list_box_row_new();
     ebox = gtk_event_box_new();
     gtk_container_add(GTK_CONTAINER(row), ebox);
-    gtk_widget_set_name(row,"message");
+   // gtk_widget_set_name(row,"message");
     gtk_list_box_row_set_selectable (GTK_LIST_BOX_ROW(row),FALSE);
-    gtk_list_box_insert (GTK_LIST_BOX(listboxmess),row,n);
+    gtk_list_box_insert (GTK_LIST_BOX(listboxmess),row,messagenumber);
     messagenumber++;
 
     horizontalbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL,0);
     //gtk_widget_set_name(gridmenu,"messagegrid");
     gtk_container_add(GTK_CONTAINER(ebox), horizontalbox);
+
+
+    messagebox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL,0);
+    gtk_box_pack_start(GTK_BOX(horizontalbox),messagebox, FALSE, FALSE, 0);
+    gtk_widget_set_name(messagebox,"message");
+
     GdkPixbuf *iconn = gdk_pixbuf_new_from_file("./media/img/pokemon-2.png",NULL);
     iconn = gdk_pixbuf_scale_simple(iconn, 32,32, GDK_INTERP_BILINEAR);
     icon = gtk_image_new_from_pixbuf(iconn);
-    gtk_box_pack_start(GTK_BOX(horizontalbox),icon, FALSE, FALSE, 0);
+    gtk_box_pack_start(GTK_BOX(messagebox),icon, FALSE, FALSE, 0);
 
     verticalbox = gtk_box_new(GTK_ORIENTATION_VERTICAL,0);
-    gtk_box_pack_start(GTK_BOX(horizontalbox),verticalbox, FALSE, FALSE, 0);
+    gtk_box_pack_start(GTK_BOX(messagebox),verticalbox, FALSE, FALSE, 0);
 
     labellmenu = gtk_label_new("Vlad");
     gtk_widget_set_name(labellmenu,"labellmenu");
@@ -107,8 +127,7 @@ void create_message(GtkWidget *newmessedgentry, gpointer data){
     gtk_box_pack_start(GTK_BOX(verticalbox),labellmenu2, FALSE, FALSE, 0);
 
     labellmenu3 = gtk_label_new("Yesterday");
-    //gtk_grid_attach(GTK_GRID(gridmenu), labellmenu3, 2, 1, 1, 1);
-    gtk_box_pack_start(GTK_BOX(horizontalbox),labellmenu3, FALSE, FALSE, 0);
+    gtk_box_pack_start(GTK_BOX(messagebox),labellmenu3, FALSE, FALSE, 0);
 
  
 
@@ -123,22 +142,42 @@ void create_message(GtkWidget *newmessedgentry, gpointer data){
 
     delet = gtk_menu_item_new_with_label("Delete");
     gtk_widget_show (delet);
-    gtk_menu_shell_append (GTK_MENU_SHELL (fileMenu), delet);
+    gtk_menu_shell_append (GTK_MENU_SHELL (fileMenu), delet);  
     g_signal_connect (delet, "activate", G_CALLBACK (delete_message), row);
-    gtk_text_view_set_buffer(GTK_TEXT_VIEW(newmessedgentry),textbuffer);
 
     gtk_widget_show_all(window);
+    gtk_scrolled_window_set_vadjustment(GTK_SCROLLED_WINDOW(scrollmess), adj);
+}
+
+void take_index(GtkWidget *listbox, gpointer data){
+    GtkListBoxRow *g= gtk_list_box_get_selected_row(GTK_LIST_BOX(listbox));
+    printf("%d",gtk_list_box_row_get_index(GTK_LIST_BOX_ROW(g)));
+    // cJSON *packet = cJSON_CreateObject();
+    // char  *packet_str = NULL;
+
+    // cJSON *typ = cJSON_CreateString("msg_c");
+    // cJSON *type = cJSON_CreateString("0");
+    // cJSON *nick = cJSON_CreateString("30");
+    // cJSON *sender = cJSON_CreateString("1");
+
+    // cJSON_AddItemToObject(packet, "TYPE", typ);
+    // cJSON_AddItemToObject(packet, "CHATID", sender);
+    // cJSON_AddItemToObject(packet, "FROM", type);
+    // cJSON_AddItemToObject(packet, "TO", nick);
+    // packet_str = mx_str_copy(cJSON_Print(packet));
+    // cJSON_Delete(packet);
+    // send(client_context->sockfd, packet_str, mx_strlen(packet_str), 0);
 }
 
 gboolean create_row(gpointer data, struct struct_type parm){
     char *chatname = get_value_by_key(parm.pack,mx_strjoin("CHATNAME=",mx_itoa(n)));
     char *lastmessage = get_value_by_key(parm.pack,mx_strjoin("LASTMESSAGE=",mx_itoa(n)));
-    GtkWidget *row;
-
     row = gtk_list_box_row_new();
     gtk_widget_set_name(row,"chatrow");
-    gtk_list_box_row_set_selectable (GTK_LIST_BOX_ROW(row),FALSE);
+    //gtk_list_box_row_set_selectable (GTK_LIST_BOX_ROW(row),FALSE);
     gtk_list_box_insert (GTK_LIST_BOX(listbox),row,n);
+    // g_object_set_data_full(row,"number",n,NULL);
+    //g_signal_connect(row,"activate", G_CALLBACK(take_index), NULL);
     n++;
 
     gridmenu = gtk_grid_new();
@@ -163,7 +202,6 @@ gboolean create_row(gpointer data, struct struct_type parm){
     gtk_widget_show_all(window);
     return 0;
 }
-
 void make_registration(GtkWidget *Registration, client_context_t *client_context){
     GtkWidget *back;
 

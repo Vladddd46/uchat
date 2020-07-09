@@ -31,6 +31,7 @@ void end_message (GtkWidget *widget, GtkWidget *message);
 char *get_text_of_textview(GtkWidget *text_view);
 void make_registration(GtkWidget *Registration, client_context_t *client_context);
 void do_login(GtkWidget *entryspawn, client_context_t *client_context);
+void take_index(GtkWidget *row, gpointer data);
 
 // Json lib. API
 // char *json_packet_former(int num, ...);
@@ -41,6 +42,7 @@ void do_registration(GtkWidget *Registration, client_context_t *client_context);
 void registration_system(int socket, char *packet);
 void login_system(client_context_t *client_context, char *packet);
 
+GtkWidget *row;
 GtkWidget *entryspawn;
 GtkWidget *login;
 GtkWidget *nickname;
@@ -81,4 +83,5 @@ GtkWidget *edit;
 GtkWidget *delet;
 GtkWidget *editmessedgentry;
 GtkWidget *editbox;
+GtkWidget *messagebox;
 
