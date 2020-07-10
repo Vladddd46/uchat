@@ -340,29 +340,6 @@ void client_context_init(int sockfd) {
     client_context->sockfd = sockfd;
 }
 
-// Read first 8 bytes from packet. (They represent the length of the packet.)
-static int packet_length_determine(void) {
-    char buf[8];
-    bzero(buf, 8);
-    recv(client_context->sockfd, buf, 8, 0);
-    int packet_len = atoi(buf);
-
-    return packet_len;
-}
-
-// Receiving packet from the socket.
-static char *packet_receive(void) {
-    int  packet_len = packet_length_determine();
-    char *packet = mx_strnew(packet_len);
-    int  index = 0;
-
-    while(index < packet_len) {
-        recv(client_context->sockfd, &packet[index], 1, 0);
-        index++;
-    }
-    return packet;
-}
-
 static void received_packet_analyzer(char *packet_type, char *packet) {
     if (!strcmp(packet_type, "reg_s"))
         registration_system(client_context->sockfd, packet);
@@ -392,7 +369,7 @@ void *server_communication(void *param) {
         status = select(FD_SETSIZE, &read_descriptors, NULL, NULL, &tv);
         if (status <= 0) continue;
         // Receive packet from the server.
-        packet      = packet_receive();
+        packet      = packet_receive(client_context->sockfd);
         if (packet == NULL)
             exit(1);
         packet_type = get_value_by_key(packet, "TYPE");
