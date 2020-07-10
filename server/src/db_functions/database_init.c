@@ -83,6 +83,8 @@ void database_init() {
 
     sql = "INSERT INTO CHATS (CHATNAME, LASTMESSAGE) VALUES('YuraVlad', 'hello');";
     exit = sqlite3_exec(db, sql, NULL, 0, &message_error);
+    sql = "INSERT INTO CHATS (CHATNAME, LASTMESSAGE) VALUES('YuraDenis', 'yo yo yo');";
+    exit = sqlite3_exec(db, sql, NULL, 0, &message_error);
     dberror(db, exit, "Error inserting to Chats table");
 
         // sql = "SELECT CHATNAME, LASTMESSAGE FROM CHATS WHERE ID=1;";
@@ -96,6 +98,8 @@ void database_init() {
 
 
     sql = "INSERT INTO USERCHAT (USERID, CHATID) VALUES(1, 1);";
+    exit = sqlite3_exec(db, sql, NULL, 0, &message_error);
+    sql = "INSERT INTO USERCHAT (USERID, CHATID) VALUES(1, 2);";
     exit = sqlite3_exec(db, sql, NULL, 0, &message_error);
     dberror(db, exit, "Error inserting to UserChats table");
     sql = "INSERT INTO USERCHAT (USERID, CHATID) VALUES(2, 1);";

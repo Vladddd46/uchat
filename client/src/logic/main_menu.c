@@ -11,7 +11,7 @@ void main_menu() {
      gtk_widget_set_name(iconnn,"image");
      gtk_grid_attach(GTK_GRID(grid), iconnn, 1, 98, 1, 1);
 
-
+     
 
     login = gtk_entry_new();
     gtk_entry_set_placeholder_text(GTK_ENTRY(login),"Login");
@@ -26,6 +26,7 @@ void main_menu() {
     gtk_widget_set_name(Password,"Password");
     gtk_grid_attach(GTK_GRID(grid), Password, 1, 101, 1, 1);
     gtk_entry_set_visibility(GTK_ENTRY(Password),FALSE);
+    g_signal_connect(Password, "activate", G_CALLBACK(do_login), client_context);
     
     labell2 = gtk_label_new("");
     gtk_grid_attach(GTK_GRID(grid), labell2, 1, 102, 1, 1);

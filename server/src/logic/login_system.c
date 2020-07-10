@@ -36,11 +36,12 @@ static char* mx_confirm_users_password(char* user, char* password) {
 
 static char* mx_get_nickname(char* login) {
     sqlite3 *db = NULL;
-    char sql[100];
+    char sql[200];
     sprintf(sql, "SELECT NICKNAME FROM USERS WHERE LOGIN='%s';", login);
     sqlite3_stmt *res;
     char* nickname;
 
+    sqlite3_open("uchat.db", &db);
     sqlite3_prepare_v2(db, sql, -1, &res, 0);
     sqlite3_step(res);
     nickname = (char*)sqlite3_column_text(res, 0);
@@ -65,6 +66,7 @@ static char *json_packet_former_from_list(chats_t *chat, char *status, char* log
     char* packet_str = NULL;
     cJSON *json_value = cJSON_CreateString("login_s");
     char *nickname = mx_get_nickname(login);
+    printf("\nnickname: %s\n\n", nickname);
 
     cJSON_AddItemToObject(packet, "TYPE", json_value);
     json_value = cJSON_CreateString(status);
@@ -73,14 +75,21 @@ static char *json_packet_former_from_list(chats_t *chat, char *status, char* log
     cJSON_AddItemToObject(packet, "NICKNAME", json_value);
     json_value =  cJSON_CreateString(login);
     cJSON_AddItemToObject(packet, "TO", json_value);
+    json_value =  cJSON_CreateString(mx_itoa(list_len));
+    cJSON_AddItemToObject(packet, "LENGTH", json_value);
     for(int i = 0; i < list_len; i++) {
+        char chat_name_former[100];
+
+        sprintf(chat_name_former, "CHATNAME=%d", i);
         json_value = cJSON_CreateString(chat -> chat_name);
-        cJSON_AddItemToObject(packet, "CHATNAME", json_value);
+        cJSON_AddItemToObject(packet, chat_name_former, json_value);
         json_value = cJSON_CreateString(chat -> last_message);
-        cJSON_AddItemToObject(packet, "LASTMESSAGE", json_value);
+        sprintf(chat_name_former, "LASTMESSAGE=%d", i);
+        cJSON_AddItemToObject(packet, chat_name_former, json_value);
         chat = chat -> next;
     }
     packet_str = cJSON_Print(packet);
+    printf("packet shmaket %s", packet_str);
     return packet_str;
 }
 
