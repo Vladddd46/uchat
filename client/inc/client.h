@@ -42,6 +42,7 @@ void do_registration(GtkWidget *Registration, client_context_t *client_context);
 void registration_system(int socket, char *packet);
 void login_system(client_context_t *client_context, char *packet);
 
+GtkWidget * messagebox;
 GtkWidget *row;
 GtkWidget *entryspawn;
 GtkWidget *login;

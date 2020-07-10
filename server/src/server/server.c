@@ -57,6 +57,7 @@ static bool update_connections(fd_set *descriptors) {
 }
 
 static void *handle_server(void *param) {
+    char *login = (char*)param;
     int status;
     int buf_len;
     fd_set read_descriptors;
@@ -89,14 +90,15 @@ static void *handle_server(void *param) {
                 
                 char *packet = mx_strnew(packet_len);
                 int index = 0;
+                printf("\npacket_len len = %d\n", packet_len);
                 while(index < packet_len) {
                     buf_len = recv(p->sock_fd, &packet[index], 1, 0);
                     index++;
                 }
                 if (buf_len < 0) continue;
 
-                // Modify db and forms packet, which must be send to specified in packet client(login).
-                char *send_packet = mx_database_communication(packet);
+                // Modify db and forms packet, which must be send to specified in packet client(login).);
+                char *send_packet = mx_database_communication(packet, p);
                 if (send_packet == NULL) // Connection was closed but update has not been made yet.
                     continue;
                 /* 
@@ -104,6 +106,8 @@ static void *handle_server(void *param) {
                  * if user with this login is connected to the server.
                  */
                 char *client_login = get_value_by_key(send_packet, "TO");
+
+                printf("Cliet : %s\n", client_login);
 
 
                 /* Makes user logged in. */
@@ -113,6 +117,7 @@ static void *handle_server(void *param) {
                 }
 
                 char *send_back_packet_prefixed =  packet_len_prefix_adder(send_packet);
+                printf("packet = %s\n", send_back_packet_prefixed);
                 free(send_packet);
                 free(packet);
 
@@ -134,6 +139,7 @@ static void *handle_server(void *param) {
 
 
 int main(int argc, char **argv) {
+    char* login = NULL;
     argv_validator(argc);
     int port             = get_port(argv);
     int listening_socket = listening_socket_init(port);
@@ -147,7 +153,7 @@ int main(int argc, char **argv) {
     listen(listening_socket, 128);
 
     pthread_t server_thread;
-    int err = pthread_create(&server_thread, NULL, handle_server, NULL);
+    int err = pthread_create(&server_thread, NULL, handle_server, login);
     error("Can not create new thread", err);
 
     /* 

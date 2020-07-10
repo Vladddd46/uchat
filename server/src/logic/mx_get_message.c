@@ -57,16 +57,20 @@ static int mx_list_len(chat_message_t* chat) {
     return len;
 }
 
-static char *mx_json_packet_former_from_list(chat_message_t* chat, int from) {
+static char *mx_json_packet_former_from_list(chat_message_t* chat, int from, char* login) {
     int list_len = mx_list_len(chat);
     cJSON *packet = cJSON_CreateObject();
     char* packet_str = NULL;
     cJSON *json_value = cJSON_CreateString("msg_s");
 
     cJSON_AddItemToObject(packet, "TYPE", json_value);
-    for(int i = 0; i < list_len; i++, from++) {
+    // printf("\nDen -- 1\n\n");
+    // printf("login = %s\n", login);
+    json_value = cJSON_CreateString(login);
+    cJSON_AddItemToObject(packet, "TO", json_value);
+    // printf("\nDen -- 2\n\n");
+    for(int i = 0; i < list_len - 1; i++, from++) {
         char packet_former[100];
-
         sprintf(packet_former, "ID%d", i);
         json_value = cJSON_CreateString(mx_itoa(from));
         cJSON_AddItemToObject(packet, packet_former, json_value);
@@ -81,23 +85,30 @@ static char *mx_json_packet_former_from_list(chat_message_t* chat, int from) {
         cJSON_AddItemToObject(packet, packet_former, json_value);
         chat = chat -> next;
     }
+    // printf("\nDen -- 3\n\n");
     packet_str = cJSON_Print(packet);
+
+    // printf("\nYOOO %s\n\n", packet_str);
     
     return packet_str;
 }
 
-char* mx_get_message(char* packet) {
+char* mx_get_message(char* packet, connected_client_list_t *p) {
+    printf("\nSEG FAUTL AFTer -- 0\n\n");
     int chat_id = atoi(get_value_by_key(packet, "CHATID"));
     int from = atoi(get_value_by_key(packet, "FROM"));
     int to = atoi(get_value_by_key(packet, "TO"));
+    char* login = p->login;
 
     chat_message_t* list = mx_fill_list(chat_id, from, to);
-    char* return_packet = mx_json_packet_former_from_list(list, from);
+    char* return_packet = mx_json_packet_former_from_list(list, from, login);
+    // printf("\nLOOK HERE -> %s\n\n", return_packet);
+    // printf("\nSEG FAUTL AFTer -- 4\n\n");
     // while(list -> message != NULL) {
-    // 	printf("Sender: %s   Time: %s\nMessage: %s\n\n", list -> sender, list -> time, list -> message);
+    //  printf("Sender: %s   Time: %s\nMessage: %s\n\n", list -> sender, list -> time, list -> message);
     //     list = list -> next;
     // }
-    printf("chat_id = %d\nfrom = %d\nto = %d\n", chat_id, from, to);
-    printf("packet shmaket %s", return_packet);
-    return return_packet;	
+    // printf("chat_id = %d\nfrom = %d\nto = %d\n", chat_id, from, to);
+    // printf("packet shmaket %s", return_packet);
+    return return_packet;   
 }
