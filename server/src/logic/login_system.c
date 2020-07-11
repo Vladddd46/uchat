@@ -61,28 +61,31 @@ static int mx_list_len(chats_t* chat) {
 }
 
 static char* mx_get_special_chat_name(char* chat_name, char* login) {
-    int len = mx_strlen(login);
-    int copy_name_len = mx_strlen(chat_name) - len;
-    char* copy_last_name = mx_strnew(mx_strlen(chat_name));
     char* result = mx_strnew(mx_strlen(chat_name) + 2);
 
-    // if(*(login) != *(chat_name)) {
-    //     for(int i = 0; i < len; i++) {
-    //         *(copy_last_name + i) = *(chat_name + i + copy_name_len);
-    //     }
-    //     int i = 0;
-    //     for(; i < copy_name_len; i++) {
-    //         *(result + i) = *(chat_name + i);
-    //     }
-    //     *(result + i) = '(';
-    //     i++;
-    //     for(int j = 0; j < len; j++, i++) {
-    //         *(result + j + i) = *(copy_last_name + j);
-    //     }
-    //     *(result + i) = ')';
-    //     return result;
-    // }
-    return login;
+    if(*(login) != *(chat_name)) {
+        char* str = strstr(chat_name, login);
+        int len = mx_strlen(chat_name) - mx_strlen(str);
+
+        for(int i = 0; i < len; i++) {
+            *(result + i) = *(chat_name + i);
+        }
+        *(result + mx_strlen(result)) = '(';
+        result = mx_strjoin(result, str);
+        *(result + mx_strlen(result)) = ')';
+    }
+    else {
+        char* str = strstr(chat_name, login);
+        int len = mx_strlen(chat_name) - mx_strlen(str);
+
+        for(int i = 0; i < len; i++) {
+            *(result + i) = *(chat_name + mx_strlen(login));
+        }
+        *(result + mx_strlen(result)) = '(';
+        result = mx_strjoin(result, str);
+        *(result + mx_strlen(result)) = ')';
+    }
+    return result;
 }
 
 static char *json_packet_former_from_list(chats_t *chat, char *status, char* login) {
