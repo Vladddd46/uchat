@@ -57,9 +57,8 @@ static bool update_connections(fd_set *descriptors) {
 }
 
 static void *handle_server(void *param) {
-    char *login = (char*)param;
     int status;
-    int buf_len;
+    int buf_len = 0;
     fd_set read_descriptors;
     // Setting waiting time for select.
     struct timeval tv = wait_time(1, 0);
@@ -84,21 +83,12 @@ static void *handle_server(void *param) {
          */
         for (connected_client_list_t *p = ctx.head.next; p != NULL; p = p->next) {
             if (FD_ISSET(p->sock_fd, &read_descriptors)) {
-                char len[8];
-                recv(p->sock_fd, len, 8, 0);
-                int packet_len = atoi(len);
-                
-                char *packet = mx_strnew(packet_len);
-                int index = 0;
-                printf("\npacket_len len = %d\n", packet_len);
-                while(index < packet_len) {
-                    buf_len = recv(p->sock_fd, &packet[index], 1, 0);
-                    index++;
-                }
+                // <del> принмает пакет с сокета.
+                char *packet = packet_receive(p->sock_fd);
                 if (buf_len < 0) continue;
-
-                // Modify db and forms packet, which must be send to specified in packet client(login).);
-                char *send_packet = mx_database_communication(packet, p);
+                printf("%s\n", packet);
+                // Modify db and forms packet, which must be send to specified in packet client(login).
+                char *send_packet = mx_database_communication(packet);
                 if (send_packet == NULL) // Connection was closed but update has not been made yet.
                     continue;
                 /* 
@@ -106,8 +96,6 @@ static void *handle_server(void *param) {
                  * if user with this login is connected to the server.
                  */
                 char *client_login = get_value_by_key(send_packet, "TO");
-
-                printf("Cliet : %s\n", client_login);
 
 
                 /* Makes user logged in. */
@@ -117,15 +105,12 @@ static void *handle_server(void *param) {
                 }
 
                 char *send_back_packet_prefixed =  packet_len_prefix_adder(send_packet);
-                printf("packet = %s\n", send_back_packet_prefixed);
                 free(send_packet);
                 free(packet);
 
                 for (connected_client_list_t *s = ctx.head.next; s != NULL; s = s->next) {
-                    if (s->is_logged && !strcmp(client_login, s->login)) { 
+                    if (s->is_logged && !strcmp(client_login, s->login))
                         send(s->sock_fd, send_back_packet_prefixed, (int)strlen(send_back_packet_prefixed), 0);
-                        printf("Sending of %d bytes\n", buf_len); // Debug.
-                    }
                 }                    
                 free(send_back_packet_prefixed);
                 // free(client_login)
@@ -139,7 +124,6 @@ static void *handle_server(void *param) {
 
 
 int main(int argc, char **argv) {
-    char* login = NULL;
     argv_validator(argc);
     int port             = get_port(argv);
     int listening_socket = listening_socket_init(port);
@@ -153,7 +137,7 @@ int main(int argc, char **argv) {
     listen(listening_socket, 128);
 
     pthread_t server_thread;
-    int err = pthread_create(&server_thread, NULL, handle_server, login);
+    int err = pthread_create(&server_thread, NULL, handle_server, NULL);
     error("Can not create new thread", err);
 
     /* 

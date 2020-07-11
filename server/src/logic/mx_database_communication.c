@@ -13,9 +13,7 @@ static int mx_callback(void* not_used, int argc, char** argv, char** az_con_name
  * {to: client_login1; type: login; status_code: success}
  * {to: client_login2; from: client_login1; type: msg_update; data: "Hello"}
  */
-char *mx_database_communication(char *packet, connected_client_list_t *p) {
-    // printf("\nSEG FAUTL AFTer -- 0\n\n");
-    printf("\nPACKET from client = %s\n\n", packet);
+char *mx_database_communication(char *packet) {
     if (!strcmp(packet, ""))
         return NULL;
     char *packet_type = get_value_by_key(packet, "TYPE");
@@ -31,8 +29,8 @@ char *mx_database_communication(char *packet, connected_client_list_t *p) {
     }
     else if (!strcmp(packet_type, "msg_c")) {
         printf("\n\nmsg_c packet received\n\n");
-        // printf("\nSEG FAUTL AFTer -- 1\n\n");
-        send_back_packet = mx_get_message(packet, p);
+        // printf("%s\n", packet);
+        send_back_packet = mx_get_message(packet);
     }
     else if (!strcmp(packet_type, "find_user_c")) {
         printf("\n\nfind_user_c packet received\n\n");

@@ -1,5 +1,21 @@
 #include "client.h"
-client_context_t *client_context;
+// client_context_t *client_context;
+
+void mx_show_dialog(GtkWidget *parent, char *message) {
+    GtkDialogFlags flags = GTK_DIALOG_DESTROY_WITH_PARENT;
+    GtkWidget *dialog = gtk_message_dialog_new(
+        GTK_WINDOW(window),
+        flags,
+        GTK_MESSAGE_WARNING,
+        GTK_BUTTONS_OK,
+        "\n%s",
+        message
+    );
+
+    gtk_dialog_run(GTK_DIALOG(dialog));
+    gtk_widget_destroy(dialog);
+}
+
 void main_menu() {
     grid = gtk_grid_new();
     gtk_widget_set_name(grid,"gride");
@@ -11,7 +27,10 @@ void main_menu() {
      gtk_widget_set_name(iconnn,"image");
      gtk_grid_attach(GTK_GRID(grid), iconnn, 1, 98, 1, 1);
 
-
+     
+    // GtkWidget * imagemorph = gtk_image_new_from_file("./morf.gif");
+    // gtk_fixed_put(GTK_FIXED (fixed), imagemorph, 0,0);
+    // gtk_widget_set_size_request(imagemorph, 1024,768);
 
     login = gtk_entry_new();
     gtk_entry_set_placeholder_text(GTK_ENTRY(login),"Login");
@@ -42,7 +61,10 @@ void main_menu() {
     Registration = gtk_button_new_with_label("Sign In");
     gtk_widget_set_name(Registration,"reg");
     g_signal_connect(Registration, "clicked", G_CALLBACK(make_registration), client_context);
+    //g_signal_connect(Registration, "clicked", G_CALLBACK(mx_show_dialog), "hello");
     gtk_grid_attach(GTK_GRID(grid), Registration, 1, 105, 1, 1);
+
+
 
     gtk_widget_set_size_request(GTK_WIDGET(window),1024,768);
     //gtk_window_set_resizable(GTK_WIDGET(window), FALSE);
