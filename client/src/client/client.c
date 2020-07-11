@@ -1,40 +1,9 @@
 #include "client.h"
+
 client_context_t *client_context;
-
-static char *mx_str_copy(char *str) {
-    int len = (int)strlen(str);
-    char *new = (char *)malloc(len + 1);
-    bzero(new, len + 1);
-
-    int i = 0;
-    while(str[i]) {
-        new[i] = str[i];
-        i++;
-    } 
-    return new;
-}
 
 static void destroy(GtkWidget *widget, gpointer data){
   gtk_main_quit();
-}
-
-
-// Checks, wether user specified input correctly.
-static void argv_validator(int argc, char **argv) {
-    char *msg;
-
-    if (argc != 3) {
-        msg = "usage: ./client ip_address port\n";
-        write(2, msg, (int)strlen(msg));
-        exit(1);
-    }
-
-    int port = atoi(argv[2]);
-    if (port == 0) {
-        msg = "Invalid port number\n";
-        write(2, msg, (int)strlen(msg));
-        exit(1);
-    }
 }
 
 // Main window init.
@@ -60,14 +29,6 @@ void gui(int argc, char **argv, client_context_t *client_context) {
     gtk_main();
 }
 
-static int Socket() {
-    // Create socket TCP and IPv4
-    int sockfd = socket(AF_INET, SOCK_STREAM, 0);
-    error("Error while creating socket", sockfd);
-
-    return sockfd;
-}
-
 static struct sockaddr_in client_address_describer(int port) {
     /*
      * Create structure, where client address is described.
@@ -86,12 +47,8 @@ static struct sockaddr_in client_address_describer(int port) {
 
 void client_context_init(int sockfd) {
     client_context = (client_context_t *)malloc(sizeof(client_context_t));
-    if (client_context == NULL) {
-        char *msg = "Client context malloc error\n";
-        write(2, msg, (int)strlen(msg));
-        exit(1);
-    }
-
+    if (client_context == NULL)
+        error("Client context malloc error", -1);
     client_context->sockfd = sockfd;
 }
 
@@ -111,7 +68,7 @@ static void received_packet_analyzer(char *packet_type, char *packet) {
  * When packet received, it is analyzed.
  * Depending on packet gui changes.
  */
-void *server_communication(void *param) {
+static void *server_communication(void *param) {
     fd_set read_descriptors;
     struct timeval tv = wait_time(1, 0);
     int status;
@@ -138,7 +95,7 @@ void *server_communication(void *param) {
 int main(int argc, char **argv) {
     argv_validator(argc, argv);
     int port                       = atoi(argv[2]);
-    int sockfd                     = Socket();
+    int sockfd                     = mx_socket();
     struct sockaddr_in client_addr = client_address_describer(port);
 
     // Do the connect to the server.

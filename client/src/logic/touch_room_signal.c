@@ -1,6 +1,6 @@
 #include "client.h"
 
-void touch_room_signal(GtkWidget *listbox, gpointer data){
+void touch_room_signal(GtkWidget *listbox, void *socket){
     GtkListBoxRow *selectedrow= gtk_list_box_get_selected_row(GTK_LIST_BOX(listbox));
     int indexrow = gtk_list_box_row_get_index(GTK_LIST_BOX_ROW(selectedrow));
     GList *gl = gtk_container_get_children(GTK_CONTAINER(selectedrow));
@@ -9,19 +9,16 @@ void touch_room_signal(GtkWidget *listbox, gpointer data){
 
     mx_printstr((char *)gtk_label_get_text(GTK_LABEL(lab)));
     mx_printstr(mx_itoa(indexrow));
-    // cJSON *packet = cJSON_CreateObject();
-    // char  *packet_str = NULL;
 
-    // cJSON *typ = cJSON_CreateString("msg_c");
-    // cJSON *type = cJSON_CreateString("0");
-    // cJSON *nick = cJSON_CreateString("30");
-    // cJSON *sender = cJSON_CreateString("1");
+    int *test = (int *)socket;
+    printf(">>>%d\n", client_context->sockfd);
+    char chat_name[80];
+    char chat_id[40];
+    sprintf(chat_name, "CHATNAME:%s", (char *)gtk_label_get_text(GTK_LABEL(lab)));
+    sprintf(chat_id, "CHATID:%d", indexrow);
 
-    // cJSON_AddItemToObject(packet, "TYPE", typ);
-    // cJSON_AddItemToObject(packet, "CHATID", sender);
-    // cJSON_AddItemToObject(packet, "FROM", type);
-    // cJSON_AddItemToObject(packet, "TO", nick);
-    // packet_str = mx_str_copy(cJSON_Print(packet));
-    // cJSON_Delete(packet);
+    char *packet = json_packet_former(3, "TYPE:msg_c", chat_name, chat_id);
+
+
     // send(client_context->sockfd, packet_str, mx_strlen(packet_str), 0);
 }

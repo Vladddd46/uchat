@@ -1,5 +1,5 @@
 #include "client.h"
-client_context_t *client_context;
+// client_context_t *client_context;
 
 void mx_show_dialog(GtkWidget *parent, char *message) {
     GtkDialogFlags flags = GTK_DIALOG_DESTROY_WITH_PARENT;

@@ -66,7 +66,8 @@ void draw_message_menu(GtkWidget *entryspawn, client_context_t *client_context){
     gtk_widget_set_name(listbox,"listboxleft");
     gtk_widget_set_size_request(scroll,300,718);
     gtk_container_add(GTK_CONTAINER(scroll), listbox);
-    g_signal_connect(listbox,"row-activated", G_CALLBACK(touch_room_signal), NULL);
+
+    g_signal_connect(listbox,"row-activated", G_CALLBACK(touch_room_signal), &client_context->sockfd);
 
      scrollnewmess = gtk_scrolled_window_new(0,0);
      gtk_fixed_put(GTK_FIXED (fixed), scrollnewmess, 300,718);

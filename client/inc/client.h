@@ -21,6 +21,7 @@ struct struct_type {
 	char *pack;
 	};
 
+client_context_t *client_context;
 // какие то непонятные функции Дениса. PS. структурируй их пожалуйста.
 void back_to_menu(GtkWidget *back, client_context_t *client_context);
 void main_menu();
@@ -31,15 +32,16 @@ void end_message (GtkWidget *widget, GtkWidget *message);
 char *get_text_of_textview(GtkWidget *text_view);
 void make_registration(GtkWidget *Registration, client_context_t *client_context);
 void do_login(GtkWidget *entryspawn, client_context_t *client_context);
-void touch_room_signal(GtkWidget *row, gpointer data);
+void touch_room_signal(GtkWidget *listbox, void *socket);
 void delete_message(GtkWidget *widget, GtkWidget *message);
 void edit_message (GtkWidget *widget, GtkWidget *message);
 void end_message (GtkWidget *widget, GtkWidget *message);
 int show_popup(GtkWidget *widget, GdkEvent *event);
 
-// Json lib. API
-// char *json_packet_former(int num, ...);
-// char *get_value_by_key(char *json_str, char *key);
+// main
+void argv_validator(int argc, char **argv);
+int mx_socket();
+struct sockaddr_in mx_client_address_describer(int port);
 
 // Logic
 void do_registration(GtkWidget *Registration, client_context_t *client_context);
