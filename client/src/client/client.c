@@ -59,8 +59,10 @@ static void received_packet_analyzer(char *packet_type, char *packet) {
         login_system(client_context, packet);
     else if (!strcmp(packet_type, "find_user_s"))
         printf("%s\n", "find_user packet receive");
-    else if (!strcmp(packet_type, "msg_s"))
+    else if (!strcmp(packet_type, "msg_s")) {
         printf("%s\n", "msg packet received");
+        printf("packet from server %s\n", packet);
+    }
 }
 
 /*

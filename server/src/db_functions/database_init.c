@@ -79,7 +79,7 @@ void database_init() {
     mx_add_user("Vlad", "qwerty", "vdepesh");
     dberror(db, exit, "Error to create MESSAGES table");
 
-    sql = "INSERT INTO CHATS (CHATNAME, LASTMESSAGE) VALUES('YuraVlad', 'hello');";
+    sql = "INSERT INTO CHATS (CHATNAME, LASTMESSAGE) VALUES('VladYura', 'hello');";
     exit = sqlite3_exec(db, sql, NULL, 0, &message_error);
     dberror(db, exit, "Error inserting to Chats table");
 

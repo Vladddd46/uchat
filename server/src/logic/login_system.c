@@ -60,6 +60,31 @@ static int mx_list_len(chats_t* chat) {
     return len;
 }
 
+static char* mx_get_special_chat_name(char* chat_name, char* login) {
+    int len = mx_strlen(login);
+    int copy_name_len = mx_strlen(chat_name) - len;
+    char* copy_last_name = mx_strnew(mx_strlen(chat_name));
+    char* result = mx_strnew(mx_strlen(chat_name) + 2);
+
+    // if(*(login) != *(chat_name)) {
+    //     for(int i = 0; i < len; i++) {
+    //         *(copy_last_name + i) = *(chat_name + i + copy_name_len);
+    //     }
+    //     int i = 0;
+    //     for(; i < copy_name_len; i++) {
+    //         *(result + i) = *(chat_name + i);
+    //     }
+    //     *(result + i) = '(';
+    //     i++;
+    //     for(int j = 0; j < len; j++, i++) {
+    //         *(result + j + i) = *(copy_last_name + j);
+    //     }
+    //     *(result + i) = ')';
+    //     return result;
+    // }
+    return login;
+}
+
 static char *json_packet_former_from_list(chats_t *chat, char *status, char* login) {
     int list_len = mx_list_len(chat);
     cJSON *packet = cJSON_CreateObject();
@@ -81,7 +106,7 @@ static char *json_packet_former_from_list(chats_t *chat, char *status, char* log
         char chat_name_former[100];
 
         sprintf(chat_name_former, "CHATNAME=%d", i);
-        json_value = cJSON_CreateString(chat -> chat_name);
+        json_value = cJSON_CreateString(mx_get_special_chat_name(chat -> chat_name, login));
         cJSON_AddItemToObject(packet, chat_name_former, json_value);
         json_value = cJSON_CreateString(chat -> last_message);
         sprintf(chat_name_former, "LASTMESSAGE=%d", i);
