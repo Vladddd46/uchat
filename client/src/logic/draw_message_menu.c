@@ -23,6 +23,7 @@ gboolean button_release (GtkWidget *widget, GdkEventKey *event, gpointer data) {
 }
 
 void draw_message_menu(GtkWidget *entryspawn, client_context_t *client_context){
+    //отрисовка основного меню с чатами и комнатами
     gtk_widget_destroy(fixed);
     fixed = gtk_fixed_new();
     gtk_container_add(GTK_CONTAINER(window), fixed); 
@@ -51,7 +52,6 @@ void draw_message_menu(GtkWidget *entryspawn, client_context_t *client_context){
 
     newchatbutton = gtk_button_new();
     gtk_box_pack_end(GTK_BOX(leftbox), newchatbutton, TRUE, TRUE, 0);
-   // g_signal_connect(newchatbutton, "clicked", G_CALLBACK(create_row), NULL);
     iconn = gdk_pixbuf_new_from_file("./media/img/plus_icon.png",NULL);
     iconn = gdk_pixbuf_scale_simple(iconn, 32,32, GDK_INTERP_BILINEAR);
     icon = gtk_image_new_from_pixbuf(iconn);
@@ -66,7 +66,7 @@ void draw_message_menu(GtkWidget *entryspawn, client_context_t *client_context){
     gtk_widget_set_name(listbox,"listboxleft");
     gtk_widget_set_size_request(scroll,300,718);
     gtk_container_add(GTK_CONTAINER(scroll), listbox);
-    g_signal_connect(listbox,"row-activated", G_CALLBACK(take_index), NULL);
+    g_signal_connect(listbox,"row-activated", G_CALLBACK(touch_room_signal), NULL);
 
      scrollnewmess = gtk_scrolled_window_new(0,0);
      gtk_fixed_put(GTK_FIXED (fixed), scrollnewmess, 300,718);

@@ -31,7 +31,11 @@ void end_message (GtkWidget *widget, GtkWidget *message);
 char *get_text_of_textview(GtkWidget *text_view);
 void make_registration(GtkWidget *Registration, client_context_t *client_context);
 void do_login(GtkWidget *entryspawn, client_context_t *client_context);
-void take_index(GtkWidget *row, gpointer data);
+void touch_room_signal(GtkWidget *row, gpointer data);
+void delete_message(GtkWidget *widget, GtkWidget *message);
+void edit_message (GtkWidget *widget, GtkWidget *message);
+void end_message (GtkWidget *widget, GtkWidget *message);
+int show_popup(GtkWidget *widget, GdkEvent *event);
 
 // Json lib. API
 // char *json_packet_former(int num, ...);

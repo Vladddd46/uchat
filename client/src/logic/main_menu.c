@@ -12,6 +12,9 @@ void main_menu() {
      gtk_grid_attach(GTK_GRID(grid), iconnn, 1, 98, 1, 1);
 
      
+    // GtkWidget * imagemorph = gtk_image_new_from_file("./morf.gif");
+    // gtk_fixed_put(GTK_FIXED (fixed), imagemorph, 0,0);
+    // gtk_widget_set_size_request(imagemorph, 1024,768);
 
     login = gtk_entry_new();
     gtk_entry_set_placeholder_text(GTK_ENTRY(login),"Login");
