@@ -38,6 +38,7 @@ typedef struct chats {
 
 // Chats messages context
 typedef struct chat_message {
+	int list_len;
 	char *sender;
     char *time;
     char *message;

@@ -86,7 +86,7 @@ static void *handle_server(void *param) {
                 // <del> принмает пакет с сокета.
                 char *packet = packet_receive(p->sock_fd);
                 if (buf_len < 0) continue;
-
+                printf("%s\n", packet);
                 // Modify db and forms packet, which must be send to specified in packet client(login).
                 char *send_packet = mx_database_communication(packet);
                 if (send_packet == NULL) // Connection was closed but update has not been made yet.

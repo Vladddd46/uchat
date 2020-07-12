@@ -26,10 +26,10 @@ void gui(int argc, char **argv, client_context_t *client_context) {
     gtk_container_add(GTK_CONTAINER(window), fixed);
     main_menu();
 
-    gtk_main();
+    gtk_main(); 
 }
 
-static struct sockaddr_in client_address_describer(int port) {
+static struct sockaddr_in client_address_describer(int port) { 
     /*
      * Create structure, where client address is described.
      * 1. server`s address
@@ -59,8 +59,10 @@ static void received_packet_analyzer(char *packet_type, char *packet) {
         login_system(client_context, packet);
     else if (!strcmp(packet_type, "find_user_s"))
         printf("%s\n", "find_user packet receive");
-    else if (!strcmp(packet_type, "msg_s"))
-        printf("%s\n", "msg packet received");
+    else if (!strcmp(packet_type, "msg_s")) {
+        create_row_system(client_context, packet);
+        printf("packet from server %s\n", packet);
+    }
 }
 
 /*

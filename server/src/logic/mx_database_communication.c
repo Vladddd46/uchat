@@ -29,6 +29,7 @@ char *mx_database_communication(char *packet) {
     }
     else if (!strcmp(packet_type, "msg_c")) {
         printf("\n\nmsg_c packet received\n\n");
+        // printf("%s\n", packet);
         send_back_packet = mx_get_message(packet);
     }
     else if (!strcmp(packet_type, "find_user_c")) {
@@ -53,6 +54,7 @@ char *mx_database_communication(char *packet) {
     // sqlite3_exec(db, sql, mx_callback, NULL, NULL);
     // return 0;
     // free(packet_type); // почему - то иногда выдает ошибку malloc error
+    printf("%s\n", send_back_packet);
     return send_back_packet;
 }
 
