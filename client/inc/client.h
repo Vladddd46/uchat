@@ -19,6 +19,7 @@ typedef struct client_context_s {
 
 struct struct_type {
 	char *pack;
+	int number;
 	};
 
 client_context_t *client_context;
@@ -27,7 +28,7 @@ void back_to_menu(GtkWidget *back, client_context_t *client_context);
 void main_menu();
 void draw_message_menu(GtkWidget *entryspawn, client_context_t *client_context);
 gboolean create_row(gpointer data, struct struct_type parm);
-void create_message(GtkWidget *newmessedgentry, gpointer data);
+void create_message(GtkWidget *newmessedgentry, struct struct_type parm);
 void end_message (GtkWidget *widget, GtkWidget *message);
 char *get_text_of_textview(GtkWidget *text_view);
 void make_registration(GtkWidget *Registration, client_context_t *client_context);
@@ -47,6 +48,7 @@ struct sockaddr_in mx_client_address_describer(int port);
 void do_registration(GtkWidget *Registration, client_context_t *client_context);
 void registration_system(int socket, char *packet);
 void login_system(client_context_t *client_context, char *packet);
+void create_row_system(client_context_t *client_context, char *packet);
 
 GtkWidget *row;
 GtkWidget *entryspawn;

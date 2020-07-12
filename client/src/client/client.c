@@ -26,7 +26,7 @@ void gui(int argc, char **argv, client_context_t *client_context) {
     gtk_container_add(GTK_CONTAINER(window), fixed);
     main_menu();
 
-    gtk_main();
+    gtk_main(); 
 }
 
 static struct sockaddr_in client_address_describer(int port) {
@@ -60,7 +60,7 @@ static void received_packet_analyzer(char *packet_type, char *packet) {
     else if (!strcmp(packet_type, "find_user_s"))
         printf("%s\n", "find_user packet receive");
     else if (!strcmp(packet_type, "msg_s")) {
-        printf("%s\n", "msg packet received");
+        create_row_system(client_context, packet);
         printf("packet from server %s\n", packet);
     }
 }

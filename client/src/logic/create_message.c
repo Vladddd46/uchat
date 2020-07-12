@@ -1,6 +1,6 @@
 #include "client.h"
 
-static int messagenumber = 0;
+int messagenumber = 0;
 bool  flag = FALSE;
 
 int show_popup(GtkWidget *widget, GdkEvent *event) {
@@ -54,9 +54,14 @@ void end_message (GtkWidget *widget, GtkWidget *message){
 
 }
 
-void create_message(GtkWidget *newmessedgentry, gpointer data){
+void create_message(GtkWidget *newmessedgentry, struct struct_type parm){
   GtkWidget *row;
   GtkAdjustment *adj;
+  printf("%s\n",">>>>>>>>>>>>>>>>>>" );
+
+    char *chatname = get_value_by_key(parm.pack,mx_strjoin("SENDER",mx_itoa(parm.number)));
+    char *messagetext = get_value_by_key(parm.pack,mx_strjoin("MESSAGE",mx_itoa(parm.number)));
+    char *timemessage = get_value_by_key(parm.pack,mx_strjoin("TIME",mx_itoa(parm.number)));
     adj = gtk_adjustment_new(10000, 10000, 1, 10000, 10000, 100000);
     row = gtk_list_box_row_new();
     ebox = gtk_event_box_new();
@@ -80,16 +85,16 @@ void create_message(GtkWidget *newmessedgentry, gpointer data){
     verticalbox = gtk_box_new(GTK_ORIENTATION_VERTICAL,0);
     gtk_box_pack_start(GTK_BOX(messagebox),verticalbox, FALSE, FALSE, 0);
 
-    labellmenu = gtk_label_new("Vlad");
+    labellmenu = gtk_label_new(chatname);
     gtk_widget_set_name(labellmenu,"labellmenu");
     gtk_box_pack_start(GTK_BOX(verticalbox),labellmenu, FALSE, FALSE, 0);
 
-    char *messageBuff = get_text_of_textview(newmessedgentry);
-    labellmenu2 = gtk_label_new(messageBuff);
+    //char *messageBuff = get_text_of_textview(newmessedgentry);
+    labellmenu2 = gtk_label_new(messagetext);
     gtk_widget_set_name(labellmenu2,"labellmenu2");
     gtk_box_pack_start(GTK_BOX(verticalbox),labellmenu2, FALSE, FALSE, 0);
 
-    labellmenu3 = gtk_label_new("Yesterday");
+    labellmenu3 = gtk_label_new(timemessage);
     gtk_box_pack_start(GTK_BOX(messagebox),labellmenu3, FALSE, FALSE, 0);
 
  
