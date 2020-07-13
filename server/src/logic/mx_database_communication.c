@@ -14,6 +14,8 @@ static int mx_callback(void* not_used, int argc, char** argv, char** az_con_name
  * {to: client_login2; from: client_login1; type: msg_update; data: "Hello"}
  */
 char *mx_database_communication(char *packet) {
+    printf("\nGet here!!\n\nPaket type: %s\n\n", packet);
+    // mx_printstr("\nGet here printstr\n\n");
     if (!strcmp(packet, ""))
         return NULL;
     char *packet_type = get_value_by_key(packet, "TYPE");
@@ -34,11 +36,17 @@ char *mx_database_communication(char *packet) {
     }
     else if (!strcmp(packet_type, "find_user_c")) {
         printf("\n\nfind_user_c packet received\n\n");
-        // send_back_packet = find_user();
+        send_back_packet = mx_find_user(packet);
+        printf("send_back_packet %s\n", send_back_packet);
     }
     else if (!strcmp(packet_type, "add_msg_c")) {
         printf("\n\nmsg_c packet received\n\n");
         send_back_packet = mx_add_message_by_id(packet);
+        // send_back_packet = msg();
+    }
+    else if (!strcmp(packet_type, "add_contact_c")) {
+        printf("\n\nmsg_c packet received\n\n");
+        send_back_packet = mx_add_contact(packet);
         // send_back_packet = msg();
     }
     // else if (!strcmp(packet_type, "search_c")) {

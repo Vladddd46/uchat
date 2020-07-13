@@ -6,9 +6,8 @@ gboolean my_keypress_function (GtkWidget *widget, GdkEventKey *event, gpointer d
     if (event->keyval == 65505 || event->keyval == 65507) {
         release_button = TRUE;
     }
-    if (event->keyval == 65293 && release_button == FALSE){
-        //create_message(newmessedgentry, NULL);
-    }
+    if (event->keyval == 65293 && release_button == FALSE)
+        create_message(newmessedgentry, NULL);
     return FALSE;
 }
 
@@ -97,3 +96,4 @@ void draw_message_menu(GtkWidget *entryspawn, client_context_t *client_context){
 
      gtk_widget_show_all(window);
 }
+
