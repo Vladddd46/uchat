@@ -20,7 +20,7 @@ typedef struct client_context_s {
 struct struct_type {
 	char *pack;
 	int number;
-	};
+};
 
 client_context_t *client_context;
 // какие то непонятные функции Дениса. PS. структурируй их пожалуйста.
@@ -43,8 +43,9 @@ void add_new_user(GtkWidget *newchatbutton, gpointer data);
 
 // main
 void argv_validator(int argc, char **argv);
-int mx_socket();
+int  mx_socket();
 struct sockaddr_in mx_client_address_describer(int port);
+void mx_received_packet_analyzer(char *packet_type, char *packet, client_context_t *client_context);
 
 // Logic
 void do_registration(GtkWidget *Registration, client_context_t *client_context);
