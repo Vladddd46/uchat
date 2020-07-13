@@ -7,7 +7,7 @@ gboolean my_keypress_function (GtkWidget *widget, GdkEventKey *event, gpointer d
         release_button = TRUE;
     }
     if (event->keyval == 65293 && release_button == FALSE){
-        //create_message(newmessedgentry, NULL);
+        //create_message_client(newmessedgentry, NULL);
     }
     return FALSE;
 }
@@ -57,6 +57,7 @@ void draw_message_menu(GtkWidget *entryspawn, client_context_t *client_context){
     iconn = gdk_pixbuf_scale_simple(iconn, 32,32, GDK_INTERP_BILINEAR);
     icon = gtk_image_new_from_pixbuf(iconn);
     gtk_button_set_image (GTK_BUTTON (newchatbutton), icon);
+    g_signal_connect(newchatbutton,"clicked", G_CALLBACK(add_new_user), NULL);
 
     rightbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL,0);
     gtk_widget_set_size_request(rightbox,724,50);

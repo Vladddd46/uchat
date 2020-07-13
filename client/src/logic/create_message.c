@@ -117,3 +117,5 @@ void create_message(GtkWidget *newmessedgentry, struct struct_type parm){
     //gtk_scrolled_window_set_vadjustment(GTK_SCROLLED_WINDOW(scrollmess), adj);
     printf("%s\n",">>>>>>>" );
 }
+
+
