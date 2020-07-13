@@ -77,4 +77,8 @@ border: none;
 #message{
   background-color: #ffffff;
   border-radius: 15px;
+  padding: 3px;
+}
+#minilistbox{
+  background-color: #ffffff;
 }

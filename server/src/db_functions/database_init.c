@@ -5,15 +5,15 @@
  * Creates user(login = admin, password = qwerty) by default.
  */
 
-static char *mx_insert_all_args(char* login, char* password, char* nickname) {
-    char *request = mx_strjoin("INSERT INTO USERS (LOGIN, PASSWORD, NICKNAME) VALUES('", login);
+static char* mx_insert_all_args(char* login, char* password, char* nickname) {
+    char* request = mx_strjoin("INSERT INTO USERS (LOGIN, PASSWORD, NICKNAME) VALUES('", login);
 
     request = mx_strjoin(request, "', '");
     request = mx_strjoin(request, password);
     request = mx_strjoin(request, "', '");
     request = mx_strjoin(request, nickname);
     request = mx_strjoin(request, "');");
-
+    // printf("%s", request);
     return request;
 }
 
@@ -57,23 +57,21 @@ void database_init() {
         "ID          INTEGER PRIMARY KEY AUTOINCREMENT, "
         "CHATNAME    TEXT NOT NULL, " // тут должна быть какая-то шняга Влада
         "LASTMESSAGE TEXT NOT NULL);";
-    exit = sqlite3_open("uchat.db", &db);
     exit = sqlite3_exec(db, sql, NULL, 0, &message_error);
     dberror(db, exit, "Error to create CHATS table");
 
     sql = "CREATE TABLE IF NOT EXISTS USERCHAT("
         "USERID     INTEGER NOT NULL, "
         "CHATID     INTEGER NOT NULL);";
-    exit = sqlite3_open("uchat.db", &db);
     exit = sqlite3_exec(db, sql, NULL, 0, &message_error);
     dberror(db, exit, "Тут проблема 1");
 
     sql = "CREATE TABLE IF NOT EXISTS MESSAGES("
         "CHATID     INTEGER, " 
+        "MESSAGEID  INTEGER, "
         "SENDER     TEXT NOT NULL, "
         "TIME       TEXT NOT NULL, "
         "MESSAGE    TEXT NOT NULL);";
-    exit = sqlite3_open("uchat.db", &db);
     exit = sqlite3_exec(db, sql, NULL, 0, &message_error);
 
     /* добавление тестовых даных в БД */
@@ -82,8 +80,6 @@ void database_init() {
     dberror(db, exit, "Error to create MESSAGES table");
 
     sql = "INSERT INTO CHATS (CHATNAME, LASTMESSAGE) VALUES('YuraVlad', 'hello');";
-    exit = sqlite3_exec(db, sql, NULL, 0, &message_error);
-    sql = "INSERT INTO CHATS (CHATNAME, LASTMESSAGE) VALUES('YuraDenis', 'yo yo yo');";
     exit = sqlite3_exec(db, sql, NULL, 0, &message_error);
     dberror(db, exit, "Error inserting to Chats table");
 
@@ -96,10 +92,42 @@ void database_init() {
 
         // printf("%s", sqlite3_column_text(res2, 0));
 
+    /* добавляем сообщения в чат */
+    sql = "INSERT INTO MESSAGES (CHATID, MESSAGEID, SENDER, TIME, MESSAGE) VALUES(1, 1, 'Yura', '12:42', 'Hello');";
+    exit = sqlite3_exec(db, sql, NULL, 0, &message_error);
+    sql = "INSERT INTO MESSAGES (CHATID, MESSAGEID, SENDER, TIME, MESSAGE) VALUES(1, 2, 'Vlad', '12:42','Hi');";
+    exit = sqlite3_exec(db, sql, NULL, 0, &message_error);
+    sql = "INSERT INTO MESSAGES (CHATID, MESSAGEID, SENDER, TIME, MESSAGE) VALUES(1, 3, 'Yura', '12:42','How are you?');";
+    exit = sqlite3_exec(db, sql, NULL, 0, &message_error);
+    sql = "INSERT INTO MESSAGES (CHATID, MESSAGEID, SENDER, TIME, MESSAGE) VALUES(1, 4, 'Vlad', '12:42','Im fine');";
+    exit = sqlite3_exec(db, sql, NULL, 0, &message_error);
+    sql = "INSERT INTO MESSAGES (CHATID, MESSAGEID, SENDER, TIME, MESSAGE) VALUES(1, 5, 'Vlad', '12:43','And you?');";
+    exit = sqlite3_exec(db, sql, NULL, 0, &message_error);
+    sql = "INSERT INTO MESSAGES (CHATID, MESSAGEID, SENDER, TIME, MESSAGE) VALUES(1, 6, 'Yura', '12:43','Im okay');";
+    exit = sqlite3_exec(db, sql, NULL, 0, &message_error);
+    sql = "INSERT INTO MESSAGES (CHATID, MESSAGEID, SENDER, TIME, MESSAGE) VALUES(1, 7, 'Yura', '12:43','How do you fell to play golf?');";
+    exit = sqlite3_exec(db, sql, NULL, 0, &message_error);
+    sql = "INSERT INTO MESSAGES (CHATID, MESSAGEID, SENDER, TIME, MESSAGE) VALUES(1, 8, 'Vlad', '12:44','Its going to be rain today');";
+    exit = sqlite3_exec(db, sql, NULL, 0, &message_error);
+    sql = "INSERT INTO MESSAGES (CHATID, MESSAGEID, SENDER, TIME, MESSAGE) VALUES(1, 9, 'Vlad', '12:44','I think we can play on Saturday');";
+    exit = sqlite3_exec(db, sql, NULL, 0, &message_error);
+    sql = "INSERT INTO MESSAGES (CHATID, MESSAGEID, SENDER, TIME, MESSAGE) VALUES(1, 10, 'Yura', '12:44','Nice');";
+    exit = sqlite3_exec(db, sql, NULL, 0, &message_error);
+    sql = "INSERT INTO MESSAGES (CHATID, MESSAGEID, SENDER, TIME, MESSAGE) VALUES(1, 11, 'Yura', '12:45','Where will we meet?');";
+    exit = sqlite3_exec(db, sql, NULL, 0, &message_error);
+    sql = "INSERT INTO MESSAGES (CHATID, MESSAGEID, SENDER, TIME, MESSAGE) VALUES(1, 12, 'Vlad', '12:45','I think near Unit City!');";
+    exit = sqlite3_exec(db, sql, NULL, 0, &message_error);
+    sql = "INSERT INTO MESSAGES (CHATID, MESSAGEID, SENDER, TIME, MESSAGE) VALUES(1, 13, 'Yura', '12:45','Well, i wiil see you there');";
+    exit = sqlite3_exec(db, sql, NULL, 0, &message_error);
+    sql = "INSERT INTO MESSAGES (CHATID, MESSAGEID, SENDER, TIME, MESSAGE) VALUES(1, 14, 'Yura', '12:46','bye');";
+    exit = sqlite3_exec(db, sql, NULL, 0, &message_error);
+    sql = "INSERT INTO MESSAGES (CHATID, MESSAGEID, SENDER, TIME, MESSAGE) VALUES(1, 15, 'Vlad', '12:46','good bye');";
+    exit = sqlite3_exec(db, sql, NULL, 0, &message_error);
+
+    dberror(db, exit, "Error inserting message to MESSAGES table");
+    /*-----------------------------------------------------*/
 
     sql = "INSERT INTO USERCHAT (USERID, CHATID) VALUES(1, 1);";
-    exit = sqlite3_exec(db, sql, NULL, 0, &message_error);
-    sql = "INSERT INTO USERCHAT (USERID, CHATID) VALUES(1, 2);";
     exit = sqlite3_exec(db, sql, NULL, 0, &message_error);
     dberror(db, exit, "Error inserting to UserChats table");
     sql = "INSERT INTO USERCHAT (USERID, CHATID) VALUES(2, 1);";
@@ -109,8 +137,3 @@ void database_init() {
     /*-----------------------------------------------------*/
     sqlite3_close(db);
 }
-
-
-
-
-

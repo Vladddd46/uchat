@@ -15,33 +15,60 @@
 
 typedef struct client_context_s {
 	int sockfd;
+	char *username;
 } client_context_t;
 
 struct struct_type {
 	char *pack;
+	int number;
 	};
 
+client_context_t *client_context;
 // какие то непонятные функции Дениса. PS. структурируй их пожалуйста.
 void back_to_menu(GtkWidget *back, client_context_t *client_context);
 void main_menu();
 void draw_message_menu(GtkWidget *entryspawn, client_context_t *client_context);
 gboolean create_row(gpointer data, struct struct_type parm);
-void create_message(GtkWidget *newmessedgentry, gpointer data);
+void create_message(GtkWidget *newmessedgentry, struct struct_type parm);
 void end_message (GtkWidget *widget, GtkWidget *message);
 char *get_text_of_textview(GtkWidget *text_view);
 void make_registration(GtkWidget *Registration, client_context_t *client_context);
 void do_login(GtkWidget *entryspawn, client_context_t *client_context);
-void take_index(GtkWidget *row, gpointer data);
+void touch_room_signal(GtkWidget *listbox, void *socket);
+void delete_message(GtkWidget *widget, GtkWidget *message);
+void edit_message (GtkWidget *widget, GtkWidget *message);
+void end_message (GtkWidget *widget, GtkWidget *message);
+int show_popup(GtkWidget *widget, GdkEvent *event);
+void add_new_user(GtkWidget *newchatbutton, gpointer data);
+gboolean mini_button_release (GtkWidget *widget, GdkEventKey *event, gpointer data);
+gboolean add_new_friend (GtkWidget *newchatbutton, gpointer data);
+void draw_list_box_system(char *packet);
+void draw_list_box(char *login, char *nickname, int number);
+// gboolean mini_my_keypress_function (GtkWidget *widget, GdkEventKey *event, gpointer data);
 
-// Json lib. API
-// char *json_packet_former(int num, ...);
-// char *get_value_by_key(char *json_str, char *key);
+
+// main
+void argv_validator(int argc, char **argv);
+int mx_socket();
+struct sockaddr_in mx_client_address_describer(int port);
 
 // Logic
 void do_registration(GtkWidget *Registration, client_context_t *client_context);
 void registration_system(int socket, char *packet);
 void login_system(client_context_t *client_context, char *packet);
-
+void create_row_system(client_context_t *client_context, char *packet);
+//mini приставка для виджетов в окне добавления юзеров
+GtkWidget *minieventbox;
+GtkWidget *minibutton;
+GtkWidget *minilabell2;
+GtkWidget *minilabell;
+GtkWidget *minirow;
+GtkWidget *miniwindow;
+GtkWidget *minibox;
+GtkWidget *minifixed;
+GtkWidget *minilistbox;
+GtkWidget *miniscroll;
+GtkWidget *minientry;
 GtkWidget *row;
 GtkWidget *entryspawn;
 GtkWidget *login;

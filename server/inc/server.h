@@ -38,11 +38,19 @@ typedef struct chats {
 
 // Chats messages context
 typedef struct chat_message {
+	int list_len;
 	char *sender;
     char *time;
     char *message;
     struct chat_message *next; 
 } chat_message_t;
+
+typedef struct users_list {
+	int id;
+	char* nickname;
+	char* login;
+	struct users_list *next;
+} users_list_t;
 
 // Server main functions.
 int  get_port(char **argv);
@@ -66,6 +74,8 @@ char *registration_system(char *packet);
 chats_t *mx_get_users_chats(char *user);
 char* mx_get_message(char* packet);
 char* mx_add_message_by_id(char* packet);
+char* mx_find_user(char* packet);
+char* mx_add_contact(char* packet);
 
 
 
