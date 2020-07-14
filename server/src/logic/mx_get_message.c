@@ -70,6 +70,8 @@ static char *mx_json_packet_former_from_list(chat_message_t* chat, int from, cha
         sprintf(packet_former, "ID%d", i);
         json_value = cJSON_CreateString(mx_itoa(from));
         cJSON_AddItemToObject(packet, packet_former, json_value);
+        json_value = cJSON_CreateString(mx_itoa(list_len));
+        cJSON_AddItemToObject(packet, "MSGLEN", json_value);
         json_value = cJSON_CreateString(chat -> sender);
         sprintf(packet_former, "SENDER%d", i);
         cJSON_AddItemToObject(packet, packet_former, json_value);

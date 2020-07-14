@@ -57,8 +57,8 @@ void create_message(GtkWidget *newmessedgentry, struct struct_type parm){
   GtkWidget *row;
   GtkAdjustment *adj;
 
-    char *nameuser = get_value_by_key(parm.pack,"TO");
-    char *chatname = get_value_by_key(parm.pack,mx_strjoin("SENDER",mx_itoa(parm.number)));
+    char *nameuser = client_context->username;
+    char *sender = get_value_by_key(parm.pack,mx_strjoin("SENDER",mx_itoa(parm.number)));
     int messagenum = atoi(get_value_by_key(parm.pack,mx_strjoin("ID",mx_itoa(parm.number))));
     char *messagetext = get_value_by_key(parm.pack,mx_strjoin("MESSAGE",mx_itoa(parm.number)));
     char *timemessage = get_value_by_key(parm.pack,mx_strjoin("TIME",mx_itoa(parm.number)));
@@ -73,7 +73,7 @@ void create_message(GtkWidget *newmessedgentry, struct struct_type parm){
     gtk_container_add(GTK_CONTAINER(ebox), horizontalbox);
 
     messagebox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL,0);
-    if (!strcmp(nameuser,chatname))
+    if (!strcmp(nameuser,sender))
         gtk_box_pack_end(GTK_BOX(horizontalbox),messagebox, FALSE, FALSE, 0);
     else
         gtk_box_pack_start(GTK_BOX(horizontalbox),messagebox, FALSE, FALSE, 0);
@@ -86,7 +86,7 @@ void create_message(GtkWidget *newmessedgentry, struct struct_type parm){
     verticalbox = gtk_box_new(GTK_ORIENTATION_VERTICAL,0);
     gtk_box_pack_start(GTK_BOX(messagebox),verticalbox, FALSE, FALSE, 0);
 
-    labellmenu = gtk_label_new(chatname);
+    labellmenu = gtk_label_new(sender);
     gtk_widget_set_name(labellmenu,"labellmenu");
     gtk_box_pack_start(GTK_BOX(verticalbox),labellmenu, FALSE, FALSE, 0);
 

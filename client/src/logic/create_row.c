@@ -2,9 +2,12 @@
 
 static int n = 0;
 
-gboolean create_row(gpointer data, struct struct_type parm){
-    char *chatname = get_value_by_key(parm.pack,mx_strjoin("CHATNAME=",mx_itoa(n)));
-    char *lastmessage = get_value_by_key(parm.pack,mx_strjoin("LASTMESSAGE=",mx_itoa(n)));
+gboolean create_row(void *data){
+    char *pack =(char *)data;
+    printf("%s\n",pack );
+    //struct struct_type *parm =(struct struct_type *)data;
+    char *chatname = get_value_by_key(pack,mx_strjoin("CHATNAME=",mx_itoa(n)));
+    char *lastmessage = get_value_by_key(pack,mx_strjoin("LASTMESSAGE=",mx_itoa(n)));
     row = gtk_list_box_row_new();
     gtk_widget_set_name(row,"chatrow");
     gtk_list_box_insert (GTK_LIST_BOX(listbox),row,n);

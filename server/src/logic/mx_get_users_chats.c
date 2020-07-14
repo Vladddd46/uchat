@@ -81,8 +81,9 @@ chats_t* mx_get_users_chats(char* user) {
         check = sqlite3_prepare_v2(db, sql, -1, &res2, 0);
         dberror(db, check, "Error select CHATNAME, LASTMESSAGE from CHATs");
         sqlite3_step(res2);
-        chat -> chat_name = mx_stringcopy(sqlite3_column_text(res2, 0));
-        chat -> last_message = mx_stringcopy(sqlite3_column_text(res2, 1));
+        chat -> chat_name = mx_string_copy((char *)sqlite3_column_text(res2, 0));
+        chat -> last_message = mx_string_copy((char *)sqlite3_column_text(res2, 1));
+        printf("%s>>>>>>>>>>>>>>>\n",chat->chat_name );
         chat -> next = malloc(sizeof(chats_t));
         chat = chat -> next;
         chat -> chat_name = NULL;

@@ -23,7 +23,7 @@ gboolean button_release (GtkWidget *widget, GdkEventKey *event, gpointer data) {
     return FALSE;
 }
 
-void draw_message_menu(GtkWidget *entryspawn, client_context_t *client_context){
+gboolean draw_message_menu(void *data){
     //отрисовка основного меню с чатами и комнатами
     gtk_widget_destroy(fixed);
     fixed = gtk_fixed_new();
@@ -97,4 +97,5 @@ void draw_message_menu(GtkWidget *entryspawn, client_context_t *client_context){
     gtk_container_add(GTK_CONTAINER(scrollmess), listboxmess);
 
      gtk_widget_show_all(window);
+     return 0;
 }

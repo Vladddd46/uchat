@@ -87,6 +87,7 @@ static void *server_communication(void *param) {
         packet      = packet_receive(client_context->sockfd);
         if (packet == NULL)
             exit(1);
+
         packet_type = get_value_by_key(packet, "TYPE");
         received_packet_analyzer(packet_type, packet);
         free(packet_type);

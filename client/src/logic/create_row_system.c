@@ -1,6 +1,8 @@
 #include "client.h"
 
-void create_row_system(client_context_t *client_context, char *packet){
+void create_row_system(client_context_t *client_context, char *packet) {
+
+	printf("==>%s\n", packet);
  char *length = get_value_by_key(packet,"MSGLEN");
  int len = atoi(length);
  free(length);

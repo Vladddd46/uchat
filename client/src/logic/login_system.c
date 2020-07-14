@@ -8,10 +8,12 @@ void login_system(client_context_t *client_context, char *packet) {
 	free(length);
 	struct struct_type arg;
 	arg.pack = packet;
-	draw_message_menu(entryspawn, client_context);
-	for (int i = 0; len > i; i++){
-		//gdk_threads_add_idle_full(G_PRIORITY_HIGH_IDLE, create_row, NULL, 0);
-		create_row(NULL, arg);
+	gdk_threads_add_idle_full(G_PRIORITY_HIGH_IDLE, draw_message_menu, NULL, 0);
+	int i = 0;
+	while (len > i && !gtk_events_pending()){
+		gdk_threads_add_idle_full(G_PRIORITY_HIGH_IDLE, create_row, mx_string_copy(packet), 0);
+		//create_row(NULL, arg);
+		i++;
 	}
 }
 
