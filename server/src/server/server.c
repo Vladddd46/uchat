@@ -106,7 +106,6 @@ static void *handle_server(void *param) {
 
                 char **receivers  = mx_packet_receivers_determine(send_packet);
                 for (int i = 0; receivers[i]; ++i) {
-                    printf("<>>>>>%s\n", receivers[i]);
                 }
 
                 /* Makes user logged in. */

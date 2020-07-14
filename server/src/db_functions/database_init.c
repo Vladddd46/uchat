@@ -13,7 +13,6 @@ static char* mx_insert_all_args(char* login, char* password, char* nickname) {
     request = mx_strjoin(request, "', '");
     request = mx_strjoin(request, nickname);
     request = mx_strjoin(request, "');");
-    // printf("%s", request);
     return request;
 }
 

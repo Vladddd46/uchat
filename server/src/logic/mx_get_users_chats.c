@@ -40,7 +40,6 @@ static void dberror(sqlite3 *db, int status, char *msg) {
 
 // static int mx_callback(void* not_used, int argc, char** argv, char** az_con_name) {
 //     for(int i = 0; i < argc; i++) {
-//         printf("%s: %s\n", az_con_name[i], argv[i]);
 //     }
 //     return 0;
 // }
@@ -48,10 +47,8 @@ static void dberror(sqlite3 *db, int status, char *msg) {
 // static int mx_get_data(const char* str) {
 //     sqlite3 *db;
 //     int exit = sqlite3_open(str, &db);
-//     printf("from\n");
 //     char* sql = "SELECT * FROM USERS;";
 //     sqlite3_exec(db, sql, mx_callback, NULL, NULL);
-//     printf("end\n");
 //     return 0;
 // }
 

@@ -53,18 +53,15 @@ void client_context_init(int sockfd) {
 }
 
 static void received_packet_analyzer(char *packet_type, char *packet) {
-    printf("%s\n",packet );
     if (!strcmp(packet_type, "reg_s"))
         registration_system(client_context->sockfd, packet);
     else if (!strcmp(packet_type, "login_s"))
         login_system(client_context, packet);
     else if (!strcmp(packet_type, "find_user_s")){
         draw_list_box_system(packet);
-        printf("%s\n", "find_user packet receive");
     }
     else if (!strcmp(packet_type, "msg_s")) {
         create_row_system(client_context, packet);
-        printf("packet from server %s\n", packet);
     }
 
 }
@@ -90,7 +87,6 @@ static void *server_communication(void *param) {
         packet      = packet_receive(client_context->sockfd);
         if (packet == NULL)
             exit(1);
-        printf(">>>>>%s\n", packet);
         packet_type = get_value_by_key(packet, "TYPE");
         received_packet_analyzer(packet_type, packet);
         free(packet_type);

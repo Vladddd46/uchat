@@ -16,8 +16,6 @@ gboolean add_new_friend (GtkWidget *newchatbutton, gpointer data) {
     GtkGrid *widgetchild = gl->data;
  	GtkWidget *minilogin = gtk_grid_get_child_at(GTK_GRID(minibox),0,0);
  	char *login = (char *)gtk_label_get_text(GTK_LABEL(minilogin));
-   	// printf("%s\n",client_context->username);
-   	// printf("%s\n",login );
 
   	cJSON *packet = cJSON_CreateObject();
     char  *packet_str = NULL;
@@ -30,7 +28,6 @@ gboolean add_new_friend (GtkWidget *newchatbutton, gpointer data) {
     cJSON_AddItemToObject(packet, "TO", nick);
     packet_str = mx_string_copy(cJSON_Print(packet));
     char *packet_str1 =  packet_len_prefix_adder(packet_str);
-   // printf("%s\n",packet_str );
     send(client_context->sockfd, packet_str, (int)strlen(packet_str), 0);
     free(packet_str);
     free(packet_str1);
@@ -40,7 +37,6 @@ gboolean add_new_friend (GtkWidget *newchatbutton, gpointer data) {
 void draw_list_box_system(char *packet){
 	int len = atoi(get_value_by_key(packet,"LENGTH"));
 
-    printf("====>%s\n", packet);
 	gtk_widget_destroy(miniscroll);
 	miniscroll = gtk_scrolled_window_new(0,0);
     gtk_fixed_put(GTK_FIXED (minifixed), miniscroll, 25,100);

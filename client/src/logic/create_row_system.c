@@ -13,7 +13,6 @@ void create_row_system(client_context_t *client_context, char *packet){
 	gtk_widget_set_name(listboxmess,"listboxmess");
 	gtk_container_add(GTK_CONTAINER(scrolll), listboxmess);
 	gtk_widget_show_all(window);
-	//printf("%s\n",packet );
 	for (int i = 0; len > i; i++){
 		create_message(newmessedgentry, arg);
 		arg.number++;

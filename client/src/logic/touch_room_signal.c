@@ -19,11 +19,8 @@ void touch_room_signal(GtkWidget *listbox, void *socket){
     GtkGrid *gridchild = gl->data;
     GtkWidget *lab = gtk_grid_get_child_at(gridchild,1,0);
 
-    mx_printstr((char *)gtk_label_get_text(GTK_LABEL(lab)));
-    mx_printstr(mx_itoa(indexrow));
 
     int *test = (int *)socket;
-    printf(">>>%d\n", client_context->sockfd);
     char chat_name[80];
     char chat_id[40];
     sprintf(chat_name, "CHATNAME:%s", mx_get_login((char *)gtk_label_get_text(GTK_LABEL(lab))));

@@ -2,7 +2,7 @@
 
 static int mx_callback(void* not_used, int argc, char** argv, char** az_con_name) {
     for(int i = 0; i < argc; i++) {
-        printf("%s: %s\n", az_con_name[i], argv[i]);
+     //   printf("%s: %s\n", az_con_name[i], argv[i]);
     }
     return 0;
 }
@@ -60,7 +60,7 @@ static char *mx_json_packet_former_from_list(chat_message_t* chat, int from, cha
     char* packet_str = NULL;
     cJSON *json_value = cJSON_CreateString("msg_s");
 
-    printf("\nLEN = %d\n", list_len);
+   // printf("\nLEN = %d\n", list_len);
     cJSON_AddItemToObject(packet, "TYPE", json_value);
     json_value = cJSON_CreateString(chat_name);
     cJSON_AddItemToObject(packet, "TO", json_value);
