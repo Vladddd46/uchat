@@ -7,7 +7,7 @@ static void destroy(GtkWidget *widget, gpointer data){
 }
 
 // Main window init.
-static void gui(int argc, char **argv, client_context_t *client_context) {
+void gui(int argc, char **argv, client_context_t *client_context) {
     gtk_init(&argc, &argv);
 
     GtkCssProvider *provider = gtk_css_provider_new();
@@ -29,11 +29,44 @@ static void gui(int argc, char **argv, client_context_t *client_context) {
     gtk_main(); 
 }
 
-static void client_context_init(int sockfd) {
+static struct sockaddr_in client_address_describer(int port) { 
+    /*
+     * Create structure, where client address is described.
+     * 1. server`s address
+     * 2. ip version AF_INET = IPv4
+     * 3. server`s port.
+     */
+    struct sockaddr_in client_addr;
+    bzero(&client_addr, sizeof(client_addr));
+    client_addr.sin_addr.s_addr = inet_addr("127.0.0.1"); //Local Host
+    client_addr.sin_family = AF_INET;
+    client_addr.sin_port = htons(port);
+
+    return client_addr;
+}
+
+void client_context_init(int sockfd) {
     client_context = (client_context_t *)malloc(sizeof(client_context_t));
     if (client_context == NULL)
         error("Client context malloc error", -1);
     client_context->sockfd = sockfd;
+}
+
+static void received_packet_analyzer(char *packet_type, char *packet) {
+    printf("%s\n",packet );
+    if (!strcmp(packet_type, "reg_s"))
+        registration_system(client_context->sockfd, packet);
+    else if (!strcmp(packet_type, "login_s"))
+        login_system(client_context, packet);
+    else if (!strcmp(packet_type, "find_user_s")){
+        draw_list_box_system(packet);
+        printf("%s\n", "find_user packet receive");
+    }
+    else if (!strcmp(packet_type, "msg_s")) {
+        create_row_system(client_context, packet);
+        printf("packet from server %s\n", packet);
+    }
+
 }
 
 /*
@@ -57,8 +90,9 @@ static void *server_communication(void *param) {
         packet      = packet_receive(client_context->sockfd);
         if (packet == NULL)
             exit(1);
+        printf(">>>>>%s\n", packet);
         packet_type = get_value_by_key(packet, "TYPE");
-        mx_received_packet_analyzer(packet_type, packet, client_context);
+        received_packet_analyzer(packet_type, packet);
         free(packet_type);
         free(packet);
     }
@@ -69,7 +103,7 @@ int main(int argc, char **argv) {
     argv_validator(argc, argv);
     int port                       = atoi(argv[2]);
     int sockfd                     = mx_socket();
-    struct sockaddr_in client_addr = mx_client_address_describer(port);
+    struct sockaddr_in client_addr = client_address_describer(port);
 
     // Do the connect to the server.
     int res = connect(sockfd, (struct sockaddr *)&client_addr, sizeof(client_addr));

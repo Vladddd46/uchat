@@ -64,8 +64,6 @@ static char *mx_json_packet_former_from_list(chat_message_t* chat, int from, cha
     cJSON_AddItemToObject(packet, "TYPE", json_value);
     json_value = cJSON_CreateString(chat_name);
     cJSON_AddItemToObject(packet, "TO", json_value);
-    json_value = cJSON_CreateString(mx_itoa(list_len));
-    cJSON_AddItemToObject(packet, "MSGLEN", json_value);
     for(int i = 0; i < list_len; i++, from++) {
         char packet_former[100];
 

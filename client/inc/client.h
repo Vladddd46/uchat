@@ -15,12 +15,13 @@
 
 typedef struct client_context_s {
 	int sockfd;
+	char *username;
 } client_context_t;
 
 struct struct_type {
 	char *pack;
 	int number;
-};
+	};
 
 client_context_t *client_context;
 // какие то непонятные функции Дениса. PS. структурируй их пожалуйста.
@@ -39,13 +40,17 @@ void edit_message (GtkWidget *widget, GtkWidget *message);
 void end_message (GtkWidget *widget, GtkWidget *message);
 int show_popup(GtkWidget *widget, GdkEvent *event);
 void add_new_user(GtkWidget *newchatbutton, gpointer data);
+gboolean mini_button_release (GtkWidget *widget, GdkEventKey *event, gpointer data);
+gboolean add_new_friend (GtkWidget *newchatbutton, gpointer data);
+void draw_list_box_system(char *packet);
+void draw_list_box(char *login, char *nickname, int number);
+// gboolean mini_my_keypress_function (GtkWidget *widget, GdkEventKey *event, gpointer data);
 
 
 // main
 void argv_validator(int argc, char **argv);
-int  mx_socket();
+int mx_socket();
 struct sockaddr_in mx_client_address_describer(int port);
-void mx_received_packet_analyzer(char *packet_type, char *packet, client_context_t *client_context);
 
 // Logic
 void do_registration(GtkWidget *Registration, client_context_t *client_context);
@@ -53,8 +58,13 @@ void registration_system(int socket, char *packet);
 void login_system(client_context_t *client_context, char *packet);
 void create_row_system(client_context_t *client_context, char *packet);
 //mini приставка для виджетов в окне добавления юзеров
-
+GtkWidget *minieventbox;
+GtkWidget *minibutton;
+GtkWidget *minilabell2;
+GtkWidget *minilabell;
+GtkWidget *minirow;
 GtkWidget *miniwindow;
+GtkWidget *minibox;
 GtkWidget *minifixed;
 GtkWidget *minilistbox;
 GtkWidget *miniscroll;

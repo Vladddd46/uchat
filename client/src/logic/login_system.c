@@ -3,6 +3,7 @@
 
 void login_system(client_context_t *client_context, char *packet) {
 	char *length = get_value_by_key(packet,"LENGTH");
+	client_context->username = get_value_by_key(packet,"TO");
 	int len = atoi(length);
 	free(length);
 	struct struct_type arg;

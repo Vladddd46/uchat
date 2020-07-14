@@ -105,7 +105,9 @@ static void *handle_server(void *param) {
                 // char *client_login = get_value_by_key(send_packet, "TO");
 
                 char **receivers  = mx_packet_receivers_determine(send_packet);
-
+                for (int i = 0; receivers[i]; ++i) {
+                    printf("<>>>>>%s\n", receivers[i]);
+                }
 
                 /* Makes user logged in. */
                 if (send_packet && (!strcmp(get_value_by_key(send_packet, "TYPE"), "login_s") || !strcmp(get_value_by_key(send_packet, "TYPE"), "reg_s")) && !strcmp(get_value_by_key(send_packet, "STATUS"), "success")) {
