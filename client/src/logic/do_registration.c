@@ -106,10 +106,8 @@ void do_registration(GtkWidget *Registration, client_context_t *client_context) 
          */
     }
     else {
-        char *packet             = make_packet(input_login, input_nick, input_password);
-        char *packet_with_prefix = packet_len_prefix_adder(packet);
-        send(client_context->sockfd, packet_with_prefix, (int)strlen(packet_with_prefix), 0); // sending registration packet to the server.
+        char *packet = make_packet(input_login, input_nick, input_password);
+        mx_send(client_context->sockfd, packet);
         free(packet);
-        free(packet_with_prefix);
     }
 }

@@ -27,12 +27,11 @@ gboolean add_new_friend (GtkWidget *newchatbutton, gpointer data) {
     cJSON_AddItemToObject(packet, "USER", user);
     cJSON_AddItemToObject(packet, "TO", nick);
     packet_str = mx_string_copy(cJSON_Print(packet));
-    char *packet_str1 =  packet_len_prefix_adder(packet_str);
-    printf("%s\n",packet_str1);
+
     // char* packet_str2 = cJSON_Print(packet_str1);
-    send(client_context->sockfd, mx_strdup(packet_str1), (int)strlen(packet_str1), 0);
+    mx_send(client_context->sockfd, packet_str);
+   
     free(packet_str);
-    free(packet_str1);
     return FALSE;
 }
 
@@ -106,8 +105,7 @@ gboolean mini_button_release (GtkWidget *widget, GdkEventKey *event, gpointer da
     cJSON_AddItemToObject(packet, "USER", user);
     cJSON_AddItemToObject(packet, "TO", nick);
     packet_str = mx_string_copy(cJSON_Print(packet));
-    packet_str =  packet_len_prefix_adder(packet_str);
-    send(client_context->sockfd, packet_str, (int)strlen(packet_str), 0);
+    mx_send(client_context->sockfd, packet_str);
     return FALSE;
 }
 

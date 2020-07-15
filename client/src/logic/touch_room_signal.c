@@ -27,7 +27,6 @@ void touch_room_signal(GtkWidget *listbox, void *socket){
     sprintf(chat_id, "CHATID:%d", ++indexrow);
 
     char *packet = json_packet_former(5, "TYPE:msg_c", chat_name, chat_id, "FROMMSG:5", "TOMSG:15");
-    packet = packet_len_prefix_adder(packet);
 
-    send(client_context->sockfd, packet, mx_strlen(packet), 0);
+    mx_send(client_context->sockfd, packet);
 }

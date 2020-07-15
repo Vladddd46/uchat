@@ -73,7 +73,7 @@ void database_init() {
         "MESSAGE    TEXT NOT NULL);";
     exit = sqlite3_exec(db, sql, NULL, 0, &message_error);
 
-    /* добавление тестовых даных в БД */
+     // добавление тестовых даных в БД 
     // def_database();
     /*-----------------------------------------------------*/
     sqlite3_close(db);

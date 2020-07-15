@@ -6,7 +6,7 @@
  * (yy > xx)
  * zz - each number represend ecnrypted ASCII of char 
  */
-char *mx_rsa_encode(char *str) {
+char *mx_rsa_encrypt(char *str) {
     int *input = mx_get_input_message(str);
     unsigned long int num1 = mx_get_prime_number(10, 20);
     unsigned long int num2 = mx_get_prime_number(num1 + 1, 40);

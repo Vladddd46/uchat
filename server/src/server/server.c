@@ -116,15 +116,12 @@ static void *handle_server(void *param) {
                     p->is_logged = true;
                 }
 
-                char *send_back_packet_prefixed =  packet_len_prefix_adder(send_packet);
-                free(send_packet);
-                free(packet);
-
                 for (connected_client_list_t *s = ctx.head.next; s != NULL; s = s->next) {
                     if (s->is_logged && mx_str_in_arr(s->login, receivers))
-                        send(s->sock_fd, send_back_packet_prefixed, (int)strlen(send_back_packet_prefixed), 0);
+                        mx_send(s->sock_fd, send_packet);
                 }                    
-                free(send_back_packet_prefixed);
+                free(send_packet);
+                free(packet);
                 // free(client_login)
                 mx_del_strarr(&receivers);
             }            
@@ -143,11 +140,6 @@ int main(int argc, char **argv) {
     database_init();
     server_context_init();
 
-    char *x = "hello world\n";
-    char *y = mx_rsa_encode(x);
-    printf(">>>%s\n", y);
-    char *z = mx_rsa_decode(y);
-    printf(">>>>%s\n", z);
     /* 
      * Making sockfd listening for incomming requests.
      * The second argument - number of max. number of requests. 

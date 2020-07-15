@@ -8,13 +8,13 @@
  * (yy > xx)
  * zz - each number represend ecnrypted ASCII of char 
  */
-char *mx_rsa_decode(char *str) {
+char *mx_rsa_decrypt(char *str) {
     unsigned long int num1 = mx_get_num_by_index(str, 0);
     unsigned long int num2 = mx_get_num_by_index(str, 1);
 
     long long int el = (num1 - 1) * (num2 - 1);
     long long int multiplyNums = num1 * num2;
-    char *descrypt = mx_strnew(100);
+    char *descrypt = mx_strnew(mx_count_string_size(str));
 
     long long int e = mx_get_encrypt(el);
     long long int d = mx_get_decrypt(e, el);
