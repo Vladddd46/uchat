@@ -12,6 +12,7 @@
 #include "cJSON.h"
 #include "libmx.h"
 #include "utils.h"
+#include "crypt.h"
 
 typedef struct client_context_s {
 	int sockfd;

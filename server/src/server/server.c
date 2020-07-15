@@ -143,6 +143,11 @@ int main(int argc, char **argv) {
     database_init();
     server_context_init();
 
+    char *x = "hello world\n";
+    char *y = mx_rsa_encode(x);
+    printf(">>>%s\n", y);
+    char *z = mx_rsa_decode(y);
+    printf(">>>>%s\n", z);
     /* 
      * Making sockfd listening for incomming requests.
      * The second argument - number of max. number of requests. 
