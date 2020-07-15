@@ -25,8 +25,18 @@ struct struct_type {
 	char *nickname;
 	};
 
+typedef struct s_s_glade {
+ char *pack;
+ int number;
+ char *login;
+ char *nickname;
+}           t_s_glade;
+
+
+
 client_context_t *client_context;
 // какие то непонятные функции Дениса. PS. структурируй их пожалуйста.
+void remake_chats(char *pack);
 void back_to_menu(GtkWidget *back, client_context_t *client_context);
 void main_menu();
 gboolean draw_message_menu(void *data);

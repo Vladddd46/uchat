@@ -28,7 +28,9 @@ gboolean add_new_friend (GtkWidget *newchatbutton, gpointer data) {
     cJSON_AddItemToObject(packet, "TO", nick);
     packet_str = mx_string_copy(cJSON_Print(packet));
     char *packet_str1 =  packet_len_prefix_adder(packet_str);
-    send(client_context->sockfd, packet_str, (int)strlen(packet_str), 0);
+    printf("%s\n",packet_str1);
+    // char* packet_str2 = cJSON_Print(packet_str1);
+    send(client_context->sockfd, mx_strdup(packet_str1), (int)strlen(packet_str1), 0);
     free(packet_str);
     free(packet_str1);
     return FALSE;
@@ -52,28 +54,29 @@ void draw_list_box_system(char *packet){
 	for(int i = 0; i < len; i++){
 		char *nickname = (get_value_by_key(packet,mx_strjoin("NICKNAME",mx_itoa(i))));
 		char *login = (get_value_by_key(packet,mx_strjoin("LOGIN",mx_itoa(i))));
-        struct struct_type arg;
-        arg.number = i;
-        arg.login = login;
-        arg.nickname = nickname;
-		gdk_threads_add_idle (draw_list_box,&arg);
+        t_s_glade *pack = (t_s_glade *)malloc(sizeof(t_s_glade));
+        pack->number = i;
+        pack->login = login;
+        pack->login = mx_strdup(pack->login);
+        pack->nickname = nickname;
+        pack->nickname = mx_strdup(pack->nickname);
+		gdk_threads_add_idle_full(G_PRIORITY_HIGH_IDLE, draw_list_box, pack, 0);
 	}
 
 }
 
 gboolean draw_list_box(void *data){
-	struct struct_type *arg =(struct struct_type *)data;
+	t_s_glade *pack = (t_s_glade *)data; 
     minirow = gtk_list_box_row_new();
-    mx_printstr(arg->login);
-	gtk_list_box_insert (GTK_LIST_BOX(minilistbox), minirow, arg->number);
+	gtk_list_box_insert (GTK_LIST_BOX(minilistbox), minirow, pack->number);
 
 	minibox = gtk_grid_new();
 	gtk_container_add(GTK_CONTAINER(minirow), minibox);
 
-	minilabell = gtk_label_new(arg->login);
+	minilabell = gtk_label_new(pack->login);
 	gtk_grid_attach(GTK_GRID(minibox),minilabell, 0, 0, 1, 1);
 
-	minilabell2 = gtk_label_new(arg->nickname);
+	minilabell2 = gtk_label_new(pack->nickname);
 	gtk_grid_attach(GTK_GRID(minibox),minilabell2, 0, 1, 1, 1);
 
     minieventbox = gtk_event_box_new();

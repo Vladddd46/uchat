@@ -95,7 +95,9 @@ static void *handle_server(void *param) {
                 if (buf_len < 0) continue;
  
                 // Modify db and forms packet, which must be send to specified in packet client(login).
+                printf("packet from client %s\n\n", packet);
                 char *send_packet = mx_database_communication(packet);
+                printf("packet from server %s\n\n", send_packet);
                 if (send_packet == NULL) // Connection was closed but update has not been made yet.
                     continue;
                 /* 

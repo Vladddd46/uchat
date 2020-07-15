@@ -1,17 +1,14 @@
 #include "client.h"
 
-static int n = 0;
 
 gboolean create_row(void *data){
-    char *pack =(char *)data;
-    printf("%s\n",pack );
+     t_s_glade *gui = (t_s_glade *)data;
     //struct struct_type *parm =(struct struct_type *)data;
-    char *chatname = get_value_by_key(pack,mx_strjoin("CHATNAME=",mx_itoa(n)));
-    char *lastmessage = get_value_by_key(pack,mx_strjoin("LASTMESSAGE=",mx_itoa(n)));
+    char *chatname = get_value_by_key(gui->pack,mx_strjoin("CHATNAME=",mx_itoa(gui->number)));
+    char *lastmessage = get_value_by_key(gui->pack,mx_strjoin("LASTMESSAGE=",mx_itoa(gui->number)));
     row = gtk_list_box_row_new();
     gtk_widget_set_name(row,"chatrow");
-    gtk_list_box_insert (GTK_LIST_BOX(listbox),row,n);
-    n++;
+    gtk_list_box_insert (GTK_LIST_BOX(listbox),row,gui->number);
 
     gridmenu = gtk_grid_new();
     gtk_container_add(GTK_CONTAINER(row), gridmenu);

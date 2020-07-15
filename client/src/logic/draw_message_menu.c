@@ -24,6 +24,7 @@ gboolean button_release (GtkWidget *widget, GdkEventKey *event, gpointer data) {
 }
 
 gboolean draw_message_menu(void *data){
+      t_s_glade *gui = (t_s_glade *)data;
     //отрисовка основного меню с чатами и комнатами
     gtk_widget_destroy(fixed);
     fixed = gtk_fixed_new();
