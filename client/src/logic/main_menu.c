@@ -1,35 +1,6 @@
 #include "client.h"
 // client_context_t *client_context;
 
-
-void dialog(GtkWidget *widget, gpointer data ){
-GtkWidget *dialog;
-
-GtkFileChooserAction action = GTK_FILE_CHOOSER_ACTION_OPEN;
-gint res;   
-
-dialog = gtk_file_chooser_dialog_new ("Open File",
-                                      GTK_WINDOW(window),
-                                      action,
-                                      ("_Cancel"),
-                                      GTK_RESPONSE_CANCEL,
-                                      ("_Open"),
-                                      GTK_RESPONSE_OK,
-                                      NULL);
-
-res = gtk_dialog_run (GTK_DIALOG (dialog));
-if (res == GTK_RESPONSE_OK)
-  {
-    char *filename;
-    GtkFileChooser *chooser = GTK_FILE_CHOOSER (dialog);
-    filename = gtk_file_chooser_get_filename (chooser);
-    printf("%s\n",filename );
-      g_free (filename);
-  }
-
-gtk_widget_destroy (dialog);
-}
-
 void mx_show_dialog(GtkWidget *parent, char *message) {
     GtkDialogFlags flags = GTK_DIALOG_DESTROY_WITH_PARENT;
     GtkWidget *dialog = gtk_message_dialog_new(
@@ -81,7 +52,7 @@ void main_menu() {
 
     entryspawn = gtk_button_new_with_label("Login");
     gtk_widget_set_name(entryspawn,"log");
-    g_signal_connect(entryspawn, "clicked", G_CALLBACK(dialog), NULL);
+    g_signal_connect(entryspawn, "clicked", G_CALLBACK(do_login), client_context);
     gtk_grid_attach(GTK_GRID(grid), entryspawn, 1, 103, 1, 1);
 
     labell3 = gtk_label_new("");
@@ -100,10 +71,3 @@ void main_menu() {
     gtk_widget_show_all(window);
 
 }
-
-
-
-
-
-
-
