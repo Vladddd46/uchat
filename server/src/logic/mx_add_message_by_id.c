@@ -74,7 +74,6 @@ static char *mx_json_packet_former_from_list(char* message, char* time, char* se
     char* packet_str = NULL;
     cJSON *json_value = cJSON_CreateString("msg_s");
 
-   // printf("\nLEN = %d\n", list_len);
     cJSON_AddItemToObject(packet, "TYPE", json_value);
     json_value = cJSON_CreateString(all_users);
     cJSON_AddItemToObject(packet, "TO", json_value);
@@ -101,22 +100,21 @@ static char *mx_json_packet_former_from_list(char* message, char* time, char* se
 }
 
 char* mx_add_message_by_id(char* packet) {
-    printf("SEG FAULT - 1\n\n");
     int message_id = atoi(get_value_by_key(packet, "MESSAGEID"));
     char* time = get_value_by_key(packet, "TIME");
     char* message = get_value_by_key(packet, "MESSAGE");
     int chat_id = atoi(get_value_by_key(packet, "CHATID"));
     char* sender = get_value_by_key(packet, "SENDER");
     char* to = get_value_by_key(packet, "TO");
-    printf("SEG FAULT - 2\n\n");
+
 
 
     if(message_id == 0)
     	mx_add_last_message(chat_id, message, time, sender);
     else
     	mx_add_message_with_id(message_id, chat_id, message);
-    printf("SEG FAULT - 1\n\n");
+
     char* return_packet = mx_json_packet_former_from_list(message, time, sender, chat_id, to);
-    printf("SEG FAULT - 2\n\n");
+
     return return_packet;
 }

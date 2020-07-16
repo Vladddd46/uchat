@@ -46,9 +46,9 @@ typedef struct chat_message {
 } chat_message_t;
 
 typedef struct users_list {
-	int id;
-	char* nickname;
-	char* login;
+	int  id;
+	char *nickname;
+	char *login;
 	struct users_list *next;
 } users_list_t;
 

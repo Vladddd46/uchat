@@ -1,5 +1,10 @@
 #include "server.h"
 
+/*
+ * Returns list of chats, where user
+ * with(user_id) is the member.
+ */
+
 static void malloc_error_checker(chats_t *chat) {
     char *msg;
 
@@ -77,7 +82,6 @@ chats_t *mx_get_users_chats(char *user) {
         sqlite3_step(res);
         sqlite3_finalize(res2);
     }
-
     sqlite3_finalize(res);
     sqlite3_close(db);
     free(user_id);

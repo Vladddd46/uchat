@@ -79,11 +79,10 @@ char *registration_system(char *packet) {
     char *to              = mx_strjoin("TO:", login);
     char *sendback_packet = json_packet_former(3, "TYPE:reg_s", return_status, to);
 
-    // free(login); выдает маллок ероры
+    // free(login); выдает !иногда! маллок ероры
     // free(password);
     // free(nickname);
     // free(return_status);
     // free(to);
-
     return sendback_packet;
 }

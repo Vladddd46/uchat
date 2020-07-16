@@ -1,12 +1,5 @@
 #include "server.h"
 
-// static int mx_callback(void* not_used, int argc, char** argv, char** az_con_name) {
-//     for(int i = 0; i < argc; i++) {
-//      //   printf("%s: %s\n", az_con_name[i], argv[i]);
-//     }
-//     return 0;
-// }
-
 static chat_message_t* mx_fill_list(int chat_id, int from, int to) {
     chat_message_t* list = malloc(sizeof(chat_message_t));
     chat_message_t* head = list;
@@ -21,7 +14,6 @@ static chat_message_t* mx_fill_list(int chat_id, int from, int to) {
     }
     sqlite3_step(res);
     for(int i = from; i < to && sqlite3_column_text(res, 0) != NULL; i++) {
-        // printf("Value = %s -- %d\n", sqlite3_column_text(res, 2), i);
         list -> sender = mx_string_copy((char*)sqlite3_column_text(res, 0));
         list -> time = mx_string_copy((char*)sqlite3_column_text(res, 1));
         list -> message = mx_string_copy((char*)sqlite3_column_text(res, 2));
@@ -29,15 +21,8 @@ static chat_message_t* mx_fill_list(int chat_id, int from, int to) {
         list = list -> next;
         list -> next = NULL;
         sqlite3_step(res);
-        // printf("%s", sqlite3_column_text(res, 2));
     }
-    // char* sql1 = "SELECT * FROM MESSAGES WHERE CHATID=1";
-    // sqlite3_exec(db, sql1, mx_callback, NULL, NULL);
-    // sqlite3_finalize(res);
-    // for(int i = 0; i < 5; i++) {
-    //     printf("Sender: %s   Time: %s\nMessage: %s\n\n", head -> sender, head -> time, head -> message);
-    //     head = head -> next;
-    // }
+
     sqlite3_finalize(res);
     sqlite3_close(db);
     return head;
@@ -118,25 +103,16 @@ static char *mx_json_packet_former_from_list(chat_message_t* chat, int from, cha
     return packet_str;
 }
 
-char* mx_get_message(char* packet) {
-    // printf("\nSEG FAUTL AFTer -- 0\n\n");
+char *mx_get_message(char* packet) {
+
     int chat_id = atoi(get_value_by_key(packet, "CHATID"));
     int from = atoi(get_value_by_key(packet, "FROMMSG"));
     int to = atoi(get_value_by_key(packet, "TOMSG"));
     char* chat_name = get_value_by_key(packet, "CHATNAME");
-    // printf("\nSEG FAUTL AFTer -- 1\n\n");
 
-    // printf("\nSEG FAUTL AFTer -- 2\n\n");
     chat_message_t* list = mx_fill_list(chat_id, from, to);
-    // printf("\nSEG FAUTL AFTer -- 3\n\n");
     char* all_users = mx_get_all_users(chat_id);
     char* return_packet = mx_json_packet_former_from_list(list, from, chat_name, all_users);
-    // printf("\nSEG FAUTL AFTer -- 4\n\n");
-    // while(list -> message != NULL) {
-    //  printf("Sender: %s   Time: %s\nMessage: %s\n\n", list -> sender, list -> time, list -> message);
-    //     list = list -> next;
-    // }
-    // printf("chat_id = %d\nfrom = %d\nto = %d\n", chat_id, from, to);
-    // printf("packet shmaket %s", return_packet);
+
     return return_packet;   
 }
