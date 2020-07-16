@@ -82,23 +82,37 @@ static char *json_packet_former_from_list(chats_t *chat, char *status, char *log
     json_value =  cJSON_CreateString(list_len_str);
     free(list_len_str);
     cJSON_AddItemToObject(packet, "LENGTH", json_value);
+    chats_t *tmp = chat;
     for(int i = 0; i < list_len; i++) {
         char chat_name_former[100];
         bzero(chat_name_former, 100);
 
         sprintf(chat_name_former, "CHATNAME=%d", i);
-        char *chat_name = mx_get_special_chat_name(chat -> chat_name);
+        char *chat_name = mx_get_special_chat_name(tmp -> chat_name);
         json_value = cJSON_CreateString(chat_name);
         free(chat_name);
         cJSON_AddItemToObject(packet, chat_name_former, json_value);
-        json_value = cJSON_CreateString(chat -> last_message);
+        json_value = cJSON_CreateString(tmp -> last_message);
         sprintf(chat_name_former, "LASTMESSAGE=%d", i);
         cJSON_AddItemToObject(packet, chat_name_former, json_value);
-        chat = chat -> next;
+        tmp = tmp -> next;
     }
     packet_str = cJSON_Print(packet);
     free(nickname);
     return packet_str;
+}
+
+static void free_chats_list(chats_t **chats) {
+    chats_t *chat = *chats;
+    chats_t *del;
+
+    while(chat) {
+        del = chat;
+        chat = chat->next;
+        free(del->chat_name);
+        free(del->last_message);
+        free(del);
+    }
 }
 
 char *login_system(char *packet) {
@@ -115,8 +129,6 @@ char *login_system(char *packet) {
     free(login);
     free(password);
     free(return_status);
-
-    printf("packet shmaket %s\n\n", sendback_packet);
-    // system("leaks -q uchat_server");
+    free_chats_list(&chat);
     return sendback_packet;
 }
