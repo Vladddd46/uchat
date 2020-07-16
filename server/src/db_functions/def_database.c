@@ -16,17 +16,16 @@ static char* mx_insert_all_args(char* login, char* password, char* nickname) {
 }
 
 static int mx_add_user(char* login, char* password, char* nickname) {
-    sqlite3 *db;
+    sqlite3 *db = opening_db();
     char *message_error;
-    int exit = sqlite3_open("uchat.db", &db);
     char* sql = mx_insert_all_args(login, password, nickname);
 
-    exit = sqlite3_exec(db, sql, NULL, 0, &message_error);
+    int exit = sqlite3_exec(db, sql, NULL, 0, &message_error);
     if(exit != SQLITE_OK) {
         printf("Error inserting User");
         sqlite3_free(message_error);
     }
-    sqlite3_close(db); 
+    sqlite3_close(db);
     return 0;
 }
 
@@ -40,13 +39,12 @@ static void dberror(sqlite3 *db, int status, char *msg) {
 }
 
 void def_database() {
-    sqlite3* db;
+    sqlite3 *db = opening_db();
     int exit = 0;
     char *message_error;
     char *sql;
 
     /* добавление тестовых даных в БД */
-    exit = sqlite3_open("uchat.db", &db);
     mx_add_user("Yura", "1234", "jorsh");
     mx_add_user("Vlad", "qwerty", "vdepesh");
     dberror(db, exit, "Error to create MESSAGES table");

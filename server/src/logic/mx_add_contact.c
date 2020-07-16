@@ -3,10 +3,9 @@
 static int mx_get_user_id(char* login) {
 	int user_id = 0;
     char sql[150];
-    sqlite3 *db;
+    sqlite3 *db = opening_db();
 	sqlite3_stmt *res;
     
-    sqlite3_open("uchat.db", &db);
     sprintf(sql, "SELECT ID FROM USERS WHERE LOGIN='%s'", login);
     sqlite3_prepare_v2(db, sql, -1, &res, 0);
     sqlite3_step(res);
@@ -23,12 +22,11 @@ static int mx_get_user_id(char* login) {
 
 static bool mx_check_contact_exits(char* mylogin, char* login) {
 	bool status = false;
-	sqlite3 *db;
+	sqlite3 *db = opening_db();
 	sqlite3_stmt *res;
 	sqlite3_stmt *res1;
 	char sql[200];
 
-    sqlite3_open("uchat.db", &db);
     sprintf(sql, "SELECT ID FROM CHATS WHERE CHATNAME='%s'", mx_strjoin(mylogin, login));
     sqlite3_prepare_v2(db, sql, -1, &res, 0);
     sqlite3_step(res);
@@ -41,24 +39,22 @@ static bool mx_check_contact_exits(char* mylogin, char* login) {
     if(sqlite3_column_text(res1, 0) != NULL) {
     	status = true;
     }
-    sqlite3_finalize(res);
     sqlite3_finalize(res1);
+    sqlite3_finalize(res);
     sqlite3_close(db);
     return status;
 }
 
 static char* mx_get_nickname(char* login) {
-    sqlite3 *db = NULL;
+    sqlite3 *db = opening_db();
     char sql[200];
     sprintf(sql, "SELECT NICKNAME FROM USERS WHERE LOGIN='%s';", login);
     sqlite3_stmt *res;
     char* nickname;
 
-    sqlite3_open("uchat.db", &db);
     sqlite3_prepare_v2(db, sql, -1, &res, 0);
     sqlite3_step(res);
     nickname = (char*)sqlite3_column_text(res, 0);
-
     sqlite3_finalize(res);
     sqlite3_close(db);
     return nickname;
@@ -77,12 +73,11 @@ static int mx_list_len(chats_t* chat) {
 }
 
 static int mx_get_last_chat_id() {
-	sqlite3 *db;
+	sqlite3 *db = opening_db();
     sqlite3_stmt *res;
     char sql[100];
     int last_chat_id = 0;
     
-    sqlite3_open("uchat.db", &db);
     sprintf(sql, "SELECT MAX(CHATID) FROM USERCHAT;");
     sqlite3_prepare_v2(db, sql, -1, &res, 0);
     sqlite3_step(res);
@@ -130,7 +125,6 @@ char* mx_add_contact(char* packet) {
 	char* sendback_packet;
 	char* message_error;
 	sqlite3 *db;
-    sqlite3_open("uchat.db", &db);
 
 	if(mx_check_contact_exits(mylogin, login)) {
         int mylogin_id = mx_get_user_id(mylogin);
@@ -138,6 +132,7 @@ char* mx_add_contact(char* packet) {
 	    char sql[200];
 	    int last_chat_id = mx_get_last_chat_id();
 
+	    sqlite3_open("uchat.db", &db);
         sprintf(sql, "INSERT INTO USERCHAT(USERID, CHATID) VALUES(%d, %d);", mylogin_id, last_chat_id + 1);
         sqlite3_exec(db, sql, NULL, 0, &message_error);
         sprintf(sql, "INSERT INTO USERCHAT(USERID, CHATID) VALUES(%d, %d);", login_id, last_chat_id + 1);
@@ -148,7 +143,5 @@ char* mx_add_contact(char* packet) {
 	}
 	else
 	    sendback_packet = json_packet_former_from_list(chat, "false", mylogin, login);
-
-    sqlite3_close(db);
 	return sendback_packet;
 }

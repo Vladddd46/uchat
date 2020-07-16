@@ -17,12 +17,11 @@ static char* mx_insert_all_args(char* login, char* password, char* nickname) {
 }
 
 static int mx_add_user(char* login, char* password, char* nickname) {
-    sqlite3 *db;
+    sqlite3 *db = opening_db();
     char *message_error;
-    int exit = sqlite3_open("uchat.db", &db);
     char* sql = mx_insert_all_args(login, password, nickname);
 
-    exit = sqlite3_exec(db, sql, NULL, 0, &message_error);
+    int exit = sqlite3_exec(db, sql, NULL, 0, &message_error);
     if(exit != SQLITE_OK) {
         printf("Error inserting User");
         sqlite3_free(message_error);
@@ -41,7 +40,7 @@ static void dberror(sqlite3 *db, int status, char *msg) {
 }
 
 void database_init() {
-    sqlite3* db;
+    sqlite3 *db = opening_db();
     int exit = 0;
     char *message_error;
     char *sql = "CREATE TABLE IF NOT EXISTS USERS("
@@ -49,8 +48,6 @@ void database_init() {
         "LOGIN    TEXT NOT NULL, "
         "PASSWORD TEXT NOT NULL, "
         "NICKNAME TEXT NOT NULL);";
-
-    exit = sqlite3_open("uchat.db", &db);
     exit = sqlite3_exec(db, sql, NULL, 0, &message_error);
     dberror(db, exit, "Error to create USERS table");
     sql = "CREATE TABLE IF NOT EXISTS CHATS("
@@ -74,7 +71,7 @@ void database_init() {
         "MESSAGE    TEXT NOT NULL);";
     exit = sqlite3_exec(db, sql, NULL, 0, &message_error);
 
-     // добавление тестовых даных в БД 
+    /* добавление тестовых даных в БД */
     // def_database();
     /*-----------------------------------------------------*/
     sqlite3_close(db);

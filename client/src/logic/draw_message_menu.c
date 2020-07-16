@@ -1,5 +1,34 @@
 #include "client.h"
 
+void dialog(GtkWidget *widget, gpointer data ){
+ GtkWidget *dialog;
+
+ GtkFileChooserAction action = GTK_FILE_CHOOSER_ACTION_OPEN;
+ gint res;   
+
+ dialog = gtk_file_chooser_dialog_new ("Open File",
+                                       GTK_WINDOW(window),
+                                       action,
+                                       ("_Cancel"),
+                                       GTK_RESPONSE_CANCEL,
+                                       ("_Open"),
+                                       GTK_RESPONSE_OK,
+                                       NULL);
+
+ res = gtk_dialog_run (GTK_DIALOG (dialog));
+ if (res == GTK_RESPONSE_OK)
+   {
+     char *filename;
+     GtkFileChooser *chooser = GTK_FILE_CHOOSER (dialog);
+     filename = gtk_file_chooser_get_filename (chooser);
+     printf("%s\n",filename );
+       g_free (filename);
+   }
+
+ gtk_widget_destroy (dialog);
+ }
+
+
 static bool release_button = FALSE;
 
 gboolean my_keypress_function (GtkWidget *widget, GdkEventKey *event, gpointer data) {
@@ -7,7 +36,7 @@ gboolean my_keypress_function (GtkWidget *widget, GdkEventKey *event, gpointer d
         release_button = TRUE;
     }
     if (event->keyval == 65293 && release_button == FALSE){
-        //create_message_client(newmessedgentry, NULL);
+        gdk_threads_add_idle_full(G_PRIORITY_HIGH_IDLE, create_message_system, NULL, 0);
     }
     return FALSE;
 }
@@ -81,6 +110,14 @@ gboolean draw_message_menu(void *data){
     gtk_widget_set_name(downbox,"downbox");
     gtk_container_add(GTK_CONTAINER(scrollnewmess), downbox);
 
+    screp = gtk_button_new();
+    gtk_box_pack_start(GTK_BOX(downbox), screp, FALSE, FALSE, 0);
+    iconn = gdk_pixbuf_new_from_file("./media/img/screp.png",NULL); 
+    iconn = gdk_pixbuf_scale_simple(iconn, 32,32, GDK_INTERP_BILINEAR);
+    icon = gtk_image_new_from_pixbuf(iconn);
+    gtk_button_set_image (GTK_BUTTON (screp), icon);
+    g_signal_connect(screp, "clicked", G_CALLBACK(dialog), NULL);
+
     textbuffer = gtk_text_buffer_new(NULL);
     newmessedgentry = gtk_text_view_new_with_buffer(textbuffer);
     gtk_widget_set_name(newmessedgentry,"newmessedgentry");
@@ -97,6 +134,6 @@ gboolean draw_message_menu(void *data){
     gtk_widget_set_name(listboxmess,"listboxmess");
     gtk_container_add(GTK_CONTAINER(scrollmess), listboxmess);
 
-     gtk_widget_show_all(window);
+     g_idle_add ((int (*)(void *))show_widget, window);
      return 0;
 }

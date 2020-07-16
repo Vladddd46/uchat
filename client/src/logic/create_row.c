@@ -29,6 +29,7 @@ gboolean create_row(void *data){
     // gtk_grid_attach(GTK_GRID(gridmenu), labellmenu3, 2, 0, 1, 1);
     // gtk_widget_set_name(labellmenu3,"labellmenu3");
 
-    gtk_widget_show_all(window);
+    
+    g_idle_add ((int (*)(void *))show_widget, window);
     return 0;
 }

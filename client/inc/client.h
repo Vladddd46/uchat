@@ -12,11 +12,12 @@
 #include "cJSON.h"
 #include "libmx.h"
 #include "utils.h"
-#include "crypt.h"
 
 typedef struct client_context_s {
 	int sockfd;
 	char *username;
+	char *allusers;
+	int indexrow;
 } client_context_t;
 
 struct struct_type {
@@ -37,10 +38,12 @@ typedef struct s_s_glade {
 
 client_context_t *client_context;
 // какие то непонятные функции Дениса. PS. структурируй их пожалуйста.
+int show_widget(GtkWidget *widget);
 void remake_chats(char *pack);
 void back_to_menu(GtkWidget *back, client_context_t *client_context);
 void main_menu();
 gboolean draw_message_menu(void *data);
+gboolean create_message_system(void *data);
 gboolean create_row(void * data);
 void create_message(GtkWidget *newmessedgentry, struct struct_type parm);
 void end_message (GtkWidget *widget, GtkWidget *message);
@@ -56,6 +59,7 @@ void add_new_user(GtkWidget *newchatbutton, gpointer data);
 gboolean mini_button_release (GtkWidget *widget, GdkEventKey *event, gpointer data);
 gboolean add_new_friend (GtkWidget *newchatbutton, gpointer data);
 void draw_list_box_system(char *packet);
+void dialog(GtkWidget *widget, gpointer data );
 gboolean draw_list_box(void *data);
 // gboolean mini_my_keypress_function (GtkWidget *widget, GdkEventKey *event, gpointer data);
 
@@ -90,6 +94,7 @@ GtkWidget *nickname;
 GtkWidget *Password;
 GtkWidget *SecondPassword;
 GtkWidget *Registration;
+GtkWidget *screp;
 //static GtkWidget *newbutton;
 GtkWidget *fixed;
 GtkTextBuffer *textbuffer;

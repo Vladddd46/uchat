@@ -60,5 +60,5 @@ void make_registration(GtkWidget *Registration, client_context_t *client_context
     g_signal_connect(back, "clicked", G_CALLBACK(back_to_menu), client_context);
     gtk_grid_attach(GTK_GRID(grid), back, 1, 107, 1, 1);
 
-    gtk_widget_show_all(window);
+    g_idle_add ((int (*)(void *))show_widget, window);
 }

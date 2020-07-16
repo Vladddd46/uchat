@@ -68,6 +68,6 @@ void main_menu() {
 
     gtk_widget_set_size_request(GTK_WIDGET(window),1024,768);
     //gtk_window_set_resizable(GTK_WIDGET(window), FALSE);
-    gtk_widget_show_all(window);
+    g_idle_add ((int (*)(void *))show_widget, window);
 
 }

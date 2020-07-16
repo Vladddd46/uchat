@@ -4,6 +4,7 @@ void create_row_system(client_context_t *client_context, char *packet) {
 
  char *length = get_value_by_key(packet,"MSGLEN");
  int len = atoi(length);
+ client_context->allusers = get_value_by_key(packet,"ALLUSERS");
  free(length);
  struct struct_type arg;
 	arg.pack = packet;
@@ -13,7 +14,7 @@ void create_row_system(client_context_t *client_context, char *packet) {
 	listboxmess = gtk_list_box_new();
 	gtk_widget_set_name(listboxmess,"listboxmess");
 	gtk_container_add(GTK_CONTAINER(scrolll), listboxmess);
-	gtk_widget_show_all(window);
+	g_idle_add ((int (*)(void *))show_widget, window);
 	for (int i = 0; len > i; i++){
 		create_message(newmessedgentry, arg);
 		arg.number++;

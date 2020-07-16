@@ -14,7 +14,6 @@
 #include "libmx.h"
 #include "cJSON.h"
 #include "utils.h"
-#include "crypt.h"
 
 // Linked list with opened sockets.
 typedef struct socket_list {

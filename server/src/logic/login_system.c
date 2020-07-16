@@ -15,18 +15,21 @@ static int json_error(cJSON *object) {
 }
 
 static char* mx_confirm_users_password(char* user, char* password) {
-    sqlite3 *db;
+    sqlite3 *db = opening_db();
     char sql[100];
     sqlite3_stmt *res;
 
     sprintf(sql, "SELECT PASSWORD FROM USERS WHERE LOGIN='%s';", user);
-    sqlite3_open("uchat.db", &db);
     sqlite3_prepare_v2(db, sql, -1, &res, 0);
     sqlite3_step(res);
     if(sqlite3_column_text(res, 0) == NULL) {
+        sqlite3_finalize(res);
+        sqlite3_close(db);
         return "false";
     }
     if(sqlite3_column_text(res, 0) != NULL && mx_strcmp((char*)sqlite3_column_text(res, 0), password) == 0) {
+        sqlite3_finalize(res);
+        sqlite3_close(db);
         return "success";
     }
     sqlite3_finalize(res);
@@ -35,17 +38,15 @@ static char* mx_confirm_users_password(char* user, char* password) {
 }
 
 static char* mx_get_nickname(char* login) {
-    sqlite3 *db = NULL;
+    sqlite3 *db = opening_db();
     char sql[200];
     sprintf(sql, "SELECT NICKNAME FROM USERS WHERE LOGIN='%s';", login);
     sqlite3_stmt *res;
     char* nickname;
 
-    sqlite3_open("uchat.db", &db);
     sqlite3_prepare_v2(db, sql, -1, &res, 0);
     sqlite3_step(res);
     nickname = (char*)sqlite3_column_text(res, 0);
-
     sqlite3_finalize(res);
     sqlite3_close(db);
     return nickname;

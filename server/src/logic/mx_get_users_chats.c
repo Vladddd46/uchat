@@ -53,7 +53,7 @@ static void dberror(sqlite3 *db, int status, char *msg) {
 // }
 
 chats_t* mx_get_users_chats(char* user) {
-	sqlite3 *db;
+	sqlite3 *db = opening_db();
     char sql[120];
     sqlite3_stmt *res;
     sqlite3_stmt *res1;
@@ -65,7 +65,6 @@ chats_t* mx_get_users_chats(char* user) {
     const unsigned char* identifier;
     sqlite3_stmt *res2;
 
-    sqlite3_open("uchat.db", &db);
     sprintf(sql, "SELECT ID FROM USERS WHERE LOGIN='%s';", user);
     int check = sqlite3_prepare_v2(db, sql, -1, &res, 0);
     dberror(db, check, "Error select ID from LOGIN");

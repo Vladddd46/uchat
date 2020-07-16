@@ -13,7 +13,6 @@
 #include <stdbool.h>
 #include "libmx.h"
 #include "cJSON.h"
-#include "crypt.h"
 
 char *json_packet_former(int num, ...);
 char *get_value_by_key(char *json_str, char *key);
@@ -26,7 +25,3 @@ char *packet_receive(int socket);
 
 // Sets time select must wait.
 struct timeval wait_time(int sec, int msec);
-
-// send wrapper.
-void mx_send(int socket, char *packet);
-

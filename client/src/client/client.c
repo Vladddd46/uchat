@@ -1,5 +1,5 @@
 #include "client.h"
-
+ /// все вызовы функций гтк запихни в мейн поток(Денис для Дениса)
 client_context_t *client_context;
 
 static void destroy(GtkWidget *widget, gpointer data){

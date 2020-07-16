@@ -4,8 +4,7 @@ SERVER_DIR = server
 CLIENT_DIR = client
 LIBMX_DIR = libs/libmx
 LIBCJSON_DIR = libs/cjson
-LIBUTILS_DIR = libs/utils
-LIBCRYPT_DIR = libs/crypt
+LIBUTILS_DIR = libs/cjson
 
 
 MAKE_M = make -sf Makefile -C
@@ -26,7 +25,6 @@ clean:
 	@$(MAKE_M) $(CLIENT_DIR) $@
 	@$(MAKE_M) $(LIBMX_DIR) $@
 	@$(MAKE_M) $(LIBCJSON_DIR) $@
-	@$(MAKE_M) $(LIBCRYPT_DIR) $@
 	@$(MAKE_M) $(LIBUTILS_DIR) $@
 
 uninstall:
@@ -35,7 +33,6 @@ uninstall:
 	@$(MAKE_M) $(LIBMX_DIR) $@
 	@$(MAKE_M) $(LIBCJSON_DIR) $@
 	@$(MAKE_M) $(LIBUTILS_DIR) $@
-	@$(MAKE_M) $(LIBCRYPT_DIR) $@
 
 reinstall: uninstall all
 

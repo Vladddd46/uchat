@@ -1,14 +1,13 @@
 #include "server.h"
 
 static char* mx_add_user(char* login, char* password, char* nickname) {
-    sqlite3 *db;
+    sqlite3 *db = opening_db();
     char *message_error;
     char sql[500];
     int check;
     sqlite3_stmt *res;
     sqlite3_stmt *res1;
 
-    sqlite3_open("uchat.db", &db);
     sprintf(sql, "SELECT PASSWORD FROM USERS WHERE LOGIN='%s';", login);
     check = sqlite3_prepare_v2(db, sql, -1, &res, 0);
     sqlite3_step(res);
@@ -22,16 +21,16 @@ static char* mx_add_user(char* login, char* password, char* nickname) {
         check = sqlite3_prepare_v2(db, sql, -1, &res1, 0);
         sqlite3_step(res1);
         if (sqlite3_column_text(res1, 0) != NULL) {
-            sqlite3_finalize(res1);
             sqlite3_finalize(res);
+            sqlite3_finalize(res1);
             sqlite3_close(db);
             return "STATUS:nickname exist";
         }
         else {
             sprintf(sql, "INSERT INTO USERS (LOGIN, NICKNAME, PASSWORD) VALUES('%s', '%s', '%s');", login, nickname, password);
             check = sqlite3_exec(db, sql, NULL, 0, &message_error);
-            sqlite3_finalize(res1);
             sqlite3_finalize(res);
+            sqlite3_finalize(res1);
             sqlite3_close(db);
             return "STATUS:success";
         }
