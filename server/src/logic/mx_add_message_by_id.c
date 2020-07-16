@@ -1,9 +1,10 @@
 #include "server.h"
 
-static int mx_get_last_message_id(int chat_id) {
-    sqlite3 *db = opening_db();
+static int mx_get_last_message_id(sqlite3 *db, int chat_id) {
     sqlite3_stmt *res;
-    char sql[100];
+    char sql[200];
+    bzero(sql, 200);
+
     int last_message_id = 0;
 
     sprintf(sql, "SELECT MAX(MESSAGEID) FROM MESSAGES WHERE CHATID='%d';", chat_id);
@@ -12,8 +13,8 @@ static int mx_get_last_message_id(int chat_id) {
     sqlite3_step(res);
     if((sqlite3_column_text(res, 0)) != NULL)
         last_message_id = atoi((const char*)sqlite3_column_text(res, 0));
+
     sqlite3_finalize(res);
-    sqlite3_close(db);
     return last_message_id;
 }
 
@@ -28,7 +29,7 @@ static void mx_add_last_message(int chat_id, char* message, char* time, char* se
     char sql[1000];
     bzero(sql, 1000);
     int check;
-    int message_id = mx_get_last_message_id(chat_id);
+    int message_id = mx_get_last_message_id(db, chat_id);
 
     message_id++;
     // dberror(db, x, "Error to open");
@@ -68,13 +69,14 @@ static char *mx_json_packet_former_from_list(char* message, char* time, char* se
     cJSON *packet = cJSON_CreateObject();
     char* packet_str = NULL;
     cJSON *json_value = cJSON_CreateString("msg_s");
+    sqlite3 *db = opening_db();
 
     cJSON_AddItemToObject(packet, "TYPE", json_value);
     json_value = cJSON_CreateString(all_users);
     cJSON_AddItemToObject(packet, "TO", json_value);
     char packet_former[100];
     sprintf(packet_former, "ID0");
-    json_value = cJSON_CreateString(mx_itoa(mx_get_last_message_id(chat_id)));
+    json_value = cJSON_CreateString(mx_itoa(mx_get_last_message_id(db, chat_id)));
     cJSON_AddItemToObject(packet, packet_former, json_value);
     json_value = cJSON_CreateString("0");
     cJSON_AddItemToObject(packet, "MSGLEN", json_value);
@@ -90,7 +92,7 @@ static char *mx_json_packet_former_from_list(char* message, char* time, char* se
     sprintf(packet_former, "MESSAGE0");
     cJSON_AddItemToObject(packet, packet_former, json_value);
     packet_str = cJSON_Print(packet);
-    
+    sqlite3_close(db);
     return packet_str;
 }
 
