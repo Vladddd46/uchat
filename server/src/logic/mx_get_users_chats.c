@@ -29,29 +29,54 @@ static char* mx_stringcopy(const unsigned char* copy) {
     return str;
 }
 
+static void malloc_error_checker(chats_t *chat) {
+    char *msg;
 
-chats_t *mx_get_users_chats(char* user) {
+    if (chat == NULL) {
+        msg =  "Malloc error\n";
+        write(2, msg, (int)strlen(msg));
+        exit(1);
+    }
+}
+
+static char *get_user_id_by_login(sqlite3 *db, char *login) {
+    char sql[200];
+    bzero(sql, 200);
+    sqlite3_stmt *res;
+    int check;
+    char *user_id;
+
+    sprintf(sql, "SELECT ID FROM USERS WHERE LOGIN='%s';", login);
+    check = sqlite3_prepare_v2(db, sql, -1, &res, 0);
+    dberror(db, check, "Error select ID from LOGIN");
+    sqlite3_step(res);
+    user_id = mx_string_copy((char *)sqlite3_column_text(res, 0));
+
+    sqlite3_finalize(res);
+    return user_id;
+}
+
+chats_t *mx_get_users_chats(char *user) {
 	sqlite3 *db = opening_db();
     char sql[200];
     bzero(sql, 200);
 
-    sqlite3_stmt *res;
     sqlite3_stmt *res1;
-    const unsigned char* user_id;
+    const unsigned char *identifier;
+
     chats_t *chat = (chats_t *)malloc(sizeof(chats_t));
+    malloc_error_checker(chat);
+
     chats_t *head = chat;
     int user_chat[1024];
     int len = 0;
-    const unsigned char* identifier;
     sqlite3_stmt *res2;
 
-    sprintf(sql, "SELECT ID FROM USERS WHERE LOGIN='%s';", user);
-    int check = sqlite3_prepare_v2(db, sql, -1, &res, 0);
-    dberror(db, check, "Error select ID from LOGIN");
-    sqlite3_step(res);
-    user_id = sqlite3_column_text(res, 0);
+    char *user_id = get_user_id_by_login(db, user);
+
+
     sprintf(sql, "SELECT CHATID FROM USERCHAT WHERE USERID=%s;", user_id);
-    check = sqlite3_prepare_v2(db, sql, -1, &res1, 0);
+    int check = sqlite3_prepare_v2(db, sql, -1, &res1, 0);
     dberror(db, check, "Error select CHATID from USERCHAT");
     sqlite3_step(res1);
     for(; sqlite3_column_text(res1, 0) != NULL; len++) {
@@ -70,9 +95,10 @@ chats_t *mx_get_users_chats(char* user) {
         sqlite3_step(res1);
         sqlite3_finalize(res2);
     }
-    sqlite3_finalize(res);
+
     sqlite3_finalize(res1);
     sqlite3_close(db);
+    free(user_id);
     return head;
 }
 
