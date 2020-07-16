@@ -40,7 +40,6 @@ static void dberror(sqlite3 *db, int status, char *msg) {
 
 // static int mx_callback(void* not_used, int argc, char** argv, char** az_con_name) {
 //     for(int i = 0; i < argc; i++) {
-//         printf("%s: %s\n", az_con_name[i], argv[i]);
 //     }
 //     return 0;
 // }
@@ -48,10 +47,8 @@ static void dberror(sqlite3 *db, int status, char *msg) {
 // static int mx_get_data(const char* str) {
 //     sqlite3 *db;
 //     int exit = sqlite3_open(str, &db);
-//     printf("from\n");
 //     char* sql = "SELECT * FROM USERS;";
 //     sqlite3_exec(db, sql, mx_callback, NULL, NULL);
-//     printf("end\n");
 //     return 0;
 // }
 
@@ -84,8 +81,9 @@ chats_t* mx_get_users_chats(char* user) {
         check = sqlite3_prepare_v2(db, sql, -1, &res2, 0);
         dberror(db, check, "Error select CHATNAME, LASTMESSAGE from CHATs");
         sqlite3_step(res2);
-        chat -> chat_name = mx_stringcopy(sqlite3_column_text(res2, 0));
-        chat -> last_message = mx_stringcopy(sqlite3_column_text(res2, 1));
+        chat -> chat_name = mx_string_copy((char *)sqlite3_column_text(res2, 0));
+        chat -> last_message = mx_string_copy((char *)sqlite3_column_text(res2, 1));
+        printf("%s>>>>>>>>>>>>>>>\n",chat->chat_name );
         chat -> next = malloc(sizeof(chats_t));
         chat = chat -> next;
         chat -> chat_name = NULL;

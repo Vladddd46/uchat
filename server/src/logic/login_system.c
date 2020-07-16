@@ -94,7 +94,6 @@ static char *json_packet_former_from_list(chats_t *chat, char *status, char* log
     char* packet_str = NULL;
     cJSON *json_value = cJSON_CreateString("login_s");
     char *nickname = mx_get_nickname(login);
-    printf("\nnickname: %s\n\n", nickname);
 
     cJSON_AddItemToObject(packet, "TYPE", json_value);
     json_value = cJSON_CreateString(status);
@@ -117,7 +116,7 @@ static char *json_packet_former_from_list(chats_t *chat, char *status, char* log
         chat = chat -> next;
     }
     packet_str = cJSON_Print(packet);
-    printf("packet shmaket %s", packet_str);
+
     return packet_str;
 }
 
@@ -132,6 +131,5 @@ char *login_system(char *packet) {
         chat -> chat_name = NULL;
     }
     sendback_packet = json_packet_former_from_list(chat, return_status, login);
-    printf("Packet to client %s", sendback_packet);
     return sendback_packet;
 }

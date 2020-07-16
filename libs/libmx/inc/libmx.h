@@ -28,6 +28,7 @@ int 		  mx_list_size(t_list *list);
 int 		  mx_is_in_str(char *str, char c);
 int 		  mx_memcmp(void *s1, void *s2, size_t n);
 int 		  mx_symbols_in_str(char *str, char *symbols);
+int 		  mx_str_in_arr(char *str, char **arr);
 char 		  *mx_string_copy(char *str);
 char 		  *mx_strnew(int size);
 char 		  *mx_strcat(char *restrict s1, char *restrict s2);

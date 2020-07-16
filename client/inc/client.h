@@ -16,19 +16,35 @@
 typedef struct client_context_s {
 	int sockfd;
 	char *username;
+	char *allusers;
+	int indexrow;
 } client_context_t;
 
 struct struct_type {
 	char *pack;
 	int number;
+	char *login;
+	char *nickname;
 	};
+
+typedef struct s_s_glade {
+ char *pack;
+ int number;
+ char *login;
+ char *nickname;
+}           t_s_glade;
+
+
 
 client_context_t *client_context;
 // какие то непонятные функции Дениса. PS. структурируй их пожалуйста.
+int show_widget(GtkWidget *widget);
+void remake_chats(char *pack);
 void back_to_menu(GtkWidget *back, client_context_t *client_context);
 void main_menu();
-void draw_message_menu(GtkWidget *entryspawn, client_context_t *client_context);
-gboolean create_row(gpointer data, struct struct_type parm);
+gboolean draw_message_menu(void *data);
+gboolean create_message_system(void *data);
+gboolean create_row(void * data);
 void create_message(GtkWidget *newmessedgentry, struct struct_type parm);
 void end_message (GtkWidget *widget, GtkWidget *message);
 char *get_text_of_textview(GtkWidget *text_view);
@@ -43,7 +59,8 @@ void add_new_user(GtkWidget *newchatbutton, gpointer data);
 gboolean mini_button_release (GtkWidget *widget, GdkEventKey *event, gpointer data);
 gboolean add_new_friend (GtkWidget *newchatbutton, gpointer data);
 void draw_list_box_system(char *packet);
-void draw_list_box(char *login, char *nickname, int number);
+void dialog(GtkWidget *widget, gpointer data );
+gboolean draw_list_box(void *data);
 // gboolean mini_my_keypress_function (GtkWidget *widget, GdkEventKey *event, gpointer data);
 
 
@@ -58,6 +75,7 @@ void registration_system(int socket, char *packet);
 void login_system(client_context_t *client_context, char *packet);
 void create_row_system(client_context_t *client_context, char *packet);
 //mini приставка для виджетов в окне добавления юзеров
+GtkWidget *minibuttonfind;
 GtkWidget *minieventbox;
 GtkWidget *minibutton;
 GtkWidget *minilabell2;
@@ -76,6 +94,7 @@ GtkWidget *nickname;
 GtkWidget *Password;
 GtkWidget *SecondPassword;
 GtkWidget *Registration;
+GtkWidget *screp;
 //static GtkWidget *newbutton;
 GtkWidget *fixed;
 GtkTextBuffer *textbuffer;

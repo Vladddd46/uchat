@@ -60,6 +60,7 @@ void argv_validator(int argc);
 // Database functions.
 void    database_init();
 sqlite3 *opening_db();
+void def_database();
 
 // Socket list.
 int socket_list_add(connected_client_list_t    *head, int new_sock_fd);

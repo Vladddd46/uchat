@@ -14,7 +14,6 @@ static int mx_callback(void* not_used, int argc, char** argv, char** az_con_name
  * {to: client_login2; from: client_login1; type: msg_update; data: "Hello"}
  */
 char *mx_database_communication(char *packet) {
-    printf("\nGet here!!\n\nPaket type: %s\n\n", packet);
     // mx_printstr("\nGet here printstr\n\n");
     if (!strcmp(packet, ""))
         return NULL;
@@ -62,7 +61,7 @@ char *mx_database_communication(char *packet) {
     // sqlite3_exec(db, sql, mx_callback, NULL, NULL);
     // return 0;
     // free(packet_type); // почему - то иногда выдает ошибку malloc error
-    printf("%s\n", send_back_packet);
+    printf("Finder %s\n", send_back_packet);
     return send_back_packet;
 }
 

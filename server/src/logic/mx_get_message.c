@@ -2,7 +2,7 @@
 
 static int mx_callback(void* not_used, int argc, char** argv, char** az_con_name) {
     for(int i = 0; i < argc; i++) {
-        printf("%s: %s\n", az_con_name[i], argv[i]);
+     //   printf("%s: %s\n", az_con_name[i], argv[i]);
     }
     return 0;
 }
@@ -42,6 +42,31 @@ static chat_message_t* mx_fill_list(int chat_id, int from, int to) {
     return head;
 }
 
+static char* mx_get_all_users(int chat_id) {
+    sqlite3 *db;
+    sqlite3_stmt *res;
+    sqlite3_stmt *res_user;
+    char sql[100];
+    char *users = "";
+    
+    sqlite3_open("uchat.db", &db);
+    sprintf(sql, "SELECT USERID FROM USERCHAT WHERE CHATID='%d';", chat_id);
+    sqlite3_prepare_v2(db, sql, -1, &res, 0);
+    sqlite3_step(res);
+    while(sqlite3_column_text(res, 0) != NULL) {
+        char* id_char = mx_string_copy((char*)sqlite3_column_text(res, 0));
+        int id_int = atoi(id_char);
+        sprintf(sql, "SELECT LOGIN FROM USERS WHERE ID='%d';", id_int);
+        sqlite3_prepare_v2(db, sql, -1, &res_user, 0);
+        sqlite3_step(res_user);
+        char* second_user = mx_string_copy((char*)sqlite3_column_text(res_user, 0));
+        users = mx_strjoin(users, second_user);
+        users = mx_strjoin(users, " ");
+        sqlite3_step(res);
+    }
+    return users;
+}
+
 static int mx_list_len(chat_message_t* chat) {
     int len = 0;
     chat_message_t* head = chat;
@@ -54,13 +79,13 @@ static int mx_list_len(chat_message_t* chat) {
     return len;
 }
 
-static char *mx_json_packet_former_from_list(chat_message_t* chat, int from, char *chat_name) {
+static char *mx_json_packet_former_from_list(chat_message_t* chat, int from, char *chat_name, char* all_users) {
     int list_len = mx_list_len(chat);
     cJSON *packet = cJSON_CreateObject();
     char* packet_str = NULL;
     cJSON *json_value = cJSON_CreateString("msg_s");
 
-    printf("\nLEN = %d\n", list_len);
+   // printf("\nLEN = %d\n", list_len);
     cJSON_AddItemToObject(packet, "TYPE", json_value);
     json_value = cJSON_CreateString(chat_name);
     cJSON_AddItemToObject(packet, "TO", json_value);
@@ -70,6 +95,10 @@ static char *mx_json_packet_former_from_list(chat_message_t* chat, int from, cha
         sprintf(packet_former, "ID%d", i);
         json_value = cJSON_CreateString(mx_itoa(from));
         cJSON_AddItemToObject(packet, packet_former, json_value);
+        json_value = cJSON_CreateString(mx_itoa(list_len));
+        cJSON_AddItemToObject(packet, "MSGLEN", json_value);
+        json_value = cJSON_CreateString(all_users);
+        cJSON_AddItemToObject(packet, "ALLUSERS", json_value);
         json_value = cJSON_CreateString(chat -> sender);
         sprintf(packet_former, "SENDER%d", i);
         cJSON_AddItemToObject(packet, packet_former, json_value);
@@ -97,7 +126,8 @@ char* mx_get_message(char* packet) {
     // printf("\nSEG FAUTL AFTer -- 2\n\n");
     chat_message_t* list = mx_fill_list(chat_id, from, to);
     // printf("\nSEG FAUTL AFTer -- 3\n\n");
-    char* return_packet = mx_json_packet_former_from_list(list, from, chat_name);
+    char* all_users = mx_get_all_users(chat_id);
+    char* return_packet = mx_json_packet_former_from_list(list, from, chat_name, all_users);
     // printf("\nSEG FAUTL AFTer -- 4\n\n");
     // while(list -> message != NULL) {
     //  printf("Sender: %s   Time: %s\nMessage: %s\n\n", list -> sender, list -> time, list -> message);

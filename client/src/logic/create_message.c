@@ -51,14 +51,14 @@ void end_message (GtkWidget *widget, GtkWidget *message){
     gtk_widget_show(newmessedgentry);
     flag = FALSE;
 
-}
+} 
 
 void create_message(GtkWidget *newmessedgentry, struct struct_type parm){
   GtkWidget *row;
   GtkAdjustment *adj;
 
-    char *nameuser = get_value_by_key(parm.pack,"TO");
-    char *chatname = get_value_by_key(parm.pack,mx_strjoin("SENDER",mx_itoa(parm.number)));
+    char *nameuser = client_context->username;
+    char *sender = get_value_by_key(parm.pack,mx_strjoin("SENDER",mx_itoa(parm.number)));
     int messagenum = atoi(get_value_by_key(parm.pack,mx_strjoin("ID",mx_itoa(parm.number))));
     char *messagetext = get_value_by_key(parm.pack,mx_strjoin("MESSAGE",mx_itoa(parm.number)));
     char *timemessage = get_value_by_key(parm.pack,mx_strjoin("TIME",mx_itoa(parm.number)));
@@ -73,7 +73,7 @@ void create_message(GtkWidget *newmessedgentry, struct struct_type parm){
     gtk_container_add(GTK_CONTAINER(ebox), horizontalbox);
 
     messagebox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL,0);
-    if (!strcmp(nameuser,chatname))
+    if (!strcmp(nameuser,sender))
         gtk_box_pack_end(GTK_BOX(horizontalbox),messagebox, FALSE, FALSE, 0);
     else
         gtk_box_pack_start(GTK_BOX(horizontalbox),messagebox, FALSE, FALSE, 0);
@@ -86,7 +86,7 @@ void create_message(GtkWidget *newmessedgentry, struct struct_type parm){
     verticalbox = gtk_box_new(GTK_ORIENTATION_VERTICAL,0);
     gtk_box_pack_start(GTK_BOX(messagebox),verticalbox, FALSE, FALSE, 0);
 
-    labellmenu = gtk_label_new(chatname);
+    labellmenu = gtk_label_new(sender);
     gtk_widget_set_name(labellmenu,"labellmenu");
     gtk_box_pack_start(GTK_BOX(verticalbox),labellmenu, FALSE, FALSE, 0);
 
@@ -113,9 +113,54 @@ void create_message(GtkWidget *newmessedgentry, struct struct_type parm){
     gtk_menu_shell_append (GTK_MENU_SHELL (fileMenu), delet);  
     g_signal_connect (delet, "activate", G_CALLBACK (delete_message), row);
 
-    gtk_widget_show_all(window);
-    //gtk_scrolled_window_set_vadjustment(GTK_SCROLLED_WINDOW(scrollmess), adj);
-    printf("%s\n",">>>>>>>" );
+    
+    g_idle_add ((int (*)(void *))show_widget, window);
+    gtk_scrolled_window_set_vadjustment(GTK_SCROLLED_WINDOW(scrollmess), adj);
 }
 
+static char* mx_get_time() {
+    time_t rawtime;
+    struct tm * timeinfo;
+    char* date = NULL;
 
+    time ( &rawtime );
+    timeinfo = localtime ( &rawtime );
+    date = asctime (timeinfo);
+    return date;
+}
+
+gboolean create_message_system(void *data){
+    char *message_from_user = get_text_of_textview(newmessedgentry);
+    *(client_context -> allusers + mx_strlen(client_context -> allusers) - 1) = '\0';
+    char* all_users = client_context -> allusers;
+
+    cJSON *packet = cJSON_CreateObject();
+    char  *packet_str = NULL;
+    cJSON *type = cJSON_CreateString("add_msg_c");
+    cJSON *time = cJSON_CreateString(mx_get_time());
+    cJSON *msg = cJSON_CreateString(message_from_user);
+    cJSON *allusers = cJSON_CreateString(all_users);
+    cJSON *message_id = cJSON_CreateString("0");
+    int chat_id_client = client_context -> indexrow;
+    cJSON *chat_id = cJSON_CreateString(mx_itoa(++chat_id_client));
+    cJSON *username = cJSON_CreateString(client_context -> username);
+    
+    cJSON_AddItemToObject(packet, "TYPE", type);
+    cJSON_AddItemToObject(packet, "MESSAGEID", message_id);
+    cJSON_AddItemToObject(packet, "TIME", time);
+    cJSON_AddItemToObject(packet, "TO", allusers);
+    cJSON_AddItemToObject(packet, "MESSAGE", msg);
+    cJSON_AddItemToObject(packet, "CHATID", chat_id);
+    cJSON_AddItemToObject(packet, "SENDER", username);
+
+
+    packet_str = mx_string_copy(cJSON_Print(packet));
+    char *packet_str1 =  packet_len_prefix_adder(packet_str);
+    printf("%s\n",packet_str1);
+    // char* packet_str2 = cJSON_Print(packet_str1);
+    send(client_context->sockfd, mx_strdup(packet_str1), (int)strlen(packet_str1), 0);
+    free(packet_str);
+    free(packet_str1);
+
+return 0;
+}

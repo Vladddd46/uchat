@@ -1,5 +1,5 @@
 #include "client.h"
-
+ /// все вызовы функций гтк запихни в мейн поток(Денис для Дениса)
 client_context_t *client_context;
 
 static void destroy(GtkWidget *widget, gpointer data){
@@ -20,7 +20,7 @@ void gui(int argc, char **argv, client_context_t *client_context) {
     g_signal_connect(window,"destroy",G_CALLBACK(gtk_main_quit), NULL);
     gtk_window_set_resizable(GTK_WINDOW(window),FALSE);
     //window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
-    //gtk_window_set_position(GTK_WINDOW(window), GTK_WIN_POS_CENTER);
+    gtk_window_set_position(GTK_WINDOW(window), GTK_WIN_POS_CENTER);
 
     fixed = gtk_fixed_new();
     gtk_container_add(GTK_CONTAINER(window), fixed);
@@ -32,7 +32,7 @@ void gui(int argc, char **argv, client_context_t *client_context) {
 static struct sockaddr_in client_address_describer(int port) { 
     /*
      * Create structure, where client address is described.
-     * 1. server`s address
+     * 1. server`s address 
      * 2. ip version AF_INET = IPv4
      * 3. server`s port.
      */
@@ -42,7 +42,7 @@ static struct sockaddr_in client_address_describer(int port) {
     client_addr.sin_family = AF_INET;
     client_addr.sin_port = htons(port);
 
-    return client_addr;
+    return client_addr; 
 }
 
 void client_context_init(int sockfd) {
@@ -53,18 +53,16 @@ void client_context_init(int sockfd) {
 }
 
 static void received_packet_analyzer(char *packet_type, char *packet) {
-    printf("%s\n",packet );
     if (!strcmp(packet_type, "reg_s"))
         registration_system(client_context->sockfd, packet);
     else if (!strcmp(packet_type, "login_s"))
         login_system(client_context, packet);
-    else if (!strcmp(packet_type, "find_user_s")){
+    else if (!strcmp(packet_type, "find_user_s"))
         draw_list_box_system(packet);
-        printf("%s\n", "find_user packet receive");
-    }
+    else if (!strcmp(packet_type, "add_new_user_s"))
+        remake_chats(packet);
     else if (!strcmp(packet_type, "msg_s")) {
         create_row_system(client_context, packet);
-        printf("packet from server %s\n", packet);
     }
 
 }
@@ -80,7 +78,6 @@ static void *server_communication(void *param) {
     int status;
     char *packet;
     char *packet_type;
-
     while(1) {
         FD_ZERO(&read_descriptors);
         FD_SET(client_context->sockfd, &read_descriptors);
@@ -90,6 +87,7 @@ static void *server_communication(void *param) {
         packet      = packet_receive(client_context->sockfd);
         if (packet == NULL)
             exit(1);
+
         packet_type = get_value_by_key(packet, "TYPE");
         received_packet_analyzer(packet_type, packet);
         free(packet_type);

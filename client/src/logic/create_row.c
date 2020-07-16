@@ -1,14 +1,14 @@
 #include "client.h"
 
-static int n = 0;
 
-gboolean create_row(gpointer data, struct struct_type parm){
-    char *chatname = get_value_by_key(parm.pack,mx_strjoin("CHATNAME=",mx_itoa(n)));
-    char *lastmessage = get_value_by_key(parm.pack,mx_strjoin("LASTMESSAGE=",mx_itoa(n)));
+gboolean create_row(void *data){
+     t_s_glade *gui = (t_s_glade *)data;
+    //struct struct_type *parm =(struct struct_type *)data;
+    char *chatname = get_value_by_key(gui->pack,mx_strjoin("CHATNAME=",mx_itoa(gui->number)));
+    char *lastmessage = get_value_by_key(gui->pack,mx_strjoin("LASTMESSAGE=",mx_itoa(gui->number)));
     row = gtk_list_box_row_new();
     gtk_widget_set_name(row,"chatrow");
-    gtk_list_box_insert (GTK_LIST_BOX(listbox),row,n);
-    n++;
+    gtk_list_box_insert (GTK_LIST_BOX(listbox),row,gui->number);
 
     gridmenu = gtk_grid_new();
     gtk_container_add(GTK_CONTAINER(row), gridmenu);
@@ -29,6 +29,7 @@ gboolean create_row(gpointer data, struct struct_type parm){
     // gtk_grid_attach(GTK_GRID(gridmenu), labellmenu3, 2, 0, 1, 1);
     // gtk_widget_set_name(labellmenu3,"labellmenu3");
 
-    gtk_widget_show_all(window);
+    
+    g_idle_add ((int (*)(void *))show_widget, window);
     return 0;
 }
