@@ -6,15 +6,8 @@
  * Forms back packet.
  */
 
-static int json_error(cJSON *object) {
-    if (object == NULL) {
-        cJSON_Delete(object);
-        return 1;
-    }
-    return 0;
-}
 
-static char* mx_confirm_users_password(char* user, char* password) {
+static char* mx_confirm_users_password(char *user, char *password) {
     sqlite3 *db = opening_db();
     char sql[400];
     bzero(sql, 400);
@@ -32,7 +25,7 @@ static char* mx_confirm_users_password(char* user, char* password) {
 
     sqlite3_finalize(res);
     sqlite3_close(db);
-    return return_status;
+    return mx_string_copy(return_status);
 }
 
 static char *mx_get_nickname(char *login) {
@@ -125,17 +118,19 @@ static char *json_packet_former_from_list(chats_t *chat, char *status, char* log
 }
 
 char *login_system(char *packet) {
-    char *login    = get_value_by_key(packet, "LOGIN");
-    char *password = get_value_by_key(packet, "PASSWORD");
-    char *return_status = mx_confirm_users_password(login, password);
-    chats_t *chat = mx_get_users_chats(login); // list чатов доступных пользователю с login (chatname, last message)
-    char *sendback_packet;
+    char *login         = get_value_by_key(packet, "LOGIN");
+    char *password      = get_value_by_key(packet, "PASSWORD");
 
-    if(mx_strcmp(return_status, "false") == 0) {
+    char *return_status = mx_confirm_users_password(login, password);
+    chats_t *chat       = mx_get_users_chats(login);
+    
+    char *sendback_packet;
+    if(mx_strcmp(return_status, "false") == 0)
         chat -> chat_name = NULL;
-    }
+    
     sendback_packet = json_packet_former_from_list(chat, return_status, login);
     free(login);
     free(password);
+    free(return_status);
     return sendback_packet;
 }
