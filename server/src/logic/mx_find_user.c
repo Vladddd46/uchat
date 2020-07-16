@@ -4,11 +4,9 @@ static bool mx_check_complability(char* login, char* nickname, char* user) {
     bool status = false;
 
     if(strstr(login, user) != NULL) {
-        printf("\nFOUND!!\n\n");
     	status = true;
     }
     else if(strstr(nickname, user) != NULL) {
-        printf("\nFOUND!!\n\n");
     	status = true;
     }
     return status;
@@ -57,6 +55,8 @@ static users_list_t* mx_fill_users_list(char* user) {
     if(head -> login == NULL) {
         list = NULL;
     }
+    sqlite3_finalize(res);
+    sqlite3_close(db);
     return head;
 }
 

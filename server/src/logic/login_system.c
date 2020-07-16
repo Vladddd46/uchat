@@ -45,6 +45,9 @@ static char* mx_get_nickname(char* login) {
     sqlite3_prepare_v2(db, sql, -1, &res, 0);
     sqlite3_step(res);
     nickname = (char*)sqlite3_column_text(res, 0);
+
+    sqlite3_finalize(res);
+    sqlite3_close(db);
     return nickname;
 }
 

@@ -48,18 +48,7 @@ char *mx_database_communication(char *packet) {
         send_back_packet = mx_add_contact(packet);
         // send_back_packet = msg();
     }
-    // else if (!strcmp(packet_type, "search_c")) {
-    //     printf("\n\nmsg_c packet received\n\n");
-    //     // send_back_packet = mx_search_all(packet);
-    // }
 
-    // sqlite3 *db;
-    // int exit = sqlite3_open("uchat.db", &db);
-
-    // char* sql = "SELECT * FROM USERS;";
-
-    // sqlite3_exec(db, sql, mx_callback, NULL, NULL);
-    // return 0;
     // free(packet_type); // почему - то иногда выдает ошибку malloc error
     printf("Finder %s\n", send_back_packet);
     return send_back_packet;

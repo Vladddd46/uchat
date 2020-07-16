@@ -39,6 +39,8 @@ static chat_message_t* mx_fill_list(int chat_id, int from, int to) {
     //     printf("Sender: %s   Time: %s\nMessage: %s\n\n", head -> sender, head -> time, head -> message);
     //     head = head -> next;
     // }
+    sqlite3_finalize(res);
+    sqlite3_close(db);
     return head;
 }
 

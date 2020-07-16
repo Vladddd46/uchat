@@ -27,6 +27,7 @@ static int mx_add_user(char* login, char* password, char* nickname) {
         printf("Error inserting User");
         sqlite3_free(message_error);
     }
+    sqlite3_close(db);
     return 0;
 }
 

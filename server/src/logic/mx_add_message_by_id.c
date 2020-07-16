@@ -49,16 +49,22 @@ static void mx_add_last_message(int chat_id, char* message, char* time, char* se
 
     char* sql1 = "SELECT * FROM MESSAGES WHERE CHATID=1";
     sqlite3_exec(db, sql1, mx_callback, NULL, NULL);
+
+    sqlite3_close(db);
 }
 
 static void mx_add_message_with_id(int message_id, int chat_id, char* message) {
 	sqlite3 *db = NULL;
+    sqlite3_open("uchat.db", &db);
+
     char *message_error;
     char sql[500];
     int check;
 
 	sprintf(sql, "UPDATE MESSAGES SET MESSAGE = '%s' WHERE MESSAGEID = %d;", message ,message_id);
     check = sqlite3_exec(db, sql, NULL, 0, &message_error);
+
+    sqlite3_close(db);
 }
 
 char* mx_add_message_by_id(char* packet) {
