@@ -29,14 +29,6 @@ static char* mx_stringcopy(const unsigned char* copy) {
     return str;
 }
 
-static void dberror(sqlite3 *db, int status, char *msg) {
-    if (status != SQLITE_OK) {
-        write(2, msg, (int)strlen(msg));
-        write(2, "\n", 1);
-        sqlite3_close(db); 
-        exit(1);
-    }
-}
 
 // static int mx_callback(void* not_used, int argc, char** argv, char** az_con_name) {
 //     for(int i = 0; i < argc; i++) {

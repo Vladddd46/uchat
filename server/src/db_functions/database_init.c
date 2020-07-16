@@ -1,44 +1,6 @@
 #include "server.h"
 
-/*
- * Initialize database, if it does not exist.
- * Creates user(login = admin, password = qwerty) by default.
- */
-
-static char* mx_insert_all_args(char* login, char* password, char* nickname) {
-    char* request = mx_strjoin("INSERT INTO USERS (LOGIN, PASSWORD, NICKNAME) VALUES('", login);
-
-    request = mx_strjoin(request, "', '");
-    request = mx_strjoin(request, password);
-    request = mx_strjoin(request, "', '");
-    request = mx_strjoin(request, nickname);
-    request = mx_strjoin(request, "');");
-    return request;
-}
-
-static int mx_add_user(char* login, char* password, char* nickname) {
-    sqlite3 *db = opening_db();
-    char *message_error;
-    char* sql = mx_insert_all_args(login, password, nickname);
-
-    int exit = sqlite3_exec(db, sql, NULL, 0, &message_error);
-    if(exit != SQLITE_OK) {
-        printf("Error inserting User");
-        sqlite3_free(message_error);
-    }
-    sqlite3_close(db);
-    return 0;
-}
-
-static void dberror(sqlite3 *db, int status, char *msg) {
-    if (status != SQLITE_OK) {
-        write(2, msg, (int)strlen(msg));
-        write(2, "\n", 1);
-        sqlite3_close(db); 
-        exit(1);
-    }
-}
-
+// Initialize database, if it does not exist.
 void database_init() {
     sqlite3 *db = opening_db();
     int exit = 0;
@@ -52,7 +14,7 @@ void database_init() {
     dberror(db, exit, "Error to create USERS table");
     sql = "CREATE TABLE IF NOT EXISTS CHATS("
         "ID          INTEGER PRIMARY KEY AUTOINCREMENT, "
-        "CHATNAME    TEXT NOT NULL, " // тут должна быть какая-то шняга Влада
+        "CHATNAME    TEXT NOT NULL, "
         "LASTMESSAGE TEXT NOT NULL);";
     exit = sqlite3_exec(db, sql, NULL, 0, &message_error);
     dberror(db, exit, "Error to create CHATS table");
@@ -72,7 +34,6 @@ void database_init() {
     exit = sqlite3_exec(db, sql, NULL, 0, &message_error);
 
     /* добавление тестовых даных в БД */
-    // def_database();
-    /*-----------------------------------------------------*/
+    def_database();
     sqlite3_close(db);
 }

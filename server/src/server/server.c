@@ -63,18 +63,16 @@ static char **mx_packet_receivers_determine(char *packet) {
     return receivers;
 }
 
+
 static void *handle_server(void *param) {
     int status;
-    int buf_len = 0;
     fd_set read_descriptors;
-    // Setting waiting time for select.
     struct timeval tv = wait_time(1, 0);
 
     while(!quit) {    
         update_connections(&read_descriptors);
         printf("wait for incomming packets...\n");
         status = select(FD_SETSIZE, &read_descriptors, NULL, NULL, &tv);
-        // if no sockets are availabe => continue loop.
         if (status <= 0) continue;
         
         pthread_mutex_lock(&ctx_mutex);
@@ -90,36 +88,19 @@ static void *handle_server(void *param) {
          */
         for (connected_client_list_t *p = ctx.head.next; p != NULL; p = p->next) {
             if (FD_ISSET(p->sock_fd, &read_descriptors)) {
-                // <del> принмает пакет с сокета.
                 char *packet = packet_receive(p->sock_fd);
-                if (buf_len < 0) continue;
  
                 // Modify db and forms packet, which must be send to specified in packet client(login).
-                printf("packet from client %s\n\n", packet);
                 char *send_packet = mx_database_communication(packet);
-                printf("packet from server %s\n\n", send_packet);
                 if (send_packet == NULL) // Connection was closed but update has not been made yet.
                     continue;
-                /* 
-                 * Retrieves user`s login from packet. Packet will be send on this login,
-                 * if user with this login is connected to the server.
-                 */
-                // char *client_login = get_value_by_key(send_packet, "TO");
 
                 char **receivers  = mx_packet_receivers_determine(send_packet);
-                for (int i = 0; receivers[i]; ++i) {
-                }
-
-                /* Makes user logged in. */
-                if (send_packet && (!strcmp(get_value_by_key(send_packet, "TYPE"), "login_s") || !strcmp(get_value_by_key(send_packet, "TYPE"), "reg_s")) && !strcmp(get_value_by_key(send_packet, "STATUS"), "success")) {
-                    p->login = mx_string_copy(receivers[0]);
-                    p->is_logged = true;
-                }
+                mx_login_user_socket(p, send_packet, receivers);
 
                 char *send_back_packet_prefixed =  packet_len_prefix_adder(send_packet);
                 free(send_packet);
                 free(packet);
-
                 for (connected_client_list_t *s = ctx.head.next; s != NULL; s = s->next) {
                     if (s->is_logged && mx_str_in_arr(s->login, receivers))
                         send(s->sock_fd, send_back_packet_prefixed, (int)strlen(send_back_packet_prefixed), 0);

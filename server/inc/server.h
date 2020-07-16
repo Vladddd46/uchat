@@ -56,11 +56,14 @@ typedef struct users_list {
 int  get_port(char **argv);
 int  listening_socket_init(int port);
 void argv_validator(int argc);
+void mx_login_user_socket(connected_client_list_t *p, char *send_packet, char **receivers);
 
 // Database functions.
 void    database_init();
 sqlite3 *opening_db();
 void def_database();
+void dberror(sqlite3 *db, int status, char *msg);
+void db_msg_error(int status, char *msg_error);
 
 // Socket list.
 int socket_list_add(connected_client_list_t    *head, int new_sock_fd);

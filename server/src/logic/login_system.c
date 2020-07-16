@@ -16,37 +16,37 @@ static int json_error(cJSON *object) {
 
 static char* mx_confirm_users_password(char* user, char* password) {
     sqlite3 *db = opening_db();
-    char sql[100];
+    char sql[400];
+    bzero(sql, 400);
+    char *return_status = NULL;
     sqlite3_stmt *res;
 
     sprintf(sql, "SELECT PASSWORD FROM USERS WHERE LOGIN='%s';", user);
+
     sqlite3_prepare_v2(db, sql, -1, &res, 0);
     sqlite3_step(res);
-    if(sqlite3_column_text(res, 0) == NULL) {
-        sqlite3_finalize(res);
-        sqlite3_close(db);
-        return "false";
-    }
-    if(sqlite3_column_text(res, 0) != NULL && mx_strcmp((char*)sqlite3_column_text(res, 0), password) == 0) {
-        sqlite3_finalize(res);
-        sqlite3_close(db);
-        return "success";
-    }
+    if(sqlite3_column_text(res, 0) == NULL) 
+        return_status = "false";
+    if(sqlite3_column_text(res, 0) != NULL && mx_strcmp((char*)sqlite3_column_text(res, 0), password) == 0)
+        return_status = "success";
+
     sqlite3_finalize(res);
     sqlite3_close(db);
-    return "false";
+    return return_status;
 }
 
-static char* mx_get_nickname(char* login) {
+static char *mx_get_nickname(char *login) {
     sqlite3 *db = opening_db();
     char sql[200];
+    bzero(sql, 200);
+
     sprintf(sql, "SELECT NICKNAME FROM USERS WHERE LOGIN='%s';", login);
     sqlite3_stmt *res;
-    char* nickname;
+    char *nickname;
 
     sqlite3_prepare_v2(db, sql, -1, &res, 0);
     sqlite3_step(res);
-    nickname = (char*)sqlite3_column_text(res, 0);
+    nickname = (char *)sqlite3_column_text(res, 0);
     sqlite3_finalize(res);
     sqlite3_close(db);
     return nickname;
@@ -125,7 +125,7 @@ static char *json_packet_former_from_list(chats_t *chat, char *status, char* log
 }
 
 char *login_system(char *packet) {
-    char *login = get_value_by_key(packet, "LOGIN");
+    char *login    = get_value_by_key(packet, "LOGIN");
     char *password = get_value_by_key(packet, "PASSWORD");
     char *return_status = mx_confirm_users_password(login, password);
     chats_t *chat = mx_get_users_chats(login); // list чатов доступных пользователю с login (chatname, last message)
@@ -135,5 +135,7 @@ char *login_system(char *packet) {
         chat -> chat_name = NULL;
     }
     sendback_packet = json_packet_former_from_list(chat, return_status, login);
+    free(login);
+    free(password);
     return sendback_packet;
 }

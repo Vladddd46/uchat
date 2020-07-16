@@ -7,15 +7,6 @@ static int mx_callback(void* not_used, int argc, char** argv, char** az_con_name
     return 0;
 }
 
-static void dberror(sqlite3 *db, int status, char *msg) {
-    if (status != SQLITE_OK) {
-        write(2, msg, (int)strlen(msg));
-        write(2, "\n", 1);
-        sqlite3_close(db); 
-        exit(1);
-    }
-}
-
 static int mx_get_last_message_id(int chat_id) {
     sqlite3 *db = opening_db();
     sqlite3_stmt *res;

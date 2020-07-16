@@ -1,66 +1,38 @@
 #include "server.h"
+
 /*
  * Initialize database, if it does not exist.
  * Creates user(login = admin, password = qwerty) by default.
  */
 
-static char* mx_insert_all_args(char* login, char* password, char* nickname) {
-    char* request = mx_strjoin("INSERT INTO USERS (LOGIN, PASSWORD, NICKNAME) VALUES('", login);
-
-    request = mx_strjoin(request, "', '");
-    request = mx_strjoin(request, password);
-    request = mx_strjoin(request, "', '");
-    request = mx_strjoin(request, nickname);
-    request = mx_strjoin(request, "');");
-    return request;
-}
-
 static int mx_add_user(char* login, char* password, char* nickname) {
     sqlite3 *db = opening_db();
+
     char *message_error;
-    char* sql = mx_insert_all_args(login, password, nickname);
+    char sql[400];
+    bzero(sql, 400);
+    sprintf(sql, "INSERT INTO USERS (LOGIN, PASSWORD, NICKNAME) VALUES('%s', '%s', '%s')", login, password, nickname);
 
     int exit = sqlite3_exec(db, sql, NULL, 0, &message_error);
-    if(exit != SQLITE_OK) {
-        printf("Error inserting User");
-        sqlite3_free(message_error);
-    }
+    db_msg_error(exit, message_error);
+
     sqlite3_close(db);
     return 0;
 }
 
-static void dberror(sqlite3 *db, int status, char *msg) {
-    if (status != SQLITE_OK) {
-        write(2, msg, (int)strlen(msg));
-        write(2, "\n", 1);
-        sqlite3_close(db); 
-        exit(1);
-    }
-}
-
 void def_database() {
     sqlite3 *db = opening_db();
-    int exit = 0;
+    int exit;
     char *message_error;
     char *sql;
 
     /* добавление тестовых даных в БД */
     mx_add_user("Yura", "1234", "jorsh");
     mx_add_user("Vlad", "qwerty", "vdepesh");
-    dberror(db, exit, "Error to create MESSAGES table");
- 
+
     sql = "INSERT INTO CHATS (CHATNAME, LASTMESSAGE) VALUES('Yura Vlad', 'hello');";
     exit = sqlite3_exec(db, sql, NULL, 0, &message_error);
     dberror(db, exit, "Error inserting to Chats table");
-
-        // sql = "SELECT CHATNAME, LASTMESSAGE FROM CHATS WHERE ID=1;";
-        // printf("SQL string: %s\n", sql);
-        // sqlite3_stmt *res2;
-        // int check = sqlite3_prepare_v2(db, sql, -1, &res2, 0);
-        // dberror(db, check, "Error select CHATNAME, LASTMESSAGE from CHATs");
-        // sqlite3_step(res2);
-
-        // printf("%s", sqlite3_column_text(res2, 0));
 
     /* добавляем сообщения в чат */
     sql = "INSERT INTO MESSAGES (CHATID, MESSAGEID, SENDER, TIME, MESSAGE) VALUES(1, 1, 'Yura', '12:42', 'Hello');";
@@ -96,14 +68,13 @@ void def_database() {
 
     dberror(db, exit, "Error inserting message to MESSAGES table");
     /*-----------------------------------------------------*/
-
     sql = "INSERT INTO USERCHAT (USERID, CHATID) VALUES(1, 1);";
     exit = sqlite3_exec(db, sql, NULL, 0, &message_error);
     dberror(db, exit, "Error inserting to UserChats table");
     sql = "INSERT INTO USERCHAT (USERID, CHATID) VALUES(2, 1);";
     exit = sqlite3_exec(db, sql, NULL, 0, &message_error);
     dberror(db, exit, "Error inserting to UserChats table");
-
     /*-----------------------------------------------------*/
+
     sqlite3_close(db);
 }
