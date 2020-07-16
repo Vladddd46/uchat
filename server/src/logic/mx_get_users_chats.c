@@ -27,17 +27,23 @@ static char *get_user_id_by_login(sqlite3 *db, char *login) {
     return user_id;
 }
 
-static void push_chats_front(chats_t **chats, char *chat_name, char *last_message) {
+static chats_t *create_chats_node(char *chat_name, char *last_message) {
     chats_t *chat = (chats_t *)malloc(sizeof(chats_t));
     malloc_error_checker(chat);
     chat->chat_name    = chat_name;
     chat->last_message = last_message;
-    chat->next         = NULL;
+    chat->next = NULL;
+    return chat; 
+}
+
+static void push_chats_front(chats_t **chats, char *chat_name, char *last_message) {
+    chats_t *chat = create_chats_node(chat_name, last_message);
+    chats_t *tmp;
 
     if (*chats == NULL)
         *chats = chat;
     else {
-        chats_t *tmp = *chats;
+        tmp = *chats;
         while(tmp->next != NULL)
             tmp = tmp->next;
         tmp->next = chat;
