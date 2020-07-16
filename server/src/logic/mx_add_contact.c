@@ -60,15 +60,14 @@ static char* mx_get_nickname(char* login) {
     return nickname;
 }
 
-static int mx_list_len(chats_t* chat) {
+static int mx_list_len(chats_t *chat) {
     int len = 0;
-    chats_t* head = chat;
+    chats_t *tmp = chat;
 
-    while(chat -> chat_name != NULL) {
-        chat = chat -> next;
+    while(tmp != NULL) {
+        tmp = tmp -> next;
         len++;
     }
-    head = chat;
     return len;
 }
 

@@ -56,50 +56,64 @@ static char *get_user_id_by_login(sqlite3 *db, char *login) {
     return user_id;
 }
 
-chats_t *mx_get_users_chats(char *user) {
-	sqlite3 *db = opening_db();
-    char sql[200];
-    bzero(sql, 200);
-
-    sqlite3_stmt *res1;
-    const unsigned char *identifier;
-
+static void push_chats_front(chats_t **chats, char *chat_name, char *last_message) {
     chats_t *chat = (chats_t *)malloc(sizeof(chats_t));
     malloc_error_checker(chat);
+    chat->chat_name    = chat_name;
+    chat->last_message = last_message;
+    chat->next         = NULL;
 
-    chats_t *head = chat;
-    int user_chat[1024];
-    int len = 0;
+    if (*chats == NULL)
+        *chats = chat;
+    else {
+        chats_t *tmp = *chats;
+        while(tmp->next != NULL)
+            tmp = tmp->next;
+        tmp->next = chat;
+    }
+}
+
+chats_t *mx_get_users_chats(char *user) {
+	sqlite3 *db = opening_db();
+    sqlite3_stmt *res;
+    char *identifier = NULL;
+
+    chats_t *chat = NULL;
+
+
     sqlite3_stmt *res2;
+
+    char sql[200];
+    bzero(sql, 200);
 
     char *user_id = get_user_id_by_login(db, user);
 
 
     sprintf(sql, "SELECT CHATID FROM USERCHAT WHERE USERID=%s;", user_id);
-    int check = sqlite3_prepare_v2(db, sql, -1, &res1, 0);
+    int check = sqlite3_prepare_v2(db, sql, -1, &res, 0);
     dberror(db, check, "Error select CHATID from USERCHAT");
-    sqlite3_step(res1);
-    for(; sqlite3_column_text(res1, 0) != NULL; len++) {
-        identifier = sqlite3_column_text(res1, 0);
+    sqlite3_step(res);
+    
+    while(sqlite3_column_text(res, 0) != NULL) {
+        identifier = (char *)sqlite3_column_text(res, 0);
         sprintf(sql, "SELECT CHATNAME, LASTMESSAGE FROM CHATS WHERE ID=%s;", identifier);
         check = sqlite3_prepare_v2(db, sql, -1, &res2, 0);
         dberror(db, check, "Error select CHATNAME, LASTMESSAGE from CHATs");
         sqlite3_step(res2);
-        chat -> chat_name = mx_string_copy((char *)sqlite3_column_text(res2, 0));
-        chat -> last_message = mx_string_copy((char *)sqlite3_column_text(res2, 1));
-        chat -> next = malloc(sizeof(chats_t));
-        chat = chat -> next;
-        chat -> chat_name = NULL;
-        chat -> last_message = NULL;
-        chat -> next = NULL;   // 0442048098 Татьяна Валентиновна
-        sqlite3_step(res1);
+        
+        char *chat_name = mx_string_copy((char *)sqlite3_column_text(res2, 0));
+        char *last_message = mx_string_copy((char *)sqlite3_column_text(res2, 1));
+
+        push_chats_front(&chat, chat_name, last_message);
+        sqlite3_step(res);
         sqlite3_finalize(res2);
     }
 
-    sqlite3_finalize(res1);
+    sqlite3_finalize(res);
     sqlite3_close(db);
     free(user_id);
-    return head;
+    printf("pilotka %s\n\n", chat -> last_message);
+    return chat;
 }
 
 

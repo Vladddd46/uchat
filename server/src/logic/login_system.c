@@ -49,7 +49,7 @@ static int mx_list_len(chats_t *chat) {
     int len = 0;
     chats_t *tmp = chat;
 
-    while(tmp -> chat_name != NULL) {
+    while(tmp != NULL) {
         tmp = tmp -> next;
         len++;
     }
@@ -59,7 +59,7 @@ static int mx_list_len(chats_t *chat) {
 static char *mx_get_special_chat_name(char *chat_name) {
     char string[100];
     bzero(string, 100);
-    
+
     sprintf(string, "(%s)", chat_name);
     return mx_string_copy(string);
 }
@@ -115,6 +115,8 @@ char *login_system(char *packet) {
     free(login);
     free(password);
     free(return_status);
+
+    printf("packet shmaket %s\n\n", sendback_packet);
     // system("leaks -q uchat_server");
     return sendback_packet;
 }
