@@ -30,27 +30,15 @@ static char* mx_stringcopy(const unsigned char* copy) {
 }
 
 
-// static int mx_callback(void* not_used, int argc, char** argv, char** az_con_name) {
-//     for(int i = 0; i < argc; i++) {
-//     }
-//     return 0;
-// }
-
-// static int mx_get_data(const char* str) {
-//     sqlite3 *db;
-//     int exit = sqlite3_open(str, &db);
-//     char* sql = "SELECT * FROM USERS;";
-//     sqlite3_exec(db, sql, mx_callback, NULL, NULL);
-//     return 0;
-// }
-
-chats_t* mx_get_users_chats(char* user) {
+chats_t *mx_get_users_chats(char* user) {
 	sqlite3 *db = opening_db();
-    char sql[120];
+    char sql[200];
+    bzero(sql, 200);
+
     sqlite3_stmt *res;
     sqlite3_stmt *res1;
     const unsigned char* user_id;
-    chats_t *chat = malloc(sizeof(chats_t));
+    chats_t *chat = (chats_t *)malloc(sizeof(chats_t));
     chats_t *head = chat;
     int user_chat[1024];
     int len = 0;
@@ -74,7 +62,6 @@ chats_t* mx_get_users_chats(char* user) {
         sqlite3_step(res2);
         chat -> chat_name = mx_string_copy((char *)sqlite3_column_text(res2, 0));
         chat -> last_message = mx_string_copy((char *)sqlite3_column_text(res2, 1));
-        printf("%s>>>>>>>>>>>>>>>\n",chat->chat_name );
         chat -> next = malloc(sizeof(chats_t));
         chat = chat -> next;
         chat -> chat_name = NULL;

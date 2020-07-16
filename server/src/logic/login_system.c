@@ -1,13 +1,13 @@
 #include "server.h"
 
 /*
- * Retrieves needed data from the packet.
+ * Retrieves needed data from the login_c packet.
  * Makes request to db and checks data validity.
  * Forms back packet.
  */
 
 
-static char* mx_confirm_users_password(char *user, char *password) {
+static char *mx_confirm_users_password(char *user, char *password) {
     sqlite3 *db = opening_db();
     char sql[400];
     bzero(sql, 400);
@@ -39,58 +39,37 @@ static char *mx_get_nickname(char *login) {
 
     sqlite3_prepare_v2(db, sql, -1, &res, 0);
     sqlite3_step(res);
-    nickname = (char *)sqlite3_column_text(res, 0);
+    nickname = mx_string_copy((char *)sqlite3_column_text(res, 0));
     sqlite3_finalize(res);
     sqlite3_close(db);
     return nickname;
 }
 
-static int mx_list_len(chats_t* chat) {
+static int mx_list_len(chats_t *chat) {
     int len = 0;
-    chats_t* head = chat;
+    chats_t *tmp = chat;
 
-    while(chat -> chat_name != NULL) {
-        chat = chat -> next;
+    while(tmp -> chat_name != NULL) {
+        tmp = tmp -> next;
         len++;
     }
-    head = chat;
     return len;
 }
 
-static char* mx_get_special_chat_name(char* chat_name, char* login) {
-    char* result = mx_strnew(mx_strlen(chat_name) + 2);
-
-    if(*(login) != *(chat_name)) {
-        char* str = strstr(chat_name, login);
-        int len = mx_strlen(chat_name) - mx_strlen(str);
-
-        for(int i = 0; i < len; i++) {
-            *(result + i) = *(chat_name + i);
-        }
-        *(result + mx_strlen(result)) = '(';
-        result = mx_strjoin(result, str);
-        *(result + mx_strlen(result)) = ')';
-    }
-    else {
-        char* str = strstr(chat_name, login);
-        int len = mx_strlen(chat_name) - mx_strlen(str);
-
-        for(int i = 0; i < len; i++) {
-            *(result + i) = *(chat_name + mx_strlen(login));
-        }
-        *(result + mx_strlen(result)) = '(';
-        result = mx_strjoin(result, str);
-        *(result + mx_strlen(result)) = ')';
-    }
-    return result;
+static char *mx_get_special_chat_name(char *chat_name) {
+    char string[100];
+    bzero(string, 100);
+    
+    sprintf(string, "(%s)", chat_name);
+    return mx_string_copy(string);
 }
 
-static char *json_packet_former_from_list(chats_t *chat, char *status, char* login) {
-    int list_len = mx_list_len(chat);
-    cJSON *packet = cJSON_CreateObject();
-    char* packet_str = NULL;
+static char *json_packet_former_from_list(chats_t *chat, char *status, char *login) {
+    int   list_len    = mx_list_len(chat);
+    cJSON *packet     = cJSON_CreateObject();
+    char  *packet_str = NULL;
     cJSON *json_value = cJSON_CreateString("login_s");
-    char *nickname = mx_get_nickname(login);
+    char  *nickname   = mx_get_nickname(login);
 
     cJSON_AddItemToObject(packet, "TYPE", json_value);
     json_value = cJSON_CreateString(status);
@@ -99,13 +78,18 @@ static char *json_packet_former_from_list(chats_t *chat, char *status, char* log
     cJSON_AddItemToObject(packet, "NICKNAME", json_value);
     json_value =  cJSON_CreateString(login);
     cJSON_AddItemToObject(packet, "TO", json_value);
-    json_value =  cJSON_CreateString(mx_itoa(list_len));
+    char *list_len_str = mx_itoa(list_len);
+    json_value =  cJSON_CreateString(list_len_str);
+    free(list_len_str);
     cJSON_AddItemToObject(packet, "LENGTH", json_value);
     for(int i = 0; i < list_len; i++) {
         char chat_name_former[100];
+        bzero(chat_name_former, 100);
 
         sprintf(chat_name_former, "CHATNAME=%d", i);
-        json_value = cJSON_CreateString(mx_get_special_chat_name(chat -> chat_name, login));
+        char *chat_name = mx_get_special_chat_name(chat -> chat_name);
+        json_value = cJSON_CreateString(chat_name);
+        free(chat_name);
         cJSON_AddItemToObject(packet, chat_name_former, json_value);
         json_value = cJSON_CreateString(chat -> last_message);
         sprintf(chat_name_former, "LASTMESSAGE=%d", i);
@@ -113,24 +97,24 @@ static char *json_packet_former_from_list(chats_t *chat, char *status, char* log
         chat = chat -> next;
     }
     packet_str = cJSON_Print(packet);
-
+    free(nickname);
     return packet_str;
 }
 
 char *login_system(char *packet) {
     char *login         = get_value_by_key(packet, "LOGIN");
     char *password      = get_value_by_key(packet, "PASSWORD");
-
     char *return_status = mx_confirm_users_password(login, password);
     chats_t *chat       = mx_get_users_chats(login);
     
     char *sendback_packet;
     if(mx_strcmp(return_status, "false") == 0)
         chat -> chat_name = NULL;
-    
+
     sendback_packet = json_packet_former_from_list(chat, return_status, login);
     free(login);
     free(password);
     free(return_status);
+    // system("leaks -q uchat_server");
     return sendback_packet;
 }
