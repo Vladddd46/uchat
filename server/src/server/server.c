@@ -56,6 +56,19 @@ static bool update_connections(fd_set *descriptors) {
     return status;
 }
 
+
+// Logins user socket if send_packet type == reg_c/log_c and status is success.
+static void user_socket_login(connected_client_list_t *p,
+                              char *send_packet,
+                              char **receivers) {
+    if ((!strcmp(get_value_by_key(send_packet, "TYPE"), "login_s") 
+        || !strcmp(get_value_by_key(send_packet, "TYPE"), "reg_s"))
+         && !strcmp(get_value_by_key(send_packet, "STATUS"), "success")) {
+        p->login = mx_string_copy(receivers[0]);
+        p->is_logged = true;
+    }
+}
+
 static char **mx_packet_receivers_determine(char *packet) {
     char *logins = get_value_by_key(packet, "TO");
     char **receivers = mx_strsplit(logins, ' ');
@@ -104,17 +117,11 @@ static void *handle_server(void *param) {
                  * Retrieves user`s login from packet. Packet will be send on this login,
                  * if user with this login is connected to the server.
                  */
-                // char *client_login = get_value_by_key(send_packet, "TO");
 
                 char **receivers  = mx_packet_receivers_determine(send_packet);
-                for (int i = 0; receivers[i]; ++i) {
-                }
 
-                /* Makes user logged in. */
-                if (send_packet && (!strcmp(get_value_by_key(send_packet, "TYPE"), "login_s") || !strcmp(get_value_by_key(send_packet, "TYPE"), "reg_s")) && !strcmp(get_value_by_key(send_packet, "STATUS"), "success")) {
-                    p->login = mx_string_copy(receivers[0]);
-                    p->is_logged = true;
-                }
+                // Logins user socket if send_packet type == reg_c/log_c and status is success
+                user_socket_login(p, send_packet, receivers);
 
                 for (connected_client_list_t *s = ctx.head.next; s != NULL; s = s->next) {
                     if (s->is_logged && mx_str_in_arr(s->login, receivers))
