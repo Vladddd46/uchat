@@ -1,5 +1,25 @@
 #include "server.h"
 
+static int mx_get_last_message_id(int chat_id) {
+    sqlite3 *db = opening_db();
+    sqlite3_stmt *res;
+    char sql[200];
+    bzero(sql, 200);
+
+    int last_message_id = 0;
+
+    sprintf(sql, "SELECT MAX(MESSAGEID) FROM MESSAGES WHERE CHATID='%d';", chat_id);
+    int exit = sqlite3_prepare_v2(db, sql, -1, &res, 0);
+    dberror(db, exit, "Error inserting to table");
+    sqlite3_step(res);
+    if((sqlite3_column_text(res, 0)) != NULL)
+        last_message_id = atoi((const char*)sqlite3_column_text(res, 0));
+
+    sqlite3_finalize(res);
+    sqlite3_close(db);
+    return last_message_id;
+}
+
 static chat_message_t* mx_fill_list(int chat_id, int from, int to) {
     chat_message_t* list = malloc(sizeof(chat_message_t));
     chat_message_t* head = list;
@@ -103,6 +123,13 @@ char *mx_get_message(char* packet) {
     int chat_id       = atoi(chat_id_str);
     int from = atoi(get_value_by_key(packet, "FROMMSG"));
     int to = atoi(get_value_by_key(packet, "TOMSG"));
+    int last_message_id = mx_get_last_message_id(chat_id);
+    
+    int amount_of_msg = to - from;
+    from = last_message_id - amount_of_msg - from;
+    to = from + to;
+    //     from = 
+    // }
     char* chat_name = get_value_by_key(packet, "CHATNAME");
 
     chat_message_t* list = mx_fill_list(chat_id, from, to);
