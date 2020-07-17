@@ -31,27 +31,60 @@ static chat_message_t* mx_fill_list(int chat_id, int from, int to) {
 static char* mx_get_all_users(int chat_id) {
     sqlite3 *db = opening_db();
     sqlite3_stmt *res;
-    sqlite3_stmt *res_user;
-    char sql[100];
+    // sqlite3_stmt *res_user;
+    char sql[500];
     char *users = "";
     
-    sprintf(sql, "SELECT USERID FROM USERCHAT WHERE CHATID='%d';", chat_id);
+    // sprintf(sql, "SELECT USERID FROM USERCHAT WHERE CHATID='%d';", chat_id);
+    // sqlite3_prepare_v2(db, sql, -1, &res, 0);
+    // sqlite3_step(res);
+    // // sqlite3_finalize(res);
+    // sqlite3_close(db);
+
+    // char *sql = "CREATE TABLE IF NOT EXISTS USERS("
+    //     "ID       INTEGER PRIMARY KEY AUTOINCREMENT, "
+    //     "LOGIN    TEXT NOT NULL, "
+    //     "PASSWORD TEXT NOT NULL, "
+    //     "NICKNAME TEXT NOT NULL);";
+
+    // sql = "CREATE TABLE IF NOT EXISTS USERCHAT("
+    //     "USERID     INTEGER NOT NULL, "
+    //     "CHATID     INTEGER NOT NULL);";
+
+    sprintf(sql, "SELECT "
+                 "   USERS.LOGIN "
+                 "FROM "
+                 "   USERCHAT "
+                 "INNER JOIN "
+                 "   USERS "
+                 "ON "
+                 "   USERS.CHATID='%d';", chat_id);
+            // "CHATID='%d' ";
     sqlite3_prepare_v2(db, sql, -1, &res, 0);
-    sqlite3_step(res);
     while(sqlite3_column_text(res, 0) != NULL) {
-        char* id_char = mx_string_copy((char*)sqlite3_column_text(res, 0));
-        int id_int = atoi(id_char);
-        sprintf(sql, "SELECT LOGIN FROM USERS WHERE ID='%d';", id_int);
-        sqlite3_prepare_v2(db, sql, -1, &res_user, 0);
-        sqlite3_step(res_user);
-        char* second_user = mx_string_copy((char*)sqlite3_column_text(res_user, 0));
+        // char* id_char = mx_string_copy((char*)sqlite3_column_text(res, 0));
+        // int id_int = atoi(id_char);
+        // sprintf(sql, "SELECT LOGIN FROM USERS WHERE ID='%d';", id_int);
+        // sqlite3_prepare_v2(db, sql, -1, &res_user, 0);
+        // sqlite3_step(res_user);
+        char* second_user = mx_string_copy((char*)sqlite3_column_text(res, 0));
         users = mx_strjoin(users, second_user);
         users = mx_strjoin(users, " ");
         sqlite3_step(res);
     }
-    sqlite3_finalize(res_user);
+    // sqlite3_finalize(res_user);
     sqlite3_finalize(res);
-    sqlite3_close(db);
+    sqlite3_close(db);  
+
+    //  db = opening_db();
+    // char* message_error;
+    // char* sql_in = "INSERT INTO MESSAGES (CHATID, MESSAGEID, SENDER, TIME, MESSAGE) VALUES(1, 18, 'Yura', 'Fri Jul 17 12:30:05 2020', 'fdg');";
+    // printf("\n\nSQL req: %s\n\n", sql_in);
+    // int check = sqlite3_exec(db, sql_in, NULL, 0, &message_error);
+    // printf("===>%s\n", message_error);
+    // dberror(db, check, "Error inserting to table");
+    // sqlite3_close(db);
+
     return users;
 }
 

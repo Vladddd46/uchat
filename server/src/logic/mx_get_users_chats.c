@@ -15,7 +15,8 @@ static void malloc_error_checker(chats_t *chat) {
     }
 }
 
-static char *get_user_id_by_login(sqlite3 *db, char *login) {
+static char *get_user_id_by_login(char *login) {
+    sqlite3 *db = opening_db();
     char sql[200];
     bzero(sql, 200);
     sqlite3_stmt *res;
@@ -29,6 +30,7 @@ static char *get_user_id_by_login(sqlite3 *db, char *login) {
     user_id = mx_string_copy((char *)sqlite3_column_text(res, 0));
 
     sqlite3_finalize(res);
+    sqlite3_close(db);
     return user_id;
 }
 
@@ -56,15 +58,19 @@ static void push_chats_front(chats_t **chats, char *chat_name, char *last_messag
 }
 
 chats_t *mx_get_users_chats(char *user) {
-    sqlite3 *db = opening_db();
     sqlite3_stmt *res;
     char *identifier = NULL;
     chats_t *chat = NULL;
     sqlite3_stmt *res2;
     char sql[200];
     bzero(sql, 200);
+    char* message_error = NULL;
     
-    char *user_id = get_user_id_by_login(db, user);
+    
+    char *user_id = get_user_id_by_login(user);
+
+    sqlite3 *db = opening_db();
+
     sprintf(sql, "SELECT CHATID FROM USERCHAT WHERE USERID=%s;", user_id);
     int check = sqlite3_prepare_v2(db, sql, -1, &res, 0);
     dberror(db, check, "Error select CHATID from USERCHAT");

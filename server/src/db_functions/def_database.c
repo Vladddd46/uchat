@@ -66,6 +66,8 @@ void def_database() {
     sql = "INSERT INTO MESSAGES (CHATID, MESSAGEID, SENDER, TIME, MESSAGE) VALUES(1, 15, 'Vlad', '12:46','good bye');";
     exit = sqlite3_exec(db, sql, NULL, 0, &message_error);
 
+
+    // sqlite3_busy_timeout(db, int 50000000);
     dberror(db, exit, "Error inserting message to MESSAGES table");
     /*-----------------------------------------------------*/
     sql = "INSERT INTO USERCHAT (USERID, CHATID) VALUES(1, 1);";
