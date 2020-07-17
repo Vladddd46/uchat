@@ -44,35 +44,66 @@ static int mx_get_last_message_id(int chat_id) {
     return last_message_id;
 }
 
+
+static chat_message_t *create_message_node(char *sender, char *time, char *message) {
+    chat_message_t *node = (chat_message_t *)malloc(sizeof(chat_message_t));
+    char *msg;
+
+    if (node == NULL) {
+        msg = "create_message_node| Malloc error\n";
+        write(2, msg, (int)strlen(msg));
+        exit(1);
+    }
+    node->sender  = sender;
+    node->time    = time;
+    node->message = message;
+    node->next    = NULL;
+    return node;
+}
+
+static void push_back_message_node(chat_message_t **list, char *sender, char *time, char *message) {
+    chat_message_t *node = create_message_node(sender, time, message);
+    chat_message_t *tmp;
+
+    if (*list == NULL)
+        *list = node;
+    else {
+        tmp = *list;
+        while(tmp->next != NULL)
+            tmp = tmp->next;
+        tmp->next = node;
+    }
+}
+
 /*
  * Returns list of messages in range <from> <to>.
  * Each node represents one message.
  */
-static chat_message_t *mx_fill_list(int chat_id, int from, int to) {
-    chat_message_t *list = malloc(sizeof(chat_message_t));
-    chat_message_t* head = list;
+static chat_message_t *mx_fill_list(char *chat_id, int from, int to) {
+    chat_message_t *list = NULL;
     sqlite3 *db = opening_db();
     sqlite3_stmt *res;
     char sql[100];
-    
-    sprintf(sql, "SELECT SENDER, TIME, MESSAGE FROM MESSAGES WHERE CHATID='%s';", mx_itoa(chat_id));
+    bzero(sql, 100);
+
+    sprintf(sql, "SELECT SENDER, TIME, MESSAGE FROM MESSAGES WHERE CHATID='%s';", chat_id);
     sqlite3_prepare_v2(db, sql, -1, &res, 0);
     for(int i = 0; i <= from; i++)
         sqlite3_step(res);
-
+    
     for(int i = from; i < to && sqlite3_column_text(res, 0) != NULL; i++) {
-        list -> sender = mx_string_copy((char*)sqlite3_column_text(res, 0));
-        list -> time = mx_string_copy((char*)sqlite3_column_text(res, 1));
-        list -> message = mx_string_copy((char*)sqlite3_column_text(res, 2));
-        list -> next = (chat_message_t*)malloc(sizeof(chat_message_t));
-        list = list -> next;
-        list -> next = NULL;
+        char *sender  = (char*)sqlite3_column_text(res, 0);
+        char *time    = (char*)sqlite3_column_text(res, 1);
+        char *message = (char*)sqlite3_column_text(res, 2);
+        if (!sender || !time || !message)
+            db_null_error();
+        push_back_message_node(&list, mx_string_copy(sender), mx_string_copy(time), mx_string_copy(message));
         sqlite3_step(res);
     }
-
+    
     sqlite3_finalize(res);
     sqlite3_close(db);
-    return head;
+    return list;
 }
 
 static char* mx_get_all_users(int chat_id) {
@@ -99,18 +130,18 @@ static char* mx_get_all_users(int chat_id) {
 
 static int mx_list_len(chat_message_t* chat) {
     int len = 0;
-    chat_message_t* head = chat;
 
-    while(chat -> next != NULL) {
-        chat = chat -> next;
+    chat_message_t *tmp = chat;
+    while(tmp != NULL) {
+        tmp = tmp -> next;
         len++;
     }
-    head = chat;
     return len;
 }
 
 static char *mx_json_packet_former_from_list(chat_message_t* chat, int from, char *chat_name, char* all_users) {
     int list_len = mx_list_len(chat);
+
     cJSON *packet = cJSON_CreateObject();
     char* packet_str = NULL;
     cJSON *json_value = cJSON_CreateString("msg_s");
@@ -162,7 +193,7 @@ char *mx_chat_render(char *packet) {
     from = last_message_id - amount_of_msg - from;
     to   = from + to;
 
-    chat_message_t *list = mx_fill_list(chat_id, from, to);
+    chat_message_t *list = mx_fill_list(chat_id_str, from, to);
     char *all_users      = mx_get_all_users(chat_id);
     char *return_packet  = mx_json_packet_former_from_list(list, from, chat_name, all_users);
 
