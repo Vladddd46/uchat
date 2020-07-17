@@ -1,25 +1,5 @@
 #include "server.h"
 
-static int mx_get_last_message_id(int chat_id) {
-    sqlite3 *db = opening_db();
-    sqlite3_stmt *res;
-    char sql[200];
-    bzero(sql, 200);
-
-    int last_message_id = 0;
-
-    sprintf(sql, "SELECT MAX(MESSAGEID) FROM MESSAGES WHERE CHATID='%d';", chat_id);
-    int exit = sqlite3_prepare_v2(db, sql, -1, &res, 0);
-    dberror(db, exit, "Error inserting to table");
-    sqlite3_step(res);
-    if((sqlite3_column_text(res, 0)) != NULL)
-        last_message_id = atoi((const char*)sqlite3_column_text(res, 0));
-
-    sqlite3_finalize(res);
-    sqlite3_close(db);
-    return last_message_id;
-}
-
 static char* mx_delete_slesh_n(char *str) {
     *(str + mx_strlen(str) - 1) = '\0';
     return str; 
