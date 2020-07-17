@@ -34,16 +34,10 @@ static char* mx_get_all_users(int chat_id) {
     char sql[500];
     bzero(sql, 500);
     char *users = "";
-    
-    sprintf(sql, "SELECT "
-                 "   USERS.LOGIN "
-                 "FROM "
-                 "   USERCHAT "
-                 "INNER JOIN "
-                 "   USERS "
-                 "ON "
-                 "   USERS.CHATID='%d';", chat_id);
+
+    sprintf(sql, "SELECT USERS.LOGIN FROM USERCHAT INNER JOIN USERS ON USERS.ID = USERCHAT.USERID AND USERCHAT.CHATID=%d;", chat_id);
     sqlite3_prepare_v2(db, sql, -1, &res, 0);
+    sqlite3_step(res);
     while(sqlite3_column_text(res, 0) != NULL) {
         char* second_user = mx_string_copy((char*)sqlite3_column_text(res, 0));
         users = mx_strjoin(users, second_user);

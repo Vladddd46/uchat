@@ -55,7 +55,6 @@ void end_message (GtkWidget *widget, GtkWidget *message){
 
 gboolean create_message(void *data){
     t_s_glade *pack = (t_s_glade *)data; 
-    pack->number+=1;
   GtkWidget *row;
   GtkAdjustment *adj;
 
@@ -118,6 +117,7 @@ gboolean create_message(void *data){
     
     g_idle_add ((int (*)(void *))show_widget, window);
     gtk_scrolled_window_set_vadjustment(GTK_SCROLLED_WINDOW(scrollmess), adj);
+    pack->number+=1;
     return 0;
 }
 
@@ -136,6 +136,8 @@ gboolean create_message_system(void *data){
     char *message_from_user = get_text_of_textview(newmessedgentry);
     *(client_context -> allusers + mx_strlen(client_context -> allusers) - 1) = '\0';
     char* all_users = client_context -> allusers;
+
+    printf("ALL users %s\n\n", all_users);
 
     cJSON *packet = cJSON_CreateObject();
     char  *packet_str = NULL;

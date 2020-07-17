@@ -62,7 +62,7 @@ static void mx_add_message_with_id(int message_id, int chat_id, char* message) {
 static char *mx_json_packet_former_from_list(char* message, char* time, char* sender, int chat_id, char* all_users) {
     cJSON *packet = cJSON_CreateObject();
     char* packet_str = NULL;
-    cJSON *json_value = cJSON_CreateString("msg_s");
+    cJSON *json_value = cJSON_CreateString("add_msg_s");
 
     cJSON_AddItemToObject(packet, "TYPE", json_value);
     json_value = cJSON_CreateString(all_users);
@@ -71,7 +71,7 @@ static char *mx_json_packet_former_from_list(char* message, char* time, char* se
     sprintf(packet_former, "ID0");
     json_value = cJSON_CreateString(mx_itoa(mx_get_last_message_id(chat_id)));
     cJSON_AddItemToObject(packet, packet_former, json_value);
-    json_value = cJSON_CreateString("0");
+    json_value = cJSON_CreateString("1");
     cJSON_AddItemToObject(packet, "MSGLEN", json_value);
     json_value = cJSON_CreateString(all_users);
     cJSON_AddItemToObject(packet, "ALLUSERS", json_value);
@@ -112,5 +112,6 @@ char* mx_add_message_by_id(char *packet) {
     free(chat_id_str);
     free(sender);
     free(to);
+    printf("packet shmaket %s\n\n", return_packet);
     return return_packet;
 }

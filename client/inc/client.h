@@ -38,6 +38,7 @@ typedef struct s_s_glade {
 
 client_context_t *client_context;
 // какие то непонятные функции Дениса. PS. структурируй их пожалуйста.
+void create_row_system_new(client_context_t *client_context, char *packet);
 int show_widget(GtkWidget *widget);
 void remake_chats(char *pack);
 void back_to_menu(GtkWidget *back, client_context_t *client_context);
