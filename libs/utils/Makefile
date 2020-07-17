@@ -12,6 +12,7 @@ SRC		=	get_value_by_key.c\
 			packet_len_prefix_adder.c\
 			wait_time.c\
 			packet_receive.c\
+			mx_send.c\
 			
 SRCS	=	$(addprefix $(SRCD)/, $(SRC))
 OBJS	=	$(addprefix $(OBJD)/, $(SRC:%.c=%.o))
@@ -25,7 +26,7 @@ $(NAME): $(OBJS)
 	@printf "\r\33[2K$@ \033[32;1mcreated\033[0m\n"
 
 $(OBJD)/%.o: $(SRCD)/%.c $(INCS)
-	@clang $(CFLG) -c $< -o $@ -I$(INCD) -I ../libmx/inc -I ../cjson/inc -I ../libmx/libmx.a -I ../cjson/cJSON.a
+	@clang $(CFLG) -c $< -o $@ -I$(INCD) -I ../libmx/inc -I ../cjson/inc -I ../crypt/inc -I ../libmx/libmx.a -I ../cjson/cJSON.a -I ../crypt/crypt.a
 	@printf "\r\33[2K$(NAME) \033[33;1mcompile \033[0m$(<:$(SRCD)/%.c=%) "
 
 $(OBJS): | $(OBJD)
