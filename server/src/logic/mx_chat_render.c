@@ -44,37 +44,6 @@ static int mx_get_last_message_id(int chat_id) {
     return last_message_id;
 }
 
-
-static chat_message_t *create_message_node(char *sender, char *time, char *message) {
-    chat_message_t *node = (chat_message_t *)malloc(sizeof(chat_message_t));
-    char *msg;
-
-    if (node == NULL) {
-        msg = "create_message_node| Malloc error\n";
-        write(2, msg, (int)strlen(msg));
-        exit(1);
-    }
-    node->sender  = sender;
-    node->time    = time;
-    node->message = message;
-    node->next    = NULL;
-    return node;
-}
-
-static void push_back_message_node(chat_message_t **list, char *sender, char *time, char *message) {
-    chat_message_t *node = create_message_node(sender, time, message);
-    chat_message_t *tmp;
-
-    if (*list == NULL)
-        *list = node;
-    else {
-        tmp = *list;
-        while(tmp->next != NULL)
-            tmp = tmp->next;
-        tmp->next = node;
-    }
-}
-
 /*
  * Returns list of messages in range <from> <to>.
  * Each node represents one message.
@@ -90,14 +59,14 @@ static chat_message_t *mx_fill_list(char *chat_id, int from, int to) {
     sqlite3_prepare_v2(db, sql, -1, &res, 0);
     for(int i = 0; i <= from; i++)
         sqlite3_step(res);
-    
+
     for(int i = from; i < to && sqlite3_column_text(res, 0) != NULL; i++) {
         char *sender  = (char*)sqlite3_column_text(res, 0);
         char *time    = (char*)sqlite3_column_text(res, 1);
         char *message = (char*)sqlite3_column_text(res, 2);
         if (!sender || !time || !message)
             db_null_error();
-        push_back_message_node(&list, mx_string_copy(sender), mx_string_copy(time), mx_string_copy(message));
+        mx_push_back_message_node(&list, mx_string_copy(sender), mx_string_copy(time), mx_string_copy(message));
         sqlite3_step(res);
     }
     

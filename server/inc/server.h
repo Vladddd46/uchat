@@ -82,9 +82,11 @@ char* mx_chat_render(char* packet);
 char* mx_add_message_by_id(char* packet);
 char* mx_find_user(char* packet);
 char* mx_add_contact(char* packet);
+
+
+// additional 
+void mx_push_back_message_node(chat_message_t **list, char *sender, char *time, char *message);
 int mx_chats_list_len(chats_t *chat);
-
-
 
 
 
