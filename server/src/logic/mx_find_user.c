@@ -16,13 +16,12 @@ static bool mx_check_complability(char* login, char* nickname, char* user) {
 
 static int mx_list_len(users_list_t* chat) {
     int len = 0;
-    users_list_t* head = chat;
+    users_list_t *tmp = chat;
 
-    while(head -> next != NULL) {
-        head = head -> next;
+    while(tmp -> next != NULL) {
+        tmp = tmp -> next;
         len++;
     }
-    // head = chat;
     return len;
 }
 

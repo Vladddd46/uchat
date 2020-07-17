@@ -34,6 +34,6 @@ void database_init() {
     exit = sqlite3_exec(db, sql, NULL, 0, &message_error);
 
     /* добавление тестовых даных в БД */
-    def_database();
+    // def_database();
     sqlite3_close(db);
 }

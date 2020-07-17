@@ -46,6 +46,8 @@ static int mx_get_last_chat_id() {
     sqlite3 *db = opening_db();
     sqlite3_stmt *res;
     char sql[100];
+    bzero(sql, 100);
+    
     int last_chat_id = 0;
     
     sprintf(sql, "SELECT MAX(CHATID) FROM USERCHAT;");

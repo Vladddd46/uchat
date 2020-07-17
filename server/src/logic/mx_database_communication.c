@@ -19,7 +19,7 @@ char *mx_database_communication(char *packet) {
     else if (!strcmp(packet_type, "reg_c"))
         send_back_packet = registration_system(packet); //
     else if (!strcmp(packet_type, "msg_c"))
-        send_back_packet = mx_get_message(packet);
+        send_back_packet = mx_chat_render(packet);
     else if (!strcmp(packet_type, "find_user_c")) 
         send_back_packet = mx_find_user(packet);
     else if (!strcmp(packet_type, "add_msg_c"))
