@@ -28,23 +28,6 @@ static char *mx_confirm_users_password(char *user, char *password) {
     return mx_string_copy(return_status);
 }
 
-static char *mx_get_nickname(char *login) {
-    sqlite3 *db = opening_db();
-    char sql[200];
-    bzero(sql, 200);
-
-    sprintf(sql, "SELECT NICKNAME FROM USERS WHERE LOGIN='%s';", login);
-    sqlite3_stmt *res;
-    char *nickname;
-
-    sqlite3_prepare_v2(db, sql, -1, &res, 0);
-    sqlite3_step(res);
-    nickname = mx_string_copy((char *)sqlite3_column_text(res, 0));
-    sqlite3_finalize(res);
-    sqlite3_close(db);
-    return nickname;
-}
-
 static int mx_list_len(chats_t *chat) {
     int len = 0;
     chats_t *tmp = chat;
@@ -69,7 +52,7 @@ static char *json_packet_former_from_list(chats_t *chat, char *status, char *log
     cJSON *packet     = cJSON_CreateObject();
     char  *packet_str = NULL;
     cJSON *json_value = cJSON_CreateString("login_s");
-    char  *nickname   = mx_get_nickname(login);
+    char  *nickname   = mx_get_nickname_by_login(login);
 
     cJSON_AddItemToObject(packet, "TYPE", json_value);
     json_value = cJSON_CreateString(status);

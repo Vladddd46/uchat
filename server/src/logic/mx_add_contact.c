@@ -1,10 +1,11 @@
 #include "server.h"
 
 static int mx_get_user_id(char* login) {
-	int user_id = 0;
+    int user_id = 0;
     char sql[150];
+    bzero(sql, 150);
     sqlite3 *db = opening_db();
-	sqlite3_stmt *res;
+    sqlite3_stmt *res;
     
     sprintf(sql, "SELECT ID FROM USERS WHERE LOGIN='%s'", login);
     sqlite3_prepare_v2(db, sql, -1, &res, 0);
@@ -17,44 +18,28 @@ static int mx_get_user_id(char* login) {
 
 
 
-static bool mx_check_contact_exits(char* mylogin, char* login) {
-	bool status = false;
-	sqlite3 *db = opening_db();
-	sqlite3_stmt *res;
-	sqlite3_stmt *res1;
-	char sql[200];
+static bool mx_check_contact_exits(char* mylogin, char *login) {
+    bool status = false;
+    sqlite3 *db = opening_db();
+    sqlite3_stmt *res;
+    sqlite3_stmt *res1;
+    char sql[200];
+    bzero(sql, 200);
 
     sprintf(sql, "SELECT ID FROM CHATS WHERE CHATNAME='%s'", mx_strjoin(mylogin, login));
     sqlite3_prepare_v2(db, sql, -1, &res, 0);
     sqlite3_step(res);
-    if(sqlite3_column_text(res, 0) != NULL) {
-    	status = true;
-    }
+    if(sqlite3_column_text(res, 0) != NULL)
+        status = true;
     sprintf(sql, "SELECT ID FROM CHATS WHERE CHATNAME='%s'", mx_strjoin(login, mylogin));
     sqlite3_prepare_v2(db, sql, -1, &res1, 0);
     sqlite3_step(res1);
-    if(sqlite3_column_text(res1, 0) != NULL) {
-    	status = true;
-    }
+    if(sqlite3_column_text(res1, 0) != NULL)
+        status = true;
     sqlite3_finalize(res1);
     sqlite3_finalize(res);
     sqlite3_close(db);
     return status;
-}
-
-static char* mx_get_nickname(char* login) {
-    sqlite3 *db = opening_db();
-    char sql[200];
-    sprintf(sql, "SELECT NICKNAME FROM USERS WHERE LOGIN='%s';", login);
-    sqlite3_stmt *res;
-    char* nickname;
-
-    sqlite3_prepare_v2(db, sql, -1, &res, 0);
-    sqlite3_step(res);
-    nickname = (char*)sqlite3_column_text(res, 0);
-    sqlite3_finalize(res);
-    sqlite3_close(db);
-    return nickname;
 }
 
 static int mx_list_len(chats_t *chat) {
@@ -69,7 +54,7 @@ static int mx_list_len(chats_t *chat) {
 }
 
 static int mx_get_last_chat_id() {
-	sqlite3 *db = opening_db();
+    sqlite3 *db = opening_db();
     sqlite3_stmt *res;
     char sql[100];
     int last_chat_id = 0;
@@ -88,7 +73,7 @@ static char *json_packet_former_from_list(chats_t *chat, char *status, char* log
     cJSON *packet = cJSON_CreateObject();
     char* packet_str = NULL;
     cJSON *json_value = cJSON_CreateString("add_new_user_s");
-    char *nickname = mx_get_nickname(login);
+    char *nickname = mx_get_nickname_by_login(login);
 
     cJSON_AddItemToObject(packet, "TYPE", json_value);
     json_value = cJSON_CreateString(status);
@@ -111,22 +96,24 @@ static char *json_packet_former_from_list(chats_t *chat, char *status, char* log
         chat = chat -> next;
     }
     packet_str = cJSON_Print(packet);
+    free(nickname);
     return packet_str;
 }
 
 char* mx_add_contact(char* packet) {
-	char* login = get_value_by_key(packet, "USER");
-	char* mylogin = get_value_by_key(packet, "TO");
-	chats_t *chat = mx_get_users_chats(mylogin);
-	char* sendback_packet;
-	char* message_error;
-	sqlite3 *db = opening_db();
+    char* login = get_value_by_key(packet, "USER");
+    char* mylogin = get_value_by_key(packet, "TO");
+    chats_t *chat = mx_get_users_chats(mylogin);
+    char* sendback_packet;
+    char* message_error;
+    sqlite3 *db = opening_db();
 
-	if(mx_check_contact_exits(mylogin, login)) {
+    if(mx_check_contact_exits(mylogin, login)) {
         int mylogin_id = mx_get_user_id(mylogin);
-	    int login_id = mx_get_user_id(login);
-	    char sql[200];
-	    int last_chat_id = mx_get_last_chat_id();
+        int login_id = mx_get_user_id(login);
+        char sql[200];
+        bzero(sql, 200);
+        int last_chat_id = mx_get_last_chat_id();
 
         sprintf(sql, "INSERT INTO USERCHAT(USERID, CHATID) VALUES(%d, %d);", mylogin_id, last_chat_id + 1);
         sqlite3_exec(db, sql, NULL, 0, &message_error);
@@ -134,11 +121,11 @@ char* mx_add_contact(char* packet) {
         sqlite3_exec(db, sql, NULL, 0, &message_error);
 
         sprintf(sql, "INSERT INTO CHATS(CHATNAME, LASMESSAGE) VALUES('(%s %s)', ' ');", login, mylogin);
-	    sendback_packet = json_packet_former_from_list(chat, "success", mylogin, login);
+        sendback_packet = json_packet_former_from_list(chat, "success", mylogin, login);
         
-	}
-	else
-	    sendback_packet = json_packet_former_from_list(chat, "false", mylogin, login);
+    }
+    else
+        sendback_packet = json_packet_former_from_list(chat, "false", mylogin, login);
     sqlite3_close(db);
-	return sendback_packet;
+    return sendback_packet;
 }

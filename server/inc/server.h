@@ -57,6 +57,7 @@ int  get_port(char **argv);
 int  listening_socket_init(int port);
 void argv_validator(int argc);
 void mx_login_user_socket(connected_client_list_t *p, char *send_packet, char **receivers);
+int  mx_user_is_already_logged_in(connected_client_list_t *list, char *user_login);
 
 // Database functions.
 void    database_init();
@@ -64,6 +65,7 @@ sqlite3 *opening_db();
 void def_database();
 void dberror(sqlite3 *db, int status, char *msg);
 void db_msg_error(int status, char *msg_error);
+char *mx_get_nickname_by_login(char *login);
 
 // Socket list.
 int socket_list_add(connected_client_list_t    *head, int new_sock_fd);
@@ -80,6 +82,7 @@ char* mx_get_message(char* packet);
 char* mx_add_message_by_id(char* packet);
 char* mx_find_user(char* packet);
 char* mx_add_contact(char* packet);
+
 
 
 
