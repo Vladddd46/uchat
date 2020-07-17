@@ -28,17 +28,6 @@ static char *mx_confirm_users_password(char *user, char *password) {
     return mx_string_copy(return_status);
 }
 
-static int mx_list_len(chats_t *chat) {
-    int len = 0;
-    chats_t *tmp = chat;
-
-    while(tmp != NULL) {
-        tmp = tmp -> next;
-        len++;
-    }
-    return len;
-}
-
 static char *mx_get_special_chat_name(char *chat_name) {
     char string[100];
     bzero(string, 100);
@@ -48,7 +37,7 @@ static char *mx_get_special_chat_name(char *chat_name) {
 }
 
 static char *json_packet_former_from_list(chats_t *chat, char *status, char *login) {
-    int   list_len    = mx_list_len(chat);
+    int   list_len    = mx_chats_list_len(chat);
     cJSON *packet     = cJSON_CreateObject();
     char  *packet_str = NULL;
     cJSON *json_value = cJSON_CreateString("login_s");

@@ -42,17 +42,6 @@ static bool mx_check_contact_exits(char* mylogin, char *login) {
     return status;
 }
 
-static int mx_list_len(chats_t *chat) {
-    int len = 0;
-    chats_t *tmp = chat;
-
-    while(tmp != NULL) {
-        tmp = tmp -> next;
-        len++;
-    }
-    return len;
-}
-
 static int mx_get_last_chat_id() {
     sqlite3 *db = opening_db();
     sqlite3_stmt *res;
@@ -69,7 +58,7 @@ static int mx_get_last_chat_id() {
 }
 
 static char *json_packet_former_from_list(chats_t *chat, char *status, char* login, char* mylogin) {
-    int list_len = mx_list_len(chat);
+    int list_len = mx_chats_list_len(chat);
     cJSON *packet = cJSON_CreateObject();
     char* packet_str = NULL;
     cJSON *json_value = cJSON_CreateString("add_new_user_s");

@@ -35,17 +35,13 @@ static void mx_add_last_message(int chat_id, char* message, char* time, char* se
     message_id++;
     sqlite3 *db = opening_db();
     char* sql = sqlite3_mprintf("INSERT INTO MESSAGES (CHATID, MESSAGEID, SENDER, TIME, MESSAGE) VALUES(%q, %q, '%q', '%q', '%q');", mx_itoa(chat_id), mx_itoa(message_id), sender, mx_delete_slesh_n(time), mx_delete_slesh_n(message));
-                 // "INSERT INTO MESSAGES (CHATID, MESSAGEID, SENDER, TIME, MESSAGE) VALUES(1, 1, 'Yura', '12:42', 'Hello');";
-    // sprintf(sql, "BEGIN; INSERT INTO MESSAGES (CHATID, MESSAGEID, SENDER, TIME, MESSAGE) VALUES(%d, %d, '%s', '%s', '%s'); COMMIT;", chat_id, message_id, sender, mx_delete_slesh_n(time), mx_delete_slesh_n(message));
+
     printf("\n\nSQL req: %s\n\n", sql);
     check = sqlite3_exec(db, sql, NULL, 0, &message_error);
 
-    // printf("===>%s\n", message_error);
     dberror(db, check, "Error inserting to table");
     sqlite3_close(db);
 
-    // char* sql1 = "SELECT * FROM MESSAGES WHERE CHATID=1";
-    // sqlite3_exec(db, sql1, mx_callback, NULL, NULL);
 }
 
 static void mx_add_message_with_id(int message_id, int chat_id, char* message) {
@@ -65,6 +61,7 @@ static char *mx_json_packet_former_from_list(char* message, char* time, char* se
     cJSON *json_value = cJSON_CreateString("add_msg_s");
 
     cJSON_AddItemToObject(packet, "TYPE", json_value);
+    printf("===>>>%s\n", all_users);
     json_value = cJSON_CreateString(all_users);
     cJSON_AddItemToObject(packet, "TO", json_value);
     char packet_former[100];

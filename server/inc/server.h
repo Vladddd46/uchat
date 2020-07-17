@@ -82,6 +82,8 @@ char* mx_get_message(char* packet);
 char* mx_add_message_by_id(char* packet);
 char* mx_find_user(char* packet);
 char* mx_add_contact(char* packet);
+int mx_chats_list_len(chats_t *chat);
+
 
 
 
