@@ -30,7 +30,7 @@ void edit_message (GtkWidget *widget, GtkWidget *message){
     gtk_widget_set_name(editmessedgentry,"newmessedgentry");
     gtk_box_pack_start(GTK_BOX(downbox),editmessedgentry, TRUE, TRUE, 0);
     gtk_entry_set_text(GTK_ENTRY(editmessedgentry),editbuff);
-    gtk_widget_show(editmessedgentry);
+    g_idle_add ((int (*)(void *))show_widget, editmessedgentry);
     g_signal_connect(editmessedgentry, "activate", G_CALLBACK(end_message), message);
     
     editbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL,0);
@@ -48,20 +48,22 @@ void end_message (GtkWidget *widget, GtkWidget *message){
     char *editbuff = (char *)gtk_entry_get_text(GTK_ENTRY(editmessedgentry));
     gtk_label_set_text(GTK_LABEL(message),editbuff);
     gtk_widget_destroy(editmessedgentry);
-    gtk_widget_show(newmessedgentry);
+    g_idle_add ((int (*)(void *))show_widget, newmessedgentry);
     flag = FALSE;
 
 } 
 
-void create_message(GtkWidget *newmessedgentry, struct struct_type parm){
+gboolean create_message(void *data){
+    t_s_glade *pack = (t_s_glade *)data; 
+    pack->number+=1;
   GtkWidget *row;
   GtkAdjustment *adj;
 
     char *nameuser = client_context->username;
-    char *sender = get_value_by_key(parm.pack,mx_strjoin("SENDER",mx_itoa(parm.number)));
-    int messagenum = atoi(get_value_by_key(parm.pack,mx_strjoin("ID",mx_itoa(parm.number))));
-    char *messagetext = get_value_by_key(parm.pack,mx_strjoin("MESSAGE",mx_itoa(parm.number)));
-    char *timemessage = get_value_by_key(parm.pack,mx_strjoin("TIME",mx_itoa(parm.number)));
+    char *sender = get_value_by_key(pack->pack,mx_strjoin("SENDER",mx_itoa(pack->number)));
+    int messagenum = atoi(get_value_by_key(pack->pack,mx_strjoin("ID",mx_itoa(pack->number))));
+    char *messagetext = get_value_by_key(pack->pack,mx_strjoin("MESSAGE",mx_itoa(pack->number)));
+    char *timemessage = get_value_by_key(pack->pack,mx_strjoin("TIME",mx_itoa(pack->number)));    // почисти память
     adj = gtk_adjustment_new(10000, 10000, 1, 10000, 10000, 100000);
     row = gtk_list_box_row_new();
     ebox = gtk_event_box_new();
@@ -104,18 +106,19 @@ void create_message(GtkWidget *newmessedgentry, struct struct_type parm){
     g_signal_connect_swapped(G_OBJECT(ebox), "button-press-event", G_CALLBACK(show_popup), fileMenu);
 
     edit = gtk_menu_item_new_with_label("Edit");
-    gtk_widget_show(edit);
+    g_idle_add ((int (*)(void *))show_widget, edit);
     gtk_menu_shell_append(GTK_MENU_SHELL(fileMenu), edit);
     g_signal_connect (edit, "activate", G_CALLBACK (edit_message), labellmenu2);
 
     delet = gtk_menu_item_new_with_label("Delete");
-    gtk_widget_show (delet);
+    g_idle_add ((int (*)(void *))show_widget, delet);
     gtk_menu_shell_append (GTK_MENU_SHELL (fileMenu), delet);  
     g_signal_connect (delet, "activate", G_CALLBACK (delete_message), row);
 
     
     g_idle_add ((int (*)(void *))show_widget, window);
     gtk_scrolled_window_set_vadjustment(GTK_SCROLLED_WINDOW(scrollmess), adj);
+    return 0;
 }
 
 static char* mx_get_time() {

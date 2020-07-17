@@ -45,7 +45,7 @@ void main_menu();
 gboolean draw_message_menu(void *data);
 gboolean create_message_system(void *data);
 gboolean create_row(void * data);
-void create_message(GtkWidget *newmessedgentry, struct struct_type parm);
+gboolean create_message(void * data);
 void end_message (GtkWidget *widget, GtkWidget *message);
 char *get_text_of_textview(GtkWidget *text_view);
 void make_registration(GtkWidget *Registration, client_context_t *client_context);
