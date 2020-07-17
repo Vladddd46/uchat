@@ -119,13 +119,13 @@ void add_new_user(GtkWidget *newchatbutton, gpointer data){
     minientry = gtk_entry_new();
     gtk_fixed_put(GTK_FIXED (minifixed), minientry, 50,50);
     gtk_widget_set_size_request(GTK_WIDGET(minientry),200,40);
-    g_signal_connect (G_OBJECT (minientry), "key_release_event", G_CALLBACK (mini_button_release), NULL);
-   // g_signal_connect (G_OBJECT (minientry), "key_press_event", G_CALLBACK (mini_my_keypress_function), NULL);
+//    g_signal_connect (G_OBJECT (minientry), "key_release_event", G_CALLBACK (mini_button_release), NULL);
+  // g_signal_connect (G_OBJECT (minientry), "key_press_event", G_CALLBACK (mini_my_keypress_function), NULL);
 
-    // minibuttonfind = gtk_button_new_with_label("Find User");
-    // gtk_widget_set_name(minibuttonfind,"minibuttonfind");
-    // gtk_fixed_put(GTK_FIXED (minifixed), minibuttonfind, 90,10);
-    // g_signal_connect (G_OBJECT (minibuttonfind), "clicked", G_CALLBACK (mini_button_release), NULL);
+    minibuttonfind = gtk_button_new_with_label("Find User");
+    gtk_widget_set_name(minibuttonfind,"minibuttonfind");
+    gtk_fixed_put(GTK_FIXED (minifixed), minibuttonfind, 90,10);
+    g_signal_connect (G_OBJECT (minibuttonfind), "clicked", G_CALLBACK (mini_button_release), NULL);
 
     miniscroll = gtk_scrolled_window_new(0,0);
     gtk_fixed_put(GTK_FIXED (minifixed), miniscroll, 25,100);
