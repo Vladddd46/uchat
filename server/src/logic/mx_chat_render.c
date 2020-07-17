@@ -24,7 +24,7 @@ static void db_null_error() {
  * Returns list of messages in range <from> <to>.
  * Each node represents one message.
  */
-static chat_message_t *mx_fill_list(char *chat_id, int from, int to) {
+static chat_message_t *fill_list(char *chat_id, int from, int to) {
     chat_message_t *list = NULL;
     sqlite3 *db = opening_db();
     sqlite3_stmt *res;
@@ -56,7 +56,7 @@ static chat_message_t *mx_fill_list(char *chat_id, int from, int to) {
  * Returns string with logins of all members, 
  * separated with space.
  */
-static char *mx_get_all_users(int chat_id) {
+static char *get_all_users(int chat_id) {
     sqlite3 *db = opening_db();
     sqlite3_stmt *res;
     char sql[500];
@@ -87,7 +87,7 @@ static char *mx_get_all_users(int chat_id) {
     return users;
 }
 
-static int mx_list_len(chat_message_t* chat) {
+static int chat_message_len(chat_message_t* chat) {
     int len = 0;
 
     chat_message_t *tmp = chat;
@@ -98,8 +98,9 @@ static int mx_list_len(chat_message_t* chat) {
     return len;
 }
 
-static char *mx_json_packet_former_from_list(chat_message_t* chat, int from, char *chat_name, char* all_users) {
-    int list_len = mx_list_len(chat);
+// Forms sendback packet.
+static char *json_packet_former_from_list(chat_message_t *chat, int from, char *chat_name, char *all_users) {
+    int list_len = chat_message_len(chat);
 
     cJSON *packet = cJSON_CreateObject();
     char* packet_str = NULL;
@@ -149,16 +150,16 @@ char *mx_chat_render(char *packet) {
     from = last_message_id - amount_of_msg - from;
     to   = from + to;
 
-    chat_message_t *list = mx_fill_list(chat_id_str, from, to);
-    char *all_users      = mx_get_all_users(chat_id);
-    char *return_packet  = mx_json_packet_former_from_list(list, from, chat_name, all_users);
+    chat_message_t *list = fill_list(chat_id_str, from, to);
+    char *all_users      = get_all_users(chat_id);
+    char *return_packet  = json_packet_former_from_list(list, from, chat_name, all_users);
 
+    // freeing mem.
     free(chat_id_str);
     free(from_str);
     free(to_str);
     free(chat_name);
     free(all_users);
-
     chat_message_t *node_to_del;
     while(list) {
         node_to_del = list;
@@ -168,6 +169,6 @@ char *mx_chat_render(char *packet) {
         free(node_to_del->message);
         free(node_to_del);
     }
-    printf(">>>%s\n", return_packet);
+
     return return_packet;   
 }
