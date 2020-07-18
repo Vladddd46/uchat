@@ -66,6 +66,7 @@ void def_database();
 void dberror(sqlite3 *db, int status, char *msg);
 void db_msg_error(int status, char *msg_error);
 char *mx_get_nickname_by_login(char *login);
+void mx_db_null_error(char *func_name);
 
 // Socket list.
 int socket_list_add(connected_client_list_t    *head, int new_sock_fd);
@@ -88,7 +89,7 @@ char* mx_add_contact(char* packet);
 void mx_push_back_message_node(chat_message_t **list, char *sender, char *time, char *message);
 int mx_chats_list_len(chats_t *chat);
 int mx_get_last_message_id(int chat_id);
-
+void mx_push_users_list_node_back(users_list_t **list, int id, char *login, char *nickname);
 
 
 

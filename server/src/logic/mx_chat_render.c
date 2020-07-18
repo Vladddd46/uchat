@@ -13,13 +13,6 @@
  * 3. Forms sendback packet.
  */
 
-static void db_null_error() {
-    char *msg = "mx_chat_render| Request to db returned NULL\n";
-
-    write(2, msg, (int)strlen(msg));
-    exit(1);
-}
-
 /*
  * Returns list of messages in range <from> <to>.
  * Each node represents one message.
@@ -41,7 +34,7 @@ static chat_message_t *fill_list(char *chat_id, int from, int to) {
         char *time    = (char*)sqlite3_column_text(res, 1);
         char *message = (char*)sqlite3_column_text(res, 2);
         if (!sender || !time || !message)
-            db_null_error();
+            mx_db_null_error("fill_list");
         mx_push_back_message_node(&list, mx_string_copy(sender), mx_string_copy(time), mx_string_copy(message));
         sqlite3_step(res);
     }
@@ -73,7 +66,7 @@ static char *get_all_users(int chat_id) {
     while(sqlite3_column_text(res, 0) != NULL) {
         user_login = (char*)sqlite3_column_text(res, 0);
         if (user_login == NULL)
-            db_null_error();
+            mx_db_null_error("get_all_users");
         tmp = mx_strjoin(user_login, " ");
         tmp2 = users;
         users = mx_strjoin(users, tmp);
