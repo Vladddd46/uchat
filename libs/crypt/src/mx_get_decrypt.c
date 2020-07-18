@@ -4,9 +4,8 @@
 long long int mx_get_decrypt(long long int e, long long int el) {
     long long int r = 1;
 
-    do {
+    while (r % e != 0)
         r += el;
-    } while (r % e != 0);
-
-    return r / e;;
+    
+    return r / e;
 }

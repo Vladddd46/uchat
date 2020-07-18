@@ -110,7 +110,7 @@ void add_new_user(GtkWidget *newchatbutton, gpointer data){
 	miniwindow = gtk_window_new(GTK_WINDOW_TOPLEVEL);
     gtk_window_set_resizable (GTK_WINDOW(miniwindow), FALSE);
     gtk_window_set_transient_for (GTK_WINDOW(miniwindow),GTK_WINDOW(window));
-    gtk_window_set_title(GTK_WINDOW(window),"Find Users");
+    gtk_window_set_title(GTK_WINDOW(miniwindow),"Find Users");
     gtk_widget_set_size_request(GTK_WIDGET(miniwindow),300,500);
 
     minifixed = gtk_fixed_new();

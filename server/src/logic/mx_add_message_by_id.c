@@ -5,29 +5,29 @@ static char* mx_delete_slesh_n(char *str) {
     return str; 
 }
 
-static void mx_add_last_message(int chat_id, char* message, char* time, char* sender) {
+static void mx_add_last_message(int chat_id, char *message, char *time, char *sender) {
     char *message_error;
-    // char sql[1000];
-    // bzero(sql, 1000);
     int check;
-    int message_id = mx_get_last_message_id(chat_id);
-
+    int message_id       = mx_get_last_message_id(chat_id);
+    char *chat_id_str    = mx_itoa(chat_id);
+    char *message_id_str = mx_itoa(message_id);
+    char sql[500];
     message_id++;
     sqlite3 *db = opening_db();
-    char* sql = sqlite3_mprintf("INSERT INTO MESSAGES (CHATID, MESSAGEID, SENDER, TIME, MESSAGE) VALUES(%q, %q, '%q', '%q', '%q');", mx_itoa(chat_id), mx_itoa(message_id), sender, mx_delete_slesh_n(time), mx_delete_slesh_n(message));
-
-    printf("\n\nSQL req: %s\n\n", sql);
+    sprintf(sql ,"INSERT INTO MESSAGES (CHATID, MESSAGEID, SENDER, TIME, MESSAGE) VALUES(%d, %d, '%s', '%s', '%s');", 
+                                 chat_id, message_id, sender, mx_delete_slesh_n(time), mx_delete_slesh_n(message));
     check = sqlite3_exec(db, sql, NULL, 0, &message_error);
-
     dberror(db, check, "Error inserting to table");
     sqlite3_close(db);
-
+    free(chat_id_str);
+    free(message_id_str);
 }
 
-static void mx_add_message_with_id(int message_id, int chat_id, char* message) {
+static void mx_add_message_with_id(int message_id, int chat_id, char *message) {
     sqlite3 *db = opening_db();
     char *message_error;
     char sql[500];
+    bzero(sql, 500);
     int check;
 
     sprintf(sql, "BEGIN; UPDATE MESSAGES SET MESSAGE = '%s' WHERE MESSAGEID = %d; COMMIT;", message ,message_id);
@@ -35,18 +35,19 @@ static void mx_add_message_with_id(int message_id, int chat_id, char* message) {
     sqlite3_close(db);
 }
 
-static char *mx_json_packet_former_from_list(char* message, char* time, char* sender, int chat_id, char* all_users) {
+static char *mx_json_packet_former_from_list(char* message, char* time, char* sender, int chat_id, char *all_users) {
     cJSON *packet = cJSON_CreateObject();
     char* packet_str = NULL;
     cJSON *json_value = cJSON_CreateString("add_msg_s");
+    char *last_msg_id_str = mx_itoa(mx_get_last_message_id(chat_id));
+    char packet_former[100];
+    bzero(packet_former, 100);
 
     cJSON_AddItemToObject(packet, "TYPE", json_value);
-    printf("===>>>%s\n", all_users);
     json_value = cJSON_CreateString(all_users);
     cJSON_AddItemToObject(packet, "TO", json_value);
-    char packet_former[100];
     sprintf(packet_former, "ID0");
-    json_value = cJSON_CreateString(mx_itoa(mx_get_last_message_id(chat_id)));
+    json_value = cJSON_CreateString(last_msg_id_str);
     cJSON_AddItemToObject(packet, packet_former, json_value);
     json_value = cJSON_CreateString("1");
     cJSON_AddItemToObject(packet, "MSGLEN", json_value);
@@ -62,6 +63,7 @@ static char *mx_json_packet_former_from_list(char* message, char* time, char* se
     sprintf(packet_former, "MESSAGE0");
     cJSON_AddItemToObject(packet, packet_former, json_value);
     packet_str = cJSON_Print(packet);
+    free(last_msg_id_str);
     return packet_str;
 }
 
@@ -89,6 +91,5 @@ char* mx_add_message_by_id(char *packet) {
     free(chat_id_str);
     free(sender);
     free(to);
-    printf("packet shmaket %s\n\n", return_packet);
     return return_packet;
 }

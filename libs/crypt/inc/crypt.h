@@ -15,4 +15,4 @@ long long int mx_modexp(long long int base,
                         long long int mod);
 
 char *mx_rsa_decode(char *str);
-char *mx_rsa_encode(char *str);
+char *mx_rsa_encrypt(char *str);

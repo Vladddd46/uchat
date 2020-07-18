@@ -13,11 +13,18 @@
  * 3. Forms sendback packet.
  */
 
+static void db_null_error() {
+    char *msg = "mx_chat_render| Request to db returned NULL\n";
+
+    write(2, msg, (int)strlen(msg));
+    exit(1);
+}
+
 /*
  * Returns list of messages in range <from> <to>.
  * Each node represents one message.
  */
-static chat_message_t *fill_list(char *chat_id, int from, int to) {
+static chat_message_t *mx_fill_list(char *chat_id, int from, int to) {
     chat_message_t *list = NULL;
     sqlite3 *db = opening_db();
     sqlite3_stmt *res;
@@ -25,7 +32,9 @@ static chat_message_t *fill_list(char *chat_id, int from, int to) {
     bzero(sql, 100);
 
     sprintf(sql, "SELECT SENDER, TIME, MESSAGE FROM MESSAGES WHERE CHATID='%s';", chat_id);
-    sqlite3_prepare_v2(db, sql, -1, &res, 0);
+    printf("sql request %s\n\n", sql);
+    int exit = sqlite3_prepare_v2(db, sql, -1, &res, 0);
+    dberror(db, exit, "Error inserting to table");
     for(int i = 0; i <= from; i++)
         sqlite3_step(res);
 
@@ -34,7 +43,7 @@ static chat_message_t *fill_list(char *chat_id, int from, int to) {
         char *time    = (char*)sqlite3_column_text(res, 1);
         char *message = (char*)sqlite3_column_text(res, 2);
         if (!sender || !time || !message)
-            mx_db_null_error("fill_list");
+            db_null_error();
         mx_push_back_message_node(&list, mx_string_copy(sender), mx_string_copy(time), mx_string_copy(message));
         sqlite3_step(res);
     }
@@ -49,7 +58,7 @@ static chat_message_t *fill_list(char *chat_id, int from, int to) {
  * Returns string with logins of all members, 
  * separated with space.
  */
-static char *get_all_users(int chat_id) {
+static char *mx_get_all_users(int chat_id) {
     sqlite3 *db = opening_db();
     sqlite3_stmt *res;
     char sql[500];
@@ -60,13 +69,15 @@ static char *get_all_users(int chat_id) {
     char *tmp2;
 
     sprintf(sql, "SELECT USERS.LOGIN FROM USERCHAT INNER JOIN USERS ON USERS.ID = USERCHAT.USERID AND USERCHAT.CHATID=%d;", chat_id);
-    sqlite3_prepare_v2(db, sql, -1, &res, 0);
+    int exit = sqlite3_prepare_v2(db, sql, -1, &res, 0);
+    dberror(db, exit, "Error inserting to table");
     sqlite3_step(res);
 
     while(sqlite3_column_text(res, 0) != NULL) {
+        printf("GOT HERE!!\n\n");
         user_login = (char*)sqlite3_column_text(res, 0);
         if (user_login == NULL)
-            mx_db_null_error("get_all_users");
+            db_null_error();
         tmp = mx_strjoin(user_login, " ");
         tmp2 = users;
         users = mx_strjoin(users, tmp);
@@ -74,7 +85,7 @@ static char *get_all_users(int chat_id) {
         free(tmp);
         sqlite3_step(res);
     }
-
+    printf("all users: %s\n\n", users);
     sqlite3_finalize(res);
     sqlite3_close(db);  
     return users;
@@ -91,11 +102,8 @@ static int mx_list_len(chat_message_t* chat) {
     return len;
 }
 
-// Forms sendback packet.
-static char *json_packet_former_from_list(chat_message_t* chat, int from, char *chat_name, int chat_id) {
-    int list_len    = mx_list_len(chat);
-    char *all_users = get_all_users(chat_id);
-
+static char *mx_json_packet_former_from_list(chat_message_t* chat, int from, char *chat_name, char* all_users) {
+    int list_len = mx_list_len(chat);
 
     cJSON *packet = cJSON_CreateObject();
     char* packet_str = NULL;
@@ -104,6 +112,21 @@ static char *json_packet_former_from_list(chat_message_t* chat, int from, char *
     cJSON_AddItemToObject(packet, "TYPE", json_value);
     json_value = cJSON_CreateString(chat_name);
     cJSON_AddItemToObject(packet, "TO", json_value);
+    json_value = cJSON_CreateString(all_users);
+    cJSON_AddItemToObject(packet, "ALLUSERS", json_value);
+    printf("List len = %d\n\n", list_len);
+    if(list_len == 0) {
+        json_value = cJSON_CreateString("0");
+        cJSON_AddItemToObject(packet, "ID0", json_value);
+        json_value = cJSON_CreateString("1");
+        cJSON_AddItemToObject(packet, "MSGLEN", json_value);
+        json_value = cJSON_CreateString("Admin");
+        cJSON_AddItemToObject(packet, "SENDER0", json_value);
+        json_value = cJSON_CreateString("Just now");
+        cJSON_AddItemToObject(packet, "TIME0", json_value);
+        json_value = cJSON_CreateString("chat created");
+        cJSON_AddItemToObject(packet, "MESSAGE0", json_value);
+    }
     for(int i = 0; i < list_len; i++, from++) {
         char packet_former[100];
 
@@ -131,6 +154,7 @@ static char *json_packet_former_from_list(chat_message_t* chat, int from, char *
 }
 
 char *mx_chat_render(char *packet) {
+    printf("packet from client: %s\n\n", packet);
     char *chat_id_str = get_value_by_key(packet, "CHATID");
     char *from_str    = get_value_by_key(packet, "FROMMSG");
     char *to_str      = get_value_by_key(packet, "TOMSG");
@@ -145,14 +169,16 @@ char *mx_chat_render(char *packet) {
     from = last_message_id - amount_of_msg - from;
     to   = from + to;
 
-    chat_message_t *list = fill_list(chat_id_str, from, to);
-    char *return_packet  = json_packet_former_from_list(list, from, chat_name, chat_id);
+    chat_message_t *list = mx_fill_list(chat_id_str, from, to);
+    char *all_users      = mx_get_all_users(chat_id);
+    char *return_packet  = mx_json_packet_former_from_list(list, from, chat_name, all_users);
 
-    // Freeing mem.
     free(chat_id_str);
     free(from_str);
     free(to_str);
     free(chat_name);
+    free(all_users);
+
     chat_message_t *node_to_del;
     while(list) {
         node_to_del = list;
@@ -162,6 +188,6 @@ char *mx_chat_render(char *packet) {
         free(node_to_del->message);
         free(node_to_del);
     }
-
+    printf("packet from server: %s\n\n", return_packet);
     return return_packet;   
 }

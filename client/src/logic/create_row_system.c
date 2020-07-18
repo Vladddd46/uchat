@@ -15,8 +15,7 @@ void create_row_system(client_context_t *client_context, char *packet) {
 	gtk_widget_set_name(listboxmess,"listboxmess");
 	gtk_container_add(GTK_CONTAINER(scrolll), listboxmess);
 	g_idle_add ((int (*)(void *))show_widget, window);
-	for (int i = 0; len > i; i++){ 
-		printf("%s\n",">>>>>>>>" );
+	for (int i = 0; len > i; i++){
 		gdk_threads_add_idle(create_message, pack);
 	}
 }

@@ -18,6 +18,7 @@ typedef struct client_context_s {
 	char *username;
 	char *allusers;
 	int indexrow;
+	int counter;
 } client_context_t;
 
 struct struct_type {
@@ -38,6 +39,10 @@ typedef struct s_s_glade {
 
 client_context_t *client_context;
 // какие то непонятные функции Дениса. PS. структурируй их пожалуйста.
+void close_window();
+gboolean button_release (GtkWidget *widget, GdkEventKey *event, gpointer data);
+void download_messages(GtkWidget *widget, gpointer data);
+gboolean my_keypress_function (GtkWidget *widget, GdkEventKey *event, gpointer data);
 void create_row_system_new(client_context_t *client_context, char *packet);
 int show_widget(GtkWidget *widget);
 void remake_chats(char *pack);
@@ -96,6 +101,7 @@ GtkWidget *Password;
 GtkWidget *SecondPassword;
 GtkWidget *Registration;
 GtkWidget *screp;
+GtkWidget *buttonrefresh;
 //static GtkWidget *newbutton;
 GtkWidget *fixed;
 GtkTextBuffer *textbuffer;
@@ -131,4 +137,7 @@ GtkWidget *delet;
 GtkWidget *editmessedgentry;
 GtkWidget *editbox;
 GtkWidget *messagebox;
+
+GtkWidget *editfixed;
+GtkWidget *editwindow;
 

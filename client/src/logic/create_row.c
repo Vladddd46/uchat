@@ -24,6 +24,7 @@ gboolean create_row(void *data){
     labellmenu2 = gtk_label_new(lastmessage);
     gtk_widget_set_name(labellmenu2,"labellmenu2");
     gtk_grid_attach(GTK_GRID(gridmenu), labellmenu2, 1, 1, 1, 1);
+    gui->number+=1;
 
     // labellmenu3 = gtk_label_new("Yesterday");
     // gtk_grid_attach(GTK_GRID(gridmenu), labellmenu3, 2, 0, 1, 1);

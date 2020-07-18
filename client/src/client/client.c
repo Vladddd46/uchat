@@ -60,8 +60,17 @@ static void received_packet_analyzer(char *packet_type, char *packet) {
         login_system(client_context, packet);
     else if (!strcmp(packet_type, "find_user_s"))
         draw_list_box_system(packet);
-    else if (!strcmp(packet_type, "add_new_user_s"))
-        remake_chats(packet);
+    else if (!strcmp(packet_type, "add_new_user_s")){
+       if(mx_strcmp(get_value_by_key(packet_type, "STATUS"), "false") == 1){
+        printf("%s\n","1" );
+            remake_chats(packet);
+       }
+        else{
+            printf("%s\n","2" );
+            close_window();
+            printf("%s\n","3" );
+        }
+    }
     else if (!strcmp(packet_type, "msg_s"))
         create_row_system(client_context, packet);
      else if (!strcmp(packet_type, "add_msg_s"))

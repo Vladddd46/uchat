@@ -8,20 +8,24 @@
  * (yy > xx)
  * zz - each number represend ecnrypted ASCII of char 
  */
+
+static char *inner_func(long long int el, 
+                        long long int multiplyNums, char *str) {
+    char *descrypt = mx_strnew(100);
+    long long int e = mx_get_encrypt(el);
+    long long int d = mx_get_decrypt(e, el);
+    for(int i = 0; i < mx_count_string_size(str); i++)
+        *(descrypt + i) = mx_modexp(mx_get_num_by_index(str, i + 2), d, multiplyNums);
+
+    return descrypt;
+}
+
 char *mx_rsa_decode(char *str) {
     unsigned long int num1 = mx_get_num_by_index(str, 0);
     unsigned long int num2 = mx_get_num_by_index(str, 1);
-
     long long int el = (num1 - 1) * (num2 - 1);
     long long int multiplyNums = num1 * num2;
-    char *descrypt = mx_strnew(100);
-
-    long long int e = mx_get_encrypt(el);
-    long long int d = mx_get_decrypt(e, el);
-
-    for(int i = 0; i < mx_count_string_size(str); i++) {
-        *(descrypt + i) = mx_modexp(mx_get_num_by_index(str, i + 2), d, multiplyNums);
-    }
+    char *descrypt = inner_func(el, multiplyNums, str);
 
     return descrypt;
 }

@@ -6,7 +6,7 @@ int *mx_get_input_message(char* user_write) {
     int *result;
     char *msg;
 
-    result = malloc(sizeof(int) * (len + 1));
+    result = (int *)malloc(sizeof(int) * (len + 1));
     if (result == NULL) {
         msg = "Malloc Error\n";
         write(2, msg, (int)strlen(msg));

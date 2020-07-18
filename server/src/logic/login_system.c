@@ -60,9 +60,7 @@ static char *json_packet_former_from_list(chats_t *chat, char *status, char *log
         bzero(chat_name_former, 100);
 
         sprintf(chat_name_former, "CHATNAME=%d", i);
-        char *chat_name = mx_get_special_chat_name(tmp -> chat_name);
-        json_value = cJSON_CreateString(chat_name);
-        free(chat_name);
+        json_value = cJSON_CreateString(tmp -> chat_name);
         cJSON_AddItemToObject(packet, chat_name_former, json_value);
         json_value = cJSON_CreateString(tmp -> last_message);
         sprintf(chat_name_former, "LASTMESSAGE=%d", i);
@@ -88,10 +86,13 @@ static void free_chats_list(chats_t **chats) {
 }
 
 char *login_system(char *packet) {
+    printf("%s\n", packet);
     char *login         = get_value_by_key(packet, "LOGIN");
     char *password      = get_value_by_key(packet, "PASSWORD");
     char *return_status = mx_confirm_users_password(login, password);
+    printf("IN PROGRESS\n");
     chats_t *chat       = mx_get_users_chats(login);
+    printf("DONE\n");
     
     char *sendback_packet;
     if(mx_strcmp(return_status, "false") == 0)
@@ -102,5 +103,6 @@ char *login_system(char *packet) {
     free(password);
     free(return_status);
     free_chats_list(&chat);
+    printf("PACKET FROM SERVER IN LOGIN: %s\n\n", sendback_packet);
     return sendback_packet;
 }

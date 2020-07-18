@@ -8,6 +8,7 @@
  * {to: client_login2; from: client_login1; type: msg_update; data: "Hello"}
  */
 char *mx_database_communication(char *packet) {
+    printf("packet databasecomminication %s\n\n", packet);
     if (!strcmp(packet, ""))
         return NULL;
 

@@ -8,7 +8,8 @@ static int mx_get_user_id(char* login) {
     sqlite3_stmt *res;
     
     sprintf(sql, "SELECT ID FROM USERS WHERE LOGIN='%s'", login);
-    sqlite3_prepare_v2(db, sql, -1, &res, 0);
+    int check = sqlite3_prepare_v2(db, sql, -1, &res, 0);
+    dberror(db, check, "SELECT ID FROM USERS WHERE LOGIN");
     sqlite3_step(res);
     user_id = atoi(mx_string_copy((char*)sqlite3_column_text(res, 0)));
     sqlite3_finalize(res);
@@ -23,20 +24,19 @@ static bool mx_check_contact_exits(char* mylogin, char *login) {
     sqlite3 *db = opening_db();
     sqlite3_stmt *res;
     sqlite3_stmt *res1;
-    char sql[200];
-    bzero(sql, 200);
+    char *sql = "SELECT CHATNAME FROM CHATS";
 
-    sprintf(sql, "SELECT ID FROM CHATS WHERE CHATNAME='%s'", mx_strjoin(mylogin, login));
-    sqlite3_prepare_v2(db, sql, -1, &res, 0);
+    int check = sqlite3_prepare_v2(db, sql, -1, &res, 0);
+    dberror(db, check, "SELECT CHATNAME FROM CHATS");
     sqlite3_step(res);
-    if(sqlite3_column_text(res, 0) != NULL)
-        status = true;
-    sprintf(sql, "SELECT ID FROM CHATS WHERE CHATNAME='%s'", mx_strjoin(login, mylogin));
-    sqlite3_prepare_v2(db, sql, -1, &res1, 0);
-    sqlite3_step(res1);
-    if(sqlite3_column_text(res1, 0) != NULL)
-        status = true;
-    sqlite3_finalize(res1);
+
+    while(sqlite3_column_text(res, 0) != NULL && status == false) {
+        if(strstr((const char*)sqlite3_column_text(res, 0), mylogin) != NULL 
+        && strstr((const char*)sqlite3_column_text(res, 0), login) != NULL) {
+            status = true;
+        }
+        sqlite3_step(res);
+    }
     sqlite3_finalize(res);
     sqlite3_close(db);
     return status;
@@ -51,9 +51,12 @@ static int mx_get_last_chat_id() {
     int last_chat_id = 0;
     
     sprintf(sql, "SELECT MAX(CHATID) FROM USERCHAT;");
-    sqlite3_prepare_v2(db, sql, -1, &res, 0);
+    int check = sqlite3_prepare_v2(db, sql, -1, &res, 0);
+    dberror(db, check, "SELECT MAX(CHATID) FROM USERCHAT");
     sqlite3_step(res);
-    last_chat_id = atoi(mx_string_copy((char*)sqlite3_column_text(res, 0)));
+    if(sqlite3_column_text(res, 0) != NULL) {
+        last_chat_id = atoi(mx_string_copy((char*)sqlite3_column_text(res, 0)));
+    }
     sqlite3_finalize(res);
     sqlite3_close(db);
     return last_chat_id;
@@ -94,29 +97,46 @@ static char *json_packet_former_from_list(chats_t *chat, char *status, char* log
 char* mx_add_contact(char* packet) {
     char* login = get_value_by_key(packet, "USER");
     char* mylogin = get_value_by_key(packet, "TO");
-    chats_t *chat = mx_get_users_chats(mylogin);
     char* sendback_packet;
     char* message_error;
     sqlite3 *db = opening_db();
 
-    if(mx_check_contact_exits(mylogin, login)) {
+    if(!mx_check_contact_exits(mylogin, login)) {
+        printf("status OK\n\n");
+        printf("\nSEG FAULT -2\n");
         int mylogin_id = mx_get_user_id(mylogin);
         int login_id = mx_get_user_id(login);
+        printf("\nSEG FAULT -1\n");
         char sql[200];
         bzero(sql, 200);
         int last_chat_id = mx_get_last_chat_id();
-
+        
+        printf("\nSEG FAULT 0\n");
         sprintf(sql, "INSERT INTO USERCHAT(USERID, CHATID) VALUES(%d, %d);", mylogin_id, last_chat_id + 1);
-        sqlite3_exec(db, sql, NULL, 0, &message_error);
+        int check = sqlite3_exec(db, sql, NULL, 0, &message_error);
+        dberror(db, check, "INSERT INTO USERCHAT(USERID, CHATID) VALUES 1");
         sprintf(sql, "INSERT INTO USERCHAT(USERID, CHATID) VALUES(%d, %d);", login_id, last_chat_id + 1);
-        sqlite3_exec(db, sql, NULL, 0, &message_error);
+        check = sqlite3_exec(db, sql, NULL, 0, &message_error);
+        dberror(db, check, "INSERT INTO USERCHAT(USERID, CHATID) VALUES 2");
 
-        sprintf(sql, "INSERT INTO CHATS(CHATNAME, LASMESSAGE) VALUES('(%s %s)', ' ');", login, mylogin);
+        sprintf(sql, "INSERT INTO CHATS(CHATNAME, LASTMESSAGE) VALUES('%s %s', 'created chat');", login, mylogin);
+        printf("sql req: %s\n\n", sql);
+        check = sqlite3_exec(db, sql, NULL, 0, &message_error);
+        dberror(db, check, "INSERT INTO CHATS(CHATNAME, LASMESSAGE) VALUES");
+        sprintf(sql, "INSERT INTO MESSAGES(CHATID, MESSAGEID, SENDER, TIME, MESSAGE) VALUES(%d, 1, '%s', 'null', 'chat created');", last_chat_id + 1, mylogin);
+        dberror(db, check, "INSERT INTO MESSAGES(CHATID, MESSAGEID, SENDER, TIME, MESSAGE)");
+        check = sqlite3_exec(db, sql, NULL, 0, &message_error);
+        printf("\nSEG FAULT 1\n");
+        chats_t *chat = mx_get_users_chats(mylogin);
+        printf("\nSEG FAULT 2\n");
         sendback_packet = json_packet_former_from_list(chat, "success", mylogin, login);
+        printf("\nSEG FAULT 3\n");
         
     }
-    else
+    else {
+        chats_t *chat = mx_get_users_chats(mylogin);
         sendback_packet = json_packet_former_from_list(chat, "false", mylogin, login);
+    }
     sqlite3_close(db);
     return sendback_packet;
 }

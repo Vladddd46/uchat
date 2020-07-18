@@ -1,5 +1,49 @@
 #include "client.h"
 
+
+void draw_edit_profile(GtkWidget *widget, gpointer data){
+    editwindow = gtk_window_new(GTK_WINDOW_TOPLEVEL);
+    gtk_window_set_resizable (GTK_WINDOW(editwindow), FALSE);
+    gtk_window_set_transient_for (GTK_WINDOW(editwindow),GTK_WINDOW(window));
+    gtk_window_set_title(GTK_WINDOW(editwindow),"Settings");
+    gtk_widget_set_size_request(GTK_WIDGET(editwindow),300,500);
+
+    editfixed = gtk_fixed_new();
+    gtk_container_add(GTK_CONTAINER(editwindow), editfixed);
+    g_idle_add ((int (*)(void *))show_widget, editwindow);
+}
+
+void download_messages(GtkWidget *widget, gpointer data){
+ 
+    // printf("%d\n",client_context->indexrow );
+    // printf("%d\n",client_context->counter );
+
+    cJSON *packet = cJSON_CreateObject();
+    char  *packet_str = NULL;
+    cJSON *type = cJSON_CreateString((char*)"msg_c");
+    cJSON *chat_id = cJSON_CreateString((char*)mx_itoa(client_context->indexrow + 1));
+    cJSON *from = cJSON_CreateString((char*)mx_itoa(client_context->counter));
+    cJSON *to = cJSON_CreateString((char*)mx_itoa(client_context->counter + 15));
+    cJSON *chat_name = cJSON_CreateString((char*)client_context -> username);
+    cJSON *to_user = cJSON_CreateString((char*)client_context -> username);
+
+    
+    cJSON_AddItemToObject(packet, "TYPE", type);
+    cJSON_AddItemToObject(packet, "CHATID", chat_id);
+    cJSON_AddItemToObject(packet, "FROMMSG", from);
+    cJSON_AddItemToObject(packet, "TOMSG", to);
+    cJSON_AddItemToObject(packet, "CHATNAME", chat_name);
+    cJSON_AddItemToObject(packet, "TO", to_user);
+   // printf("type: %s\nchat_id: %s\nfrom: %s\nto: %s\nchat_name: %s\n\n", (char*)"msg_c", (char*)mx_itoa(client_context->indexrow + 1), (char*)mx_itoa(client_context->counter), (char*)mx_itoa(client_context->counter + 15), (char*)client_context -> username);
+
+    packet_str = mx_string_copy(cJSON_Print(packet));
+    char *packet_str1 =  packet_len_prefix_adder(packet_str);
+
+    send(client_context->sockfd, mx_strdup(packet_str1), (int)strlen(packet_str1), 0);
+    free(packet_str);
+    free(packet_str1);
+}
+
 void dialog(GtkWidget *widget, gpointer data ){
  GtkWidget *dialog;
 
@@ -54,6 +98,7 @@ gboolean button_release (GtkWidget *widget, GdkEventKey *event, gpointer data) {
 
 gboolean draw_message_menu(void *data){
       t_s_glade *gui = (t_s_glade *)data;
+       GtkPositionType *pos = NULL;
     //отрисовка основного меню с чатами и комнатами
     gtk_widget_destroy(fixed);
     fixed = gtk_fixed_new();
@@ -74,6 +119,7 @@ gboolean draw_message_menu(void *data){
     iconn = gdk_pixbuf_scale_simple(iconn, 32,32, GDK_INTERP_BILINEAR);
     icon = gtk_image_new_from_pixbuf(iconn);
     gtk_button_set_image (GTK_BUTTON (leftmenu), icon);
+    g_signal_connect(leftmenu,"clicked", G_CALLBACK(draw_edit_profile), NULL);
 
     searchmenu = gtk_text_view_new ();
     gtk_widget_set_size_request(searchmenu,150,50);
@@ -94,46 +140,14 @@ gboolean draw_message_menu(void *data){
     gtk_widget_set_name(rightbox,"rightbox");
     gtk_fixed_put(GTK_FIXED (fixed), rightbox, 300,0);
 
+  
+
     listbox = gtk_list_box_new();
     gtk_widget_set_name(listbox,"listboxleft");
     gtk_widget_set_size_request(scroll,300,718);
     gtk_container_add(GTK_CONTAINER(scroll), listbox);
 
     g_signal_connect(listbox,"row-activated", G_CALLBACK(touch_room_signal), &client_context->sockfd);
-
-     scrollnewmess = gtk_scrolled_window_new(0,0);
-     gtk_fixed_put(GTK_FIXED (fixed), scrollnewmess, 300,718);
-     gtk_widget_set_size_request(scrollnewmess,724,50);
-
-    downbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL,0);
-    gtk_widget_set_size_request(downbox,724,50);
-    gtk_widget_set_name(downbox,"downbox");
-    gtk_container_add(GTK_CONTAINER(scrollnewmess), downbox);
-
-    screp = gtk_button_new();
-    gtk_box_pack_start(GTK_BOX(downbox), screp, FALSE, FALSE, 0);
-    iconn = gdk_pixbuf_new_from_file("./media/img/screp.png",NULL); 
-    iconn = gdk_pixbuf_scale_simple(iconn, 32,32, GDK_INTERP_BILINEAR);
-    icon = gtk_image_new_from_pixbuf(iconn);
-    gtk_button_set_image (GTK_BUTTON (screp), icon);
-    g_signal_connect(screp, "clicked", G_CALLBACK(dialog), NULL);
-
-    textbuffer = gtk_text_buffer_new(NULL);
-    newmessedgentry = gtk_text_view_new_with_buffer(textbuffer);
-    gtk_widget_set_name(newmessedgentry,"newmessedgentry");
-    gtk_box_pack_start(GTK_BOX(downbox),newmessedgentry, TRUE, TRUE, 0);
-    g_signal_connect (G_OBJECT (newmessedgentry), "key_release_event", G_CALLBACK (button_release), NULL);
-    g_signal_connect (G_OBJECT (newmessedgentry), "key_press_event", G_CALLBACK (my_keypress_function), NULL);
-    
-    scrollmess = gtk_scrolled_window_new(0,0);
-    gtk_fixed_put(GTK_FIXED (fixed), scrollmess, 300,50);
-    gtk_widget_set_name(scrollmess,"scrollmess");
-    gtk_widget_set_size_request(GTK_WIDGET(scrollmess),724,668);
-
-    listboxmess = gtk_list_box_new();
-    gtk_widget_set_name(listboxmess,"listboxmess");
-    gtk_container_add(GTK_CONTAINER(scrollmess), listboxmess);
-
      g_idle_add ((int (*)(void *))show_widget, window);
      return 0;
 }

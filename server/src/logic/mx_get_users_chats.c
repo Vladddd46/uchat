@@ -57,19 +57,14 @@ static void push_chats_front(chats_t **chats, char *chat_name, char *last_messag
     }
 }
 
-chats_t *mx_get_users_chats(char *user) {
-    sqlite3_stmt *res;
-    char *identifier = NULL;
-    chats_t *chat = NULL;
-    sqlite3_stmt *res2;
+static char** mx_get_users_chat_id(char* user_id) {
     char sql[200];
     bzero(sql, 200);
     char* message_error = NULL;
-    
-    
-    char *user_id = get_user_id_by_login(user);
-
     sqlite3 *db = opening_db();
+    char** chat_id_arr = mx_new_strarr(2000);
+    int arr_index = 0;
+    sqlite3_stmt *res;
 
     sprintf(sql, "SELECT CHATID FROM USERCHAT WHERE USERID=%s;", user_id);
     int check = sqlite3_prepare_v2(db, sql, -1, &res, 0);
@@ -77,18 +72,48 @@ chats_t *mx_get_users_chats(char *user) {
     sqlite3_step(res);
     
     while(sqlite3_column_text(res, 0) != NULL) {
-        identifier = (char *)sqlite3_column_text(res, 0);
-        sprintf(sql, "SELECT CHATNAME, LASTMESSAGE FROM CHATS WHERE ID=%s;", identifier);
-        check = sqlite3_prepare_v2(db, sql, -1, &res2, 0);
-        dberror(db, check, "Error select CHATNAME, LASTMESSAGE from CHATs");
-        sqlite3_step(res2);
-        char *chat_name    = mx_string_copy((char *)sqlite3_column_text(res2, 0));
-        char *last_message = mx_string_copy((char *)sqlite3_column_text(res2, 1));
-        push_chats_front(&chat, chat_name, last_message);
+        *(chat_id_arr + arr_index) = mx_string_copy((char *)sqlite3_column_text(res, 0));
+        printf("%s\n", mx_string_copy((char *)sqlite3_column_text(res, 0)));
+        arr_index++;
         sqlite3_step(res);
-        sqlite3_finalize(res2);
     }
+    *(chat_id_arr + arr_index) = NULL;
     sqlite3_finalize(res);
+    sqlite3_close(db);
+    return chat_id_arr;
+}
+
+chats_t *mx_get_users_chats(char *user) {
+    sqlite3_stmt *res;
+    chats_t *chat = NULL;
+    char sql[200];
+    bzero(sql, 200);
+    char* message_error = NULL;
+    printf("\nSEG FAULT 0\n");
+    char *user_id = get_user_id_by_login(user);
+    printf("\nSEG FAULT 0.5\n");
+    char** chats_arr = mx_get_users_chat_id(user_id);
+    int arr_index = 0;
+    
+    printf("\nSEG FAULT 1\n");
+    
+    sqlite3 *db = opening_db();
+    
+    printf("\nSEG FAULT 2\n");
+    while(*(chats_arr + arr_index) != NULL) {
+        printf("\nSEG FAULT 3\n");
+        sprintf(sql, "SELECT CHATNAME, LASTMESSAGE FROM CHATS WHERE ID=%s;", *(chats_arr + arr_index));
+        int check = sqlite3_prepare_v2(db, sql, -1, &res, 0);
+        dberror(db, check, "Error select CHATNAME, LASTMESSAGE from CHATs");
+        sqlite3_step(res);
+        printf("\n%s\n", sqlite3_column_text(res, 0));
+        char *chat_name    = mx_string_copy((char *)sqlite3_column_text(res, 0));
+        char *last_message = mx_string_copy((char *)sqlite3_column_text(res, 1));
+        push_chats_front(&chat, chat_name, last_message);
+        sqlite3_finalize(res);
+        arr_index++;
+    }
+
     sqlite3_close(db);
     free(user_id);
     return chat;

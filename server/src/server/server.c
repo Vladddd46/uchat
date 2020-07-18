@@ -89,6 +89,7 @@ static void *handle_server(void *param) {
         for (connected_client_list_t *p = ctx.head.next; p != NULL; p = p->next) {
             if (FD_ISSET(p->sock_fd, &read_descriptors)) {
                 char *packet = packet_receive(p->sock_fd);
+                printf("packet on server.c: %s\n\n", packet);
  
                 // Modify db and forms packet, which must be send to specified in packet client(login).
                 char *send_packet = mx_database_communication(packet);

@@ -55,15 +55,16 @@ void end_message (GtkWidget *widget, GtkWidget *message){
 
 gboolean create_message(void *data){
     t_s_glade *pack = (t_s_glade *)data; 
-  GtkWidget *row;
   GtkAdjustment *adj;
-
+  printf("%s\n","before" );
     char *nameuser = client_context->username;
+    printf("%s\n","1" );
     char *sender = get_value_by_key(pack->pack,mx_strjoin("SENDER",mx_itoa(pack->number)));
     int messagenum = atoi(get_value_by_key(pack->pack,mx_strjoin("ID",mx_itoa(pack->number))));
     char *messagetext = get_value_by_key(pack->pack,mx_strjoin("MESSAGE",mx_itoa(pack->number)));
     char *timemessage = get_value_by_key(pack->pack,mx_strjoin("TIME",mx_itoa(pack->number)));    // почисти память
-    adj = gtk_adjustment_new(10000, 10000, 1, 10000, 10000, 100000);
+    printf("%s\n","after" );
+    adj = gtk_adjustment_new(10000, 100000, -1000, 100, 10000, 10000);
     row = gtk_list_box_row_new();
     ebox = gtk_event_box_new();
     gtk_container_add(GTK_CONTAINER(row), ebox);
@@ -115,9 +116,11 @@ gboolean create_message(void *data){
     g_signal_connect (delet, "activate", G_CALLBACK (delete_message), row);
 
     
-    //g_idle_add ((int (*)(void *))show_widget, window);
-    gtk_widget_show_all(window);
+    g_idle_add ((int (*)(void *))show_widget, window);
+    //gtk_widget_show_all(window);
     gtk_scrolled_window_set_vadjustment(GTK_SCROLLED_WINDOW(scrollmess), adj);
+    client_context->counter+=1;
+    printf("%d\n",client_context->counter );
     pack->number+=1;
     return 0;
 }
