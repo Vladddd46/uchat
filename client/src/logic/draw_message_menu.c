@@ -15,18 +15,42 @@ void draw_edit_profile(GtkWidget *widget, gpointer data){
 
 void download_messages(GtkWidget *widget, gpointer data){
  
-    // printf("%d\n",client_context->indexrow );
-    // printf("%d\n",client_context->counter );
-
     cJSON *packet = cJSON_CreateObject();
     char  *packet_str = NULL;
     cJSON *type = cJSON_CreateString((char*)"msg_c");
-    cJSON *chat_id = cJSON_CreateString((char*)mx_itoa(client_context->indexrow + 1));
-    cJSON *from = cJSON_CreateString((char*)mx_itoa(client_context->counter));
-    cJSON *to = cJSON_CreateString((char*)mx_itoa(client_context->counter + 15));
-    cJSON *chat_name = cJSON_CreateString((char*)client_context -> username);
-    cJSON *to_user = cJSON_CreateString((char*)client_context -> username);
 
+    char *chat_id_str = (char*)mx_itoa(client_context->indexrow + 1);
+    if (chat_id_str == NULL)
+        mx_null_error("26: download_messages");
+    cJSON *chat_id = cJSON_CreateString(chat_id_str);
+    free(chat_id_str);
+
+    char *from_str = (char*)mx_itoa(client_context->counter);
+    if (from_str == NULL)
+        mx_null_error("31: download_messages");
+    cJSON *from = cJSON_CreateString(from_str);
+
+    char *to_str = (char*)mx_itoa(client_context->counter + 15);
+    if (to_str == NULL)
+        mx_null_error("36: download_messages");
+    cJSON *to = cJSON_CreateString(to_str);
+
+    char *chat_name_str = (char *)client_context -> username;
+    if (chat_name_str == NULL)
+        mx_null_error("41: download_messages");
+    cJSON *chat_name = cJSON_CreateString(chat_name_str);
+
+
+    char *to_user_str = (char*)client_context -> username;
+    if (to_user_str == NULL)
+        mx_null_error("46: download_messages");
+    cJSON *to_user = cJSON_CreateString(to_user_str);
+
+
+    char *chat_id_sql_str = (char*)client_context->mas[client_context->indexrow];
+    if (chat_id_sql_str == NULL)
+        mx_null_error("52: download_messages");
+    cJSON *chat_id_sql = cJSON_CreateString(chat_id_sql_str);
     
     cJSON_AddItemToObject(packet, "TYPE", type);
     cJSON_AddItemToObject(packet, "CHATID", chat_id);
@@ -34,10 +58,12 @@ void download_messages(GtkWidget *widget, gpointer data){
     cJSON_AddItemToObject(packet, "TOMSG", to);
     cJSON_AddItemToObject(packet, "CHATNAME", chat_name);
     cJSON_AddItemToObject(packet, "TO", to_user);
-   // printf("type: %s\nchat_id: %s\nfrom: %s\nto: %s\nchat_name: %s\n\n", (char*)"msg_c", (char*)mx_itoa(client_context->indexrow + 1), (char*)mx_itoa(client_context->counter), (char*)mx_itoa(client_context->counter + 15), (char*)client_context -> username);
+    cJSON_AddItemToObject(packet, "CHATIDFROMDB:", chat_id_sql);
 
-    packet_str = mx_string_copy(cJSON_Print(packet));
+    packet_str         = mx_string_copy(cJSON_Print(packet));
     char *packet_str1 =  packet_len_prefix_adder(packet_str);
+    if (packet_str1 == NULL)
+        mx_null_error("66: download_messages");
 
     send(client_context->sockfd, mx_strdup(packet_str1), (int)strlen(packet_str1), 0);
     free(packet_str);
@@ -46,7 +72,6 @@ void download_messages(GtkWidget *widget, gpointer data){
 
 void dialog(GtkWidget *widget, gpointer data ){
  GtkWidget *dialog;
-
  GtkFileChooserAction action = GTK_FILE_CHOOSER_ACTION_OPEN;
  gint res;   
 
@@ -59,46 +84,39 @@ void dialog(GtkWidget *widget, gpointer data ){
                                        GTK_RESPONSE_OK,
                                        NULL);
 
- res = gtk_dialog_run (GTK_DIALOG (dialog));
- if (res == GTK_RESPONSE_OK)
-   {
-     char *filename;
-     GtkFileChooser *chooser = GTK_FILE_CHOOSER (dialog);
-     filename = gtk_file_chooser_get_filename (chooser);
-     printf("%s\n",filename );
-       g_free (filename);
-   }
-
- gtk_widget_destroy (dialog);
+ res = gtk_dialog_run(GTK_DIALOG(dialog));
+ if (res == GTK_RESPONSE_OK) {
+    char *filename;
+    GtkFileChooser *chooser = GTK_FILE_CHOOSER (dialog);
+    filename = gtk_file_chooser_get_filename (chooser);
+    g_free(filename);
  }
+
+    gtk_widget_destroy (dialog);
+}
 
 
 static bool release_button = FALSE;
 
 gboolean my_keypress_function (GtkWidget *widget, GdkEventKey *event, gpointer data) {
-    if (event->keyval == 65505 || event->keyval == 65507) {
+    if (event->keyval == 65505 || event->keyval == 65507)
         release_button = TRUE;
-    }
-    if (event->keyval == 65293 && release_button == FALSE){
+    if (event->keyval == 65293 && release_button == FALSE)
         gdk_threads_add_idle_full(G_PRIORITY_HIGH_IDLE, create_message_system, NULL, 0);
-    }
     return FALSE;
 }
 
 gboolean button_release (GtkWidget *widget, GdkEventKey *event, gpointer data) {
-    if (event->keyval == 65505) {
+    if (event->keyval == 65505)
         release_button = FALSE;
-    }
     if (event->keyval == 65293 && release_button == FALSE)
-    {
         gtk_text_buffer_set_text (GTK_TEXT_BUFFER(textbuffer),"",-1);
-    }
     return FALSE;
 }
 
 gboolean draw_message_menu(void *data){
-      t_s_glade *gui = (t_s_glade *)data;
-       GtkPositionType *pos = NULL;
+    t_s_glade *gui = (t_s_glade *)data;
+    GtkPositionType *pos = NULL;
     //отрисовка основного меню с чатами и комнатами
     gtk_widget_destroy(fixed);
     fixed = gtk_fixed_new();
@@ -121,7 +139,7 @@ gboolean draw_message_menu(void *data){
     gtk_button_set_image (GTK_BUTTON (leftmenu), icon);
     g_signal_connect(leftmenu,"clicked", G_CALLBACK(draw_edit_profile), NULL);
 
-    searchmenu = gtk_text_view_new ();
+    searchmenu = gtk_text_view_new();
     gtk_widget_set_size_request(searchmenu,150,50);
     gtk_widget_set_name(searchmenu,"searchmenu");
     gtk_box_pack_start(GTK_BOX(leftbox),searchmenu, TRUE, TRUE, 10);
@@ -148,6 +166,6 @@ gboolean draw_message_menu(void *data){
     gtk_container_add(GTK_CONTAINER(scroll), listbox);
 
     g_signal_connect(listbox,"row-activated", G_CALLBACK(touch_room_signal), &client_context->sockfd);
-     g_idle_add ((int (*)(void *))show_widget, window);
-     return 0;
+    g_idle_add ((int (*)(void *))show_widget, window);
+    return 0;
 }

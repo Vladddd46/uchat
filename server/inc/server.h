@@ -33,6 +33,7 @@ typedef struct {
 typedef struct chats {
     char* chat_name;
     char* last_message;
+    char* chat_id;
     struct chats *next;
 } chats_t;
 

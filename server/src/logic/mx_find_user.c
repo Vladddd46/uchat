@@ -72,8 +72,6 @@ static char *mx_json_packet_former_from_list(users_list_t* list, char* login_to)
         cJSON_AddItemToObject(packet, "TO", json_value);
         json_value = cJSON_CreateString(mx_itoa(list_len));
         cJSON_AddItemToObject(packet, "LENGTH", json_value);
-        // json_value = cJSON_CreateString(chat_name);
-        // cJSON_AddItemToObject(packet, "TO", json_value);
         for(int i = 0; i < list_len; i++) {
             char packet_former[100];
 
@@ -108,12 +106,10 @@ static char *mx_json_packet_former_from_list(users_list_t* list, char* login_to)
 }
 
 char* mx_find_user(char* packet) {
-    printf("packet from client (find user) %s\n\n", packet);
 	char* user = get_value_by_key(packet, "USER");
     char* login_to = get_value_by_key(packet, "TO");
     users_list_t* list = mx_fill_users_list(user);
 
     char* return_packet = mx_json_packet_former_from_list(list, login_to);
-    printf("packet from server (find_user) %s\n\n", return_packet);
     return return_packet;
 }

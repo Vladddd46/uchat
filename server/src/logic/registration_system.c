@@ -100,6 +100,7 @@ char *registration_system(char *packet) {
     char *login           = get_value_by_key(packet, "LOGIN");
     char *password        = get_value_by_key(packet, "PASSWORD");
     char *nickname        = get_value_by_key(packet, "NICKNAME");
+    
     if (login == NULL || password == NULL || nickname == NULL)
         mx_null_value_error("registration_system");
     char *sendback_packet = form_sendback_packet(login, password, nickname);

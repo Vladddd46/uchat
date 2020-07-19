@@ -53,27 +53,24 @@ void client_context_init(int sockfd) {
 }
 
 static void received_packet_analyzer(char *packet_type, char *packet) {
-    printf("Received packet %s\n",packet );
-    if (!strcmp(packet_type, "reg_s"))
+
+    printf("[received packet]%s\n", packet);
+    if (!mx_strcmp(packet_type, "reg_s"))
         registration_system(client_context->sockfd, packet);
-    else if (!strcmp(packet_type, "login_s"))
+    else if (!mx_strcmp(packet_type, "login_s"))
         login_system(client_context, packet);
-    else if (!strcmp(packet_type, "find_user_s"))
+    else if (!mx_strcmp(packet_type, "find_user_s"))
         draw_list_box_system(packet);
-    else if (!strcmp(packet_type, "add_new_user_s")){
-       if(mx_strcmp(get_value_by_key(packet, "STATUS"), "false") != 0){
-        printf("%s\n","1" );
+    else if (!mx_strcmp(packet_type, "add_new_user_s")) {
+
+       if(mx_strcmp(get_value_by_key(packet, "STATUS"), "false") != 0)
             remake_chats(packet);
-       }
-        else{
-            printf("%s\n","2" );
+        else
             close_window();
-            printf("%s\n","3" );
-        }
     }
-    else if (!strcmp(packet_type, "msg_s"))
+    else if (!mx_strcmp(packet_type, "msg_s"))
         create_row_system(client_context, packet);
-     else if (!strcmp(packet_type, "add_msg_s"))
+     else if (!mx_strcmp(packet_type, "add_msg_s"))
         create_row_system_new(client_context, packet);
 
 }
@@ -96,10 +93,18 @@ static void *server_communication(void *param) {
         if (status <= 0) continue;
         // Receive packet from the server.
         packet      = packet_receive(client_context->sockfd);
-        if (packet == NULL)
+        if (packet == NULL || !mx_strcmp(packet, "")) {
+            char *msg = "get_value_by_key error in server_communication";
+            write(2, msg, (int)strlen(msg));
             exit(1);
+        }
 
         packet_type = get_value_by_key(packet, "TYPE");
+        if (packet_type == NULL){
+            char *msg = "get_value_by_key error in server_communication";
+            write(2, msg, (int)strlen(msg));
+            exit(1);
+        }
         received_packet_analyzer(packet_type, packet);
         free(packet_type);
         free(packet);

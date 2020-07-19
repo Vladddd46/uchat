@@ -54,6 +54,9 @@ static void add_lists_of_chats(cJSON *packet, int list_len, chats_t *chat) {
         json_value = cJSON_CreateString(tmp -> last_message);
         sprintf(chat_name_former, "LASTMESSAGE=%d", i);
         cJSON_AddItemToObject(packet, chat_name_former, json_value);
+        json_value = cJSON_CreateString(tmp -> chat_id);
+        sprintf(chat_name_former, "CHATID=%d", i);
+        cJSON_AddItemToObject(packet, chat_name_former, json_value);
         tmp = tmp -> next;
     }
 }

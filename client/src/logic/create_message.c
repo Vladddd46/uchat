@@ -21,7 +21,7 @@ void delete_message(GtkWidget *widget, GtkWidget *message){
     }
 }
 
-void edit_message (GtkWidget *widget, GtkWidget *message){
+void edit_message(GtkWidget *widget, GtkWidget *message){
     if (flag == FALSE) {
     char *editbuff = (char *)gtk_label_get_text(GTK_LABEL(message));
     gtk_widget_hide(newmessedgentry);
@@ -125,11 +125,10 @@ gboolean create_message(void *data){
     return 0;
 }
 
-static char* mx_get_time() {
+static char *mx_get_time() {
     time_t rawtime;
     struct tm * timeinfo;
-    char* date = NULL;
-
+    char *date = NULL;
     time ( &rawtime );
     timeinfo = localtime ( &rawtime );
     date = asctime (timeinfo);
@@ -138,22 +137,24 @@ static char* mx_get_time() {
 
 gboolean create_message_system(void *data){
     char *message_from_user = get_text_of_textview(newmessedgentry);
-    // *(client_context -> allusers + mx_strlen(client_context -> allusers)) = '\0'; // для потомков (Татьяна Василевна)
-    char* all_users = client_context -> allusers;
-    printf(">>>>>>>>>>>>>>>>>>>>>>>>>>>.%s\n",all_users );
+    if (message_from_user == NULL) {
+        mx_null_error("142: create_message_system error");
+    }
+    char *all_users = client_context->allusers;
 
-    printf("ALL users %s\n\n", all_users);
-
-    cJSON *packet = cJSON_CreateObject();
     char  *packet_str = NULL;
-    cJSON *type = cJSON_CreateString("add_msg_c");
-    cJSON *time = cJSON_CreateString(mx_get_time());
-    cJSON *msg = cJSON_CreateString(message_from_user);
-    cJSON *allusers = cJSON_CreateString(all_users);
-    cJSON *message_id = cJSON_CreateString("0");
-    int chat_id_client = client_context -> indexrow;
-    cJSON *chat_id = cJSON_CreateString(mx_itoa(++chat_id_client));
-    cJSON *username = cJSON_CreateString(client_context -> username);
+    cJSON *packet = cJSON_CreateObject();
+    cJSON *type   = cJSON_CreateString("add_msg_c");
+    char *current_time = mx_get_time();
+    if (current_time == NULL)
+         mx_null_error("150: current_time is NULL");
+    cJSON *time        = cJSON_CreateString(current_time);
+    cJSON *msg         = cJSON_CreateString(message_from_user);
+    cJSON *allusers    = cJSON_CreateString(all_users);
+    cJSON *message_id  = cJSON_CreateString("0");
+    int chat_id_client = client_context->indexrow;
+    cJSON *chat_id     = cJSON_CreateString(client_context->mas[client_context->indexrow]);
+    cJSON *username    = cJSON_CreateString(client_context -> username);
     
     cJSON_AddItemToObject(packet, "TYPE", type);
     cJSON_AddItemToObject(packet, "MESSAGEID", message_id);
@@ -163,14 +164,12 @@ gboolean create_message_system(void *data){
     cJSON_AddItemToObject(packet, "CHATID", chat_id);
     cJSON_AddItemToObject(packet, "SENDER", username);
 
-
     packet_str = mx_string_copy(cJSON_Print(packet));
+
     char *packet_str1 =  packet_len_prefix_adder(packet_str);
-    printf("%s\n",packet_str1);
-    // char* packet_str2 = cJSON_Print(packet_str1);
-    send(client_context->sockfd, mx_strdup(packet_str1), (int)strlen(packet_str1), 0);
+    printf("[outcomming packet]%s\n", packet_str1);
+    send(client_context->sockfd, packet_str1, (int)strlen(packet_str1), 0);
     free(packet_str);
     free(packet_str1);
-
-return 0;
+    return 0;
 }

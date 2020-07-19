@@ -87,6 +87,9 @@ static char *json_packet_former_from_list(chats_t *chat, char *status, char* log
         json_value = cJSON_CreateString(chat -> last_message);
         sprintf(chat_name_former, "LASTMESSAGE=%d", i);
         cJSON_AddItemToObject(packet, chat_name_former, json_value);
+        json_value = cJSON_CreateString(chat -> chat_id);
+        sprintf(chat_name_former, "CHATID=%d", i);
+        cJSON_AddItemToObject(packet, chat_name_former, json_value);
         chat = chat -> next;
     }
     packet_str = cJSON_Print(packet);
@@ -102,16 +105,12 @@ char* mx_add_contact(char* packet) {
     sqlite3 *db = opening_db();
 
     if(!mx_check_contact_exits(mylogin, login)) {
-        printf("status OK\n\n");
-        printf("\nSEG FAULT -2\n");
         int mylogin_id = mx_get_user_id(mylogin);
         int login_id = mx_get_user_id(login);
-        printf("\nSEG FAULT -1\n");
         char sql[200];
         bzero(sql, 200);
         int last_chat_id = mx_get_last_chat_id();
         
-        printf("\nSEG FAULT 0\n");
         sprintf(sql, "INSERT INTO USERCHAT(USERID, CHATID) VALUES(%d, %d);", mylogin_id, last_chat_id + 1);
         int check = sqlite3_exec(db, sql, NULL, 0, &message_error);
         dberror(db, check, "INSERT INTO USERCHAT(USERID, CHATID) VALUES 1");

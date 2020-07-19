@@ -19,6 +19,7 @@ typedef struct client_context_s {
 	char *allusers;
 	int indexrow;
 	int counter;
+		char **mas;
 } client_context_t;
 
 struct struct_type {
@@ -63,7 +64,7 @@ void end_message (GtkWidget *widget, GtkWidget *message);
 int show_popup(GtkWidget *widget, GdkEvent *event);
 void add_new_user(GtkWidget *newchatbutton, gpointer data);
 gboolean mini_button_release (GtkWidget *widget, GdkEventKey *event, gpointer data);
-gboolean add_new_friend (GtkWidget *newchatbutton, gpointer data);
+gboolean add_new_friend (GtkWidget *widget, gpointer data);
 void draw_list_box_system(char *packet);
 void dialog(GtkWidget *widget, gpointer data );
 gboolean draw_list_box(void *data);
@@ -80,6 +81,11 @@ void do_registration(GtkWidget *Registration, client_context_t *client_context);
 void registration_system(int socket, char *packet);
 void login_system(client_context_t *client_context, char *packet);
 void create_row_system(client_context_t *client_context, char *packet);
+
+// additional
+void mx_null_error(char *msg);
+
+
 //mini приставка для виджетов в окне добавления юзеров
 GtkWidget *minibuttonfind;
 GtkWidget *minieventbox;

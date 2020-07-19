@@ -8,7 +8,9 @@ gboolean create_row(void *data){
     char *lastmessage = get_value_by_key(gui->pack,mx_strjoin("LASTMESSAGE=",mx_itoa(gui->number)));
     row = gtk_list_box_row_new();
     gtk_widget_set_name(row,"chatrow");
-    gtk_list_box_insert (GTK_LIST_BOX(listbox),row,gui->number);
+    gtk_list_box_insert (GTK_LIST_BOX(listbox),row,gui->number); 
+    g_object_set_data(G_OBJECT(row),"row number",&(gui->number));
+    client_context->mas[gui->number] = get_value_by_key(gui->pack, mx_strjoin("CHATID=",mx_itoa(gui->number)));
 
     gridmenu = gtk_grid_new();
     gtk_container_add(GTK_CONTAINER(row), gridmenu);

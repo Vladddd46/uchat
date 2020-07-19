@@ -3,8 +3,9 @@
 
 void touch_room_signal(GtkWidget *listbox, void *socket){
     client_context->counter = 0;
-    GtkListBoxRow *selectedrow= gtk_list_box_get_selected_row(GTK_LIST_BOX(listbox));
+    GtkListBoxRow *selectedrow = gtk_list_box_get_selected_row(GTK_LIST_BOX(listbox));
     int indexrow = gtk_list_box_row_get_index(GTK_LIST_BOX_ROW(selectedrow));
+    printf("%d\n",indexrow );
     client_context->indexrow =indexrow;
     GList *gl = gtk_container_get_children(GTK_CONTAINER(selectedrow));
     GtkGrid *gridchild = gl->data;
@@ -52,18 +53,21 @@ void touch_room_signal(GtkWidget *listbox, void *socket){
          g_idle_add ((int (*)(void *))show_widget, window);
         flagG = TRUE;
     }
- //printf("%s\n","touch_room_signal" );
+   
     int *test = (int *)socket;
     char *chat_name = client_context->username;
-    printf("chat_name = %s\n\n", chat_name);
     char chat_id[40];
+    bzero(chat_id, 40);
     chat_name = mx_strjoin("CHATNAME:", chat_name);
     sprintf(chat_id, "CHATID:%d", ++indexrow);
+    char* chat_id_str = mx_strjoin("CHATIDFROMDB:", client_context->mas[client_context->indexrow]);
 
-    char *packet = json_packet_former(5, "TYPE:msg_c", chat_name, chat_id, "FROMMSG:5", "TOMSG:15");
+    char *packet = json_packet_former(6, "TYPE:msg_c", chat_name, chat_id, "FROMMSG:0", "TOMSG:15", chat_id_str);
     packet = packet_len_prefix_adder(packet);
     printf("PACKet berfore send %s\n\n", packet);
 
+    printf("%d\n", client_context->sockfd);
+    
     send(client_context->sockfd, packet, mx_strlen(packet), 0);
      printf("%s\n","packet sended" );
 }

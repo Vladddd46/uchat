@@ -1,10 +1,5 @@
 #include "client.h"
 
-/*
- * C
- *
- */
-
 #define OKEY                    0
 #define LOGIN_IS_EMPTY          1
 #define LOGIN_FORBIDDEN_SYMBOLS 2
@@ -49,22 +44,37 @@ static int validate(char *login, char *password) {
 }
 
 static void send_login_packet(int socket, char *input_login, char *input_password) {
-    char *login_pair = mx_strjoin("LOGIN:",    input_login);
-    char *pass_pair  = mx_strjoin("PASSWORD:", input_password);
-    char *packet     = json_packet_former(3, "TYPE:login_c", login_pair, pass_pair);
-    char *packet_with_prefix = packet_len_prefix_adder(packet);
+    // char *login_pair = mx_strjoin("LOGIN:",    input_login); // потенциально удолять
+    // char *pass_pair  = mx_strjoin("PASSWORD:", input_password);// потенциально удолять
+    // char *packet_str     = json_packet_former(3, "TYPE:login_c", login_pair, pass_pair);// потенциально удолять
+    
+    char *packet_str = NULL;
+    cJSON *packet     = cJSON_CreateObject();
+    cJSON *json_value = cJSON_CreateString("login_c");
+    cJSON_AddItemToObject(packet, "TYPE", json_value);
+    json_value = cJSON_CreateString(input_login);
+    cJSON_AddItemToObject(packet, "LOGIN", json_value);
+    json_value = cJSON_CreateString(input_password);
+    cJSON_AddItemToObject(packet, "PASSWORD", json_value);
+    packet_str = cJSON_Print(packet);
+    if (packet_str == NULL)
+        mx_null_error("61: send_login_packet");
 
+    char *packet_with_prefix = packet_len_prefix_adder(packet_str);
+    if (packet_with_prefix == NULL)
+        mx_null_error("65: send_login_packet");
     send(socket, packet_with_prefix, (int)strlen(packet_with_prefix), 0);
-
-    free(login_pair);
-    free(pass_pair);
-    free(packet);
+    // free(login_pair);
+    // free(pass_pair);
+    free(packet_str);
     free(packet_with_prefix);
 }
 
 void do_login(GtkWidget *entryspawn, client_context_t *client_context){
     char *input_login    = (char *)gtk_entry_get_text(GTK_ENTRY(login));
     char *input_password = (char *)gtk_entry_get_text(GTK_ENTRY(Password));
+    if (input_login == NULL || input_password == NULL)
+        mx_null_error("64: do_login");
     int  validate_status = validate(input_login, input_password);
 
     if (validate_status)

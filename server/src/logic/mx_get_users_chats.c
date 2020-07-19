@@ -22,33 +22,30 @@ static char *get_user_id_by_login(char *login) {
     sqlite3_stmt *res;
     int check;
     char *user_id;
-    printf("%s\n", login);
+
     sprintf(sql, "SELECT ID FROM USERS WHERE LOGIN='%s';", login);
     check = sqlite3_prepare_v2(db, sql, -1, &res, 0);
-    printf("%s\n", sql);
     dberror(db, check, "Error select ID from LOGIN");
     sqlite3_step(res);
-    printf("4\n");
     char *resx = (char *)sqlite3_column_text(res, 0);
-    printf(">>%s\n", resx);
     user_id = mx_string_copy(resx);
-    printf("3\n");
     sqlite3_finalize(res);
     sqlite3_close(db);
     return user_id;
 }
 
-static chats_t *create_chats_node(char *chat_name, char *last_message) {
+static chats_t *create_chats_node(char *chat_name, char *last_message, char* chat_id) {
     chats_t *chat = (chats_t *)malloc(sizeof(chats_t));
     malloc_error_checker(chat);
     chat->chat_name    = chat_name;
     chat->last_message = last_message;
+    chat->chat_id = chat_id;
     chat->next = NULL;
     return chat; 
 }
 
-static void push_chats_front(chats_t **chats, char *chat_name, char *last_message) {
-    chats_t *chat = create_chats_node(chat_name, last_message);
+static void push_chats_front(chats_t **chats, char *chat_name, char *last_message, char* chat_id) {
+    chats_t *chat = create_chats_node(chat_name, last_message, chat_id);
     chats_t *tmp;
 
     if (*chats == NULL)
@@ -106,9 +103,10 @@ chats_t *mx_get_users_chats(char *user) {
         int check = sqlite3_prepare_v2(db, sql, -1, &res, 0);
         dberror(db, check, "Error select CHATNAME, LASTMESSAGE from CHATs");
         sqlite3_step(res);
+        char *chat_id      = mx_string_copy(*(chats_arr + arr_index)); 
         char *chat_name    = mx_string_copy((char *)sqlite3_column_text(res, 0));
         char *last_message = mx_string_copy((char *)sqlite3_column_text(res, 1));
-        push_chats_front(&chat, chat_name, last_message);
+        push_chats_front(&chat, chat_name, last_message, chat_id);
         sqlite3_finalize(res);
         arr_index++;
     }

@@ -1,4 +1,4 @@
-#include "client.h"
+                                                 #include "client.h"
 
 // gboolean mini_my_keypress_function (GtkWidget *widget, GdkEventKey *event, gpointer data) {
 //     if (event->keyval == 65505 || event->keyval == 65507) {
@@ -9,15 +9,9 @@
 //     }
 //     return FALSE;
 // }
-gboolean add_new_friend (GtkWidget *newchatbutton, gpointer data) {
-    printf("%s\n","1" );
-	GtkListBoxRow *selectedrow = gtk_list_box_get_selected_row(GTK_LIST_BOX(minilistbox));
-    printf("%s\n","2" );
-	GList *gl = gtk_container_get_children(GTK_CONTAINER(selectedrow));  
-    GtkGrid *widgetchild = gl->data;
- 	GtkWidget *minilogin = gtk_grid_get_child_at(GTK_GRID(minibox),0,0);
- 	char *login = (char *)gtk_label_get_text(GTK_LABEL(minilogin));
-    printf(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>%s\n",login );
+
+gboolean add_new_friend(GtkWidget *widget, gpointer data) {
+   char  *login = g_object_get_data(G_OBJECT(widget),"name user");
 
   	cJSON *packet = cJSON_CreateObject();
     char  *packet_str = NULL;
@@ -30,8 +24,9 @@ gboolean add_new_friend (GtkWidget *newchatbutton, gpointer data) {
     cJSON_AddItemToObject(packet, "TO", nick);
     packet_str = mx_string_copy(cJSON_Print(packet));
     char *packet_str1 =  packet_len_prefix_adder(packet_str);
-    printf("%s\n",packet_str1);
-    // char* packet_str2 = cJSON_Print(packet_str1);
+    if (packet_str1 == NULL)
+        mx_null_error("27: add_new_friend");
+
     send(client_context->sockfd, mx_strdup(packet_str1), (int)strlen(packet_str1), 0);
     free(packet_str);
     free(packet_str1);
@@ -39,7 +34,11 @@ gboolean add_new_friend (GtkWidget *newchatbutton, gpointer data) {
 }
 
 void draw_list_box_system(char *packet){
-	int len = atoi(get_value_by_key(packet,"LENGTH"));
+    char *len_str = get_value_by_key(packet,"LENGTH");
+    if (len_str == NULL)
+        mx_null_error("38: draw_list_box_system");
+	int len = atoi(len_str);
+    free(len_str);
 
 	gtk_widget_destroy(miniscroll);
 	miniscroll = gtk_scrolled_window_new(0,0);
@@ -50,14 +49,30 @@ void draw_list_box_system(char *packet){
     gtk_container_add(GTK_CONTAINER(miniscroll), minilistbox);
 
 	for(int i = 0; i < len; i++){
-		char *nickname = (get_value_by_key(packet,mx_strjoin("NICKNAME",mx_itoa(i))));
-		char *login = (get_value_by_key(packet,mx_strjoin("LOGIN",mx_itoa(i))));
+
+        char *nicknamex = mx_strjoin("NICKNAME",mx_itoa(i));
+        if (nicknamex == NULL)
+            mx_null_error("54: draw_list_box_system");
+		char *nickname = get_value_by_key(packet, nicknamex);
+         if (nickname == NULL)
+            mx_null_error("57: draw_list_box_system");
+
+        char *loginx = mx_strjoin("LOGIN",mx_itoa(i));
+        if (loginx == NULL)
+            mx_null_error("61: draw_list_box_system");
+		char *login = get_value_by_key(packet, loginx);
+        if (login == NULL)
+            mx_null_error("66: draw_list_box_system");
+
+
         t_s_glade *pack = (t_s_glade *)malloc(sizeof(t_s_glade));
+        if (pack == NULL)
+            mx_null_error("55: draw_list_box_system");
         pack->number = i;
         pack->login = login;
-        pack->login = mx_strdup(pack->login);
+        pack->login = mx_string_copy(pack->login);
         pack->nickname = nickname;
-        pack->nickname = mx_strdup(pack->nickname);
+        pack->nickname = mx_string_copy(pack->nickname);
 		gdk_threads_add_idle_full(G_PRIORITY_HIGH_IDLE, draw_list_box, pack, 0);
 	}
 
@@ -78,6 +93,7 @@ gboolean draw_list_box(void *data){
 	gtk_grid_attach(GTK_GRID(minibox),minilabell2, 0, 1, 1, 1);
 
     minieventbox = gtk_event_box_new();
+    g_object_set_data(G_OBJECT(minieventbox),"name user",pack->login);
     gtk_widget_set_name(minieventbox,"minieventbox");
     GdkPixbuf *iconn = gdk_pixbuf_new_from_file("./media/img/plus_icon.png",NULL);
     iconn = gdk_pixbuf_scale_simple(iconn, 32,32, GDK_INTERP_BILINEAR);
@@ -104,6 +120,8 @@ gboolean mini_button_release (GtkWidget *widget, GdkEventKey *event, gpointer da
     cJSON_AddItemToObject(packet, "TO", nick);
     packet_str = mx_string_copy(cJSON_Print(packet));
     packet_str =  packet_len_prefix_adder(packet_str);
+    if (packet_str == NULL)
+        mx_null_error("123: draw_list_box_system");
     send(client_context->sockfd, packet_str, (int)strlen(packet_str), 0);
     return FALSE;
 }
@@ -121,8 +139,6 @@ void add_new_user(GtkWidget *newchatbutton, gpointer data){
     minientry = gtk_entry_new();
     gtk_fixed_put(GTK_FIXED (minifixed), minientry, 50,50);
     gtk_widget_set_size_request(GTK_WIDGET(minientry),200,40);
-//    g_signal_connect (G_OBJECT (minientry), "key_release_event", G_CALLBACK (mini_button_release), NULL);
-  // g_signal_connect (G_OBJECT (minientry), "key_press_event", G_CALLBACK (mini_my_keypress_function), NULL);
 
     minibuttonfind = gtk_button_new_with_label("Find User");
     gtk_widget_set_name(minibuttonfind,"minibuttonfind");
@@ -136,7 +152,6 @@ void add_new_user(GtkWidget *newchatbutton, gpointer data){
     minilistbox = gtk_list_box_new();
     gtk_container_add(GTK_CONTAINER(miniscroll), minilistbox);
     gtk_widget_set_name(minilistbox,"minilistbox");
-    
 
     g_idle_add ((int (*)(void *))show_widget, miniwindow);
 

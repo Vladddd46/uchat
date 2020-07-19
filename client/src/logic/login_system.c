@@ -12,6 +12,7 @@ void login_system(client_context_t *client_context, char *packet) {
 	gui->pack = packet;
 	gui->pack = mx_strdup(gui->pack);
 	gui->number = 0;
+	client_context->mas =mx_new_strarr(len);
 
 	gdk_threads_add_idle_full(G_PRIORITY_HIGH_IDLE, draw_message_menu, gui, 0); 
 	int i = 0;
@@ -36,6 +37,7 @@ void login_system(client_context_t *client_context, char *packet) {
 	gtk_container_add(GTK_CONTAINER(scroll), listbox);
 	g_idle_add ((int (*)(void *))show_widget, window);
 	g_signal_connect(listbox,"row-activated", G_CALLBACK(touch_room_signal), &client_context->sockfd);
+	client_context->mas =mx_new_strarr(len);
 	while (len > i && !gtk_events_pending()){
 		gdk_threads_add_idle_full(G_PRIORITY_HIGH_IDLE, create_row, gui, 0);
 		i++;
