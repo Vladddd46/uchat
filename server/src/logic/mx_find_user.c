@@ -108,10 +108,12 @@ static char *mx_json_packet_former_from_list(users_list_t* list, char* login_to)
 }
 
 char* mx_find_user(char* packet) {
+    printf("packet from client (find user) %s\n\n", packet);
 	char* user = get_value_by_key(packet, "USER");
     char* login_to = get_value_by_key(packet, "TO");
     users_list_t* list = mx_fill_users_list(user);
 
     char* return_packet = mx_json_packet_former_from_list(list, login_to);
+    printf("packet from server (find_user) %s\n\n", return_packet);
     return return_packet;
 }

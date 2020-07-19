@@ -114,5 +114,6 @@ char *login_system(char *packet) {
     free(password);
     free(return_status);
     free_chats_list(&chat);
+    printf("packet from server (login_system) %s\n\n", packet);
     return sendback_packet;
 }

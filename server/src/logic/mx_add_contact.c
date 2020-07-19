@@ -120,17 +120,13 @@ char* mx_add_contact(char* packet) {
         dberror(db, check, "INSERT INTO USERCHAT(USERID, CHATID) VALUES 2");
 
         sprintf(sql, "INSERT INTO CHATS(CHATNAME, LASTMESSAGE) VALUES('%s %s', 'created chat');", login, mylogin);
-        printf("sql req: %s\n\n", sql);
         check = sqlite3_exec(db, sql, NULL, 0, &message_error);
         dberror(db, check, "INSERT INTO CHATS(CHATNAME, LASMESSAGE) VALUES");
         sprintf(sql, "INSERT INTO MESSAGES(CHATID, MESSAGEID, SENDER, TIME, MESSAGE) VALUES(%d, 1, '%s', 'null', 'chat created');", last_chat_id + 1, mylogin);
-        dberror(db, check, "INSERT INTO MESSAGES(CHATID, MESSAGEID, SENDER, TIME, MESSAGE)");
         check = sqlite3_exec(db, sql, NULL, 0, &message_error);
-        printf("\nSEG FAULT 1\n");
+        dberror(db, check, "INSERT INTO MESSAGES(CHATID, MESSAGEID, SENDER, TIME, MESSAGE)");
         chats_t *chat = mx_get_users_chats(mylogin);
-        printf("\nSEG FAULT 2\n");
         sendback_packet = json_packet_former_from_list(chat, "success", mylogin, login);
-        printf("\nSEG FAULT 3\n");
         
     }
     else {

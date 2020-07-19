@@ -10,12 +10,14 @@
 //     return FALSE;
 // }
 gboolean add_new_friend (GtkWidget *newchatbutton, gpointer data) {
-	
-	GtkListBoxRow *selectedrow= gtk_list_box_get_selected_row(GTK_LIST_BOX(minilistbox));
-	GList *gl = gtk_container_get_children(GTK_CONTAINER(selectedrow));
+    printf("%s\n","1" );
+	GtkListBoxRow *selectedrow = gtk_list_box_get_selected_row(GTK_LIST_BOX(minilistbox));
+    printf("%s\n","2" );
+	GList *gl = gtk_container_get_children(GTK_CONTAINER(selectedrow));  
     GtkGrid *widgetchild = gl->data;
  	GtkWidget *minilogin = gtk_grid_get_child_at(GTK_GRID(minibox),0,0);
  	char *login = (char *)gtk_label_get_text(GTK_LABEL(minilogin));
+    printf(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>%s\n",login );
 
   	cJSON *packet = cJSON_CreateObject();
     char  *packet_str = NULL;
@@ -82,7 +84,7 @@ gboolean draw_list_box(void *data){
     icon = gtk_image_new_from_pixbuf(iconn);
     gtk_grid_attach(GTK_GRID(minibox),minieventbox, 1, 0, 2, 2);
     gtk_container_add(GTK_CONTAINER(minieventbox), icon);
-    g_signal_connect(minieventbox,"button-release-event", G_CALLBACK(add_new_friend), NULL);
+    g_signal_connect(minieventbox,"button-release-event", G_CALLBACK(add_new_friend), minilistbox);
     gtk_list_box_select_row(GTK_LIST_BOX(minilistbox),GTK_LIST_BOX_ROW(minirow));
 
 	g_idle_add ((int (*)(void *))show_widget, miniwindow);
@@ -95,7 +97,7 @@ gboolean mini_button_release (GtkWidget *widget, GdkEventKey *event, gpointer da
     char  *packet_str = NULL;
   	cJSON *type = cJSON_CreateString("find_user_c");
     cJSON *user = cJSON_CreateString(editbuff);
-    cJSON *nick = cJSON_CreateString("Yura");
+    cJSON *nick = cJSON_CreateString(client_context->username);
 
     cJSON_AddItemToObject(packet, "TYPE", type);
     cJSON_AddItemToObject(packet, "USER", user);

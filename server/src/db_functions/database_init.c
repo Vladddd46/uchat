@@ -35,5 +35,6 @@ void database_init() {
 
     /* добавление тестовых даных в БД */
     // def_database();
+    // def_database();
     sqlite3_close(db);
 }

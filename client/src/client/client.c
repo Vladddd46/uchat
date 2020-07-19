@@ -53,7 +53,7 @@ void client_context_init(int sockfd) {
 }
 
 static void received_packet_analyzer(char *packet_type, char *packet) {
-    printf("%s\n",packet );
+    printf("Received packet %s\n",packet );
     if (!strcmp(packet_type, "reg_s"))
         registration_system(client_context->sockfd, packet);
     else if (!strcmp(packet_type, "login_s"))
@@ -61,7 +61,7 @@ static void received_packet_analyzer(char *packet_type, char *packet) {
     else if (!strcmp(packet_type, "find_user_s"))
         draw_list_box_system(packet);
     else if (!strcmp(packet_type, "add_new_user_s")){
-       if(mx_strcmp(get_value_by_key(packet_type, "STATUS"), "false") == 1){
+       if(mx_strcmp(get_value_by_key(packet, "STATUS"), "false") != 0){
         printf("%s\n","1" );
             remake_chats(packet);
        }
