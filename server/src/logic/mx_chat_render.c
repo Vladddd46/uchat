@@ -188,6 +188,6 @@ char *mx_chat_render(char *packet) {
         free(node_to_del->message);
         free(node_to_del);
     }
-    printf("packet from server: %s\n\n", return_packet);
+    printf("packet from server (chart_render.c) : %s\n\n", return_packet);
     return return_packet;   
 }

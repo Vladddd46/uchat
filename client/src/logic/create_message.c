@@ -140,6 +140,7 @@ gboolean create_message_system(void *data){
     char *message_from_user = get_text_of_textview(newmessedgentry);
     // *(client_context -> allusers + mx_strlen(client_context -> allusers)) = '\0'; // для потомков (Татьяна Василевна)
     char* all_users = client_context -> allusers;
+    printf(">>>>>>>>>>>>>>>>>>>>>>>>>>>.%s\n",all_users );
 
     printf("ALL users %s\n\n", all_users);
 
