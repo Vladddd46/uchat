@@ -88,9 +88,7 @@ static void *handle_server(void *param) {
          */
         for (connected_client_list_t *p = ctx.head.next; p != NULL; p = p->next) {
             if (FD_ISSET(p->sock_fd, &read_descriptors)) {
-                printf("%s\n","1" );
                 char *packet = packet_receive(p->sock_fd);
-                printf(">>>>%s\n",packet );
                 if (packet == NULL)
                     mx_null_value_error("handle_server");
                 printf("%s\n", packet);
@@ -111,17 +109,14 @@ static void *handle_server(void *param) {
                 char *send_back_packet_prefixed =  packet_len_prefix_adder(send_packet);
                 free(send_packet);
                 free(packet);
-                printf("8\n");
                 for (connected_client_list_t *s = ctx.head.next; s != NULL; s = s->next) {
                     if (s->is_logged && mx_str_in_arr(s->login, receivers))
                         send(s->sock_fd, send_back_packet_prefixed, (int)strlen(send_back_packet_prefixed), 0);
                 }          
-                printf("9\n");          
+       
                 free(send_back_packet_prefixed);
                 // free(client_login)
-                printf("10\n");
-                // mx_del_strarr(&receivers);
-                printf("11\n");
+                // mx_del_strarr(&receivers); выдает сигфолт
             }            
         }
         pthread_mutex_unlock(&ctx_mutex);
