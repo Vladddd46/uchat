@@ -157,7 +157,7 @@ gboolean my_keypress_function (GtkWidget *widget, GdkEventKey *event, gpointer d
     if (event->keyval == 65505 || event->keyval == 65507)
         release_button = TRUE;
     if (event->keyval == 65293 && release_button == FALSE)
-        gdk_threads_add_idle_full(G_PRIORITY_HIGH_IDLE, create_message_system, NULL, 0);
+        gdk_threads_add_idle_full(G_PRIORITY_HIGH_IDLE, create_message_system, NULL, 0); 
     return FALSE;
 }
 

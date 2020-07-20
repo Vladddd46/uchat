@@ -87,6 +87,10 @@ border: none;
   padding: 40px;  
 
 }
+#stickerwindow{
+  background-color: white;
+  background-image:none;
+}
 /*#minibuttonfind{
   box-shadow:inset 0px 1px 0px 0px #bbdaf7;
   background-color:#9dd1d1;

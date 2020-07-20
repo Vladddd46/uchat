@@ -88,6 +88,11 @@ void mx_null_error(char *msg);
 
 
 //mini приставка для виджетов в окне добавления юзеров
+GtkWidget *stickerebox;
+GtkWidget *stickerimage;
+GtkWidget *stickerfixed;
+GtkWidget *stickerwindow;
+GtkWidget *sticker;
 GtkWidget *changepassword;
 GtkWidget *logout;
 GtkWidget *editgrid;
