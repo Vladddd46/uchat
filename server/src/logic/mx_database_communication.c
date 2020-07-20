@@ -27,7 +27,7 @@ char *mx_database_communication(char *packet) {
         send_back_packet = mx_add_message_by_id(packet);
     else if (!strcmp(packet_type, "add_contact_c"))
         send_back_packet = mx_add_contact(packet);
-
+    printf("5\n");
     free(packet_type);
     return send_back_packet;
 }

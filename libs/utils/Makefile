@@ -13,6 +13,7 @@ SRC		=	get_value_by_key.c\
 			wait_time.c\
 			packet_receive.c\
 			mx_send.c\
+			mx_change_offensive_words.c\
 			
 SRCS	=	$(addprefix $(SRCD)/, $(SRC))
 OBJS	=	$(addprefix $(OBJD)/, $(SRC:%.c=%.o))

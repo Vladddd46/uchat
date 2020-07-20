@@ -27,3 +27,5 @@ void mx_send(int socket, char *packet);
 
 // Sets time select must wait.
 struct timeval wait_time(int sec, int msec);
+
+char *mx_change_offensive_words(char *str);

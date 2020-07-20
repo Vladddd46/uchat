@@ -95,20 +95,24 @@ static void *handle_server(void *param) {
                 char *send_packet = mx_database_communication(packet);
                 if (send_packet == NULL) // Connection was closed but update has not been made yet.
                     continue;
-
+                printf("6\n");
                 char **receivers  = mx_packet_receivers_determine(send_packet);
                 mx_login_user_socket(p, send_packet, receivers);
-
+                printf("7\n");
                 char *send_back_packet_prefixed =  packet_len_prefix_adder(send_packet);
                 free(send_packet);
                 free(packet);
+                printf("8\n");
                 for (connected_client_list_t *s = ctx.head.next; s != NULL; s = s->next) {
                     if (s->is_logged && mx_str_in_arr(s->login, receivers))
                         send(s->sock_fd, send_back_packet_prefixed, (int)strlen(send_back_packet_prefixed), 0);
-                }                    
+                }          
+                printf("9\n");          
                 free(send_back_packet_prefixed);
                 // free(client_login)
-                mx_del_strarr(&receivers);
+                printf("10\n");
+                // mx_del_strarr(&receivers);
+                printf("11\n");
             }            
         }
         pthread_mutex_unlock(&ctx_mutex);

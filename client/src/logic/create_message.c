@@ -56,14 +56,13 @@ void end_message (GtkWidget *widget, GtkWidget *message){
 gboolean create_message(void *data){
     t_s_glade *pack = (t_s_glade *)data; 
   GtkAdjustment *adj;
-  printf("%s\n","before" );
+
     char *nameuser = client_context->username;
-    printf("%s\n","1" );
     char *sender = get_value_by_key(pack->pack,mx_strjoin("SENDER",mx_itoa(pack->number)));
     int messagenum = atoi(get_value_by_key(pack->pack,mx_strjoin("ID",mx_itoa(pack->number))));
     char *messagetext = get_value_by_key(pack->pack,mx_strjoin("MESSAGE",mx_itoa(pack->number)));
     char *timemessage = get_value_by_key(pack->pack,mx_strjoin("TIME",mx_itoa(pack->number)));    // почисти память
-    printf("%s\n","after" );
+
     adj = gtk_adjustment_new(10000, 100000, -1000, 100, 10000, 10000);
     row = gtk_list_box_row_new();
     ebox = gtk_event_box_new();
@@ -120,7 +119,6 @@ gboolean create_message(void *data){
     //gtk_widget_show_all(window);
     gtk_scrolled_window_set_vadjustment(GTK_SCROLLED_WINDOW(scrollmess), adj);
     client_context->counter+=1;
-    printf("%d\n",client_context->counter );
     pack->number+=1;
     return 0;
 }
@@ -140,6 +138,10 @@ gboolean create_message_system(void *data){
     if (message_from_user == NULL) {
         mx_null_error("142: create_message_system error");
     }
+    char *processed_msg_from_user = mx_change_offensive_words(message_from_user);
+     if (processed_msg_from_user == NULL) {
+        mx_null_error("145: create_message_system error");
+    }
     char *all_users = client_context->allusers;
 
     char  *packet_str = NULL;
@@ -149,7 +151,7 @@ gboolean create_message_system(void *data){
     if (current_time == NULL)
          mx_null_error("150: current_time is NULL");
     cJSON *time        = cJSON_CreateString(current_time);
-    cJSON *msg         = cJSON_CreateString(message_from_user);
+    cJSON *msg         = cJSON_CreateString(processed_msg_from_user);
     cJSON *allusers    = cJSON_CreateString(all_users);
     cJSON *message_id  = cJSON_CreateString("0");
     int chat_id_client = client_context->indexrow;
