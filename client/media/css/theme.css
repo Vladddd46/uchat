@@ -81,6 +81,12 @@ border: none;
 #minilistbox{
   background-color: #ffffff;
 }
+#editgrid{
+  background: #ffffff;
+  border-radius: 15px;
+  padding: 40px;  
+
+}
 /*#minibuttonfind{
   box-shadow:inset 0px 1px 0px 0px #bbdaf7;
   background-color:#9dd1d1;

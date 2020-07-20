@@ -1,6 +1,5 @@
 #include "client.h"
- bool flagG = FALSE;
-
+//bool flagG = FALSE;
 void touch_room_signal(GtkWidget *listbox, void *socket){
     client_context->counter = 0;
     GtkListBoxRow *selectedrow = gtk_list_box_get_selected_row(GTK_LIST_BOX(listbox));
@@ -12,7 +11,7 @@ void touch_room_signal(GtkWidget *listbox, void *socket){
     GtkWidget *lab = gtk_grid_get_child_at(gridchild,1,0);
     //printf("%s\n","touch_room_signal" );
 
-    if( flagG == FALSE){
+    if( client_context->flag == FALSE){
         scrollnewmess = gtk_scrolled_window_new(0,0);
          gtk_fixed_put(GTK_FIXED (fixed), scrollnewmess, 300,718);
          gtk_widget_set_size_request(scrollnewmess,724,50);
@@ -51,7 +50,7 @@ void touch_room_signal(GtkWidget *listbox, void *socket){
         gtk_widget_set_name(listboxmess,"listboxmess");
         gtk_container_add(GTK_CONTAINER(scrollmess), listboxmess);
          g_idle_add ((int (*)(void *))show_widget, window);
-        flagG = TRUE;
+        client_context->flag = TRUE;
     }
    
     int *test = (int *)socket;

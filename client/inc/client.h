@@ -19,7 +19,8 @@ typedef struct client_context_s {
 	char *allusers;
 	int indexrow;
 	int counter;
-		char **mas;
+	char **mas;
+	bool flag;
 } client_context_t;
 
 struct struct_type {
@@ -40,7 +41,7 @@ typedef struct s_s_glade {
 
 client_context_t *client_context;
 // какие то непонятные функции Дениса. PS. структурируй их пожалуйста.
-void close_window();
+void close_window(GtkWidget *widget);
 gboolean button_release (GtkWidget *widget, GdkEventKey *event, gpointer data);
 void download_messages(GtkWidget *widget, gpointer data);
 gboolean my_keypress_function (GtkWidget *widget, GdkEventKey *event, gpointer data);
@@ -87,6 +88,13 @@ void mx_null_error(char *msg);
 
 
 //mini приставка для виджетов в окне добавления юзеров
+GtkWidget *changepassword;
+GtkWidget *logout;
+GtkWidget *editgrid;
+GtkWidget *themelabel;
+GtkWidget *languagelabel;
+GtkWidget *switchtheme;
+GtkWidget *switchlanguage;
 GtkWidget *minibuttonfind;
 GtkWidget *minieventbox;
 GtkWidget *minibutton;

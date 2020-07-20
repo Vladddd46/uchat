@@ -66,7 +66,7 @@ static void received_packet_analyzer(char *packet_type, char *packet) {
        if(mx_strcmp(get_value_by_key(packet, "STATUS"), "false") != 0)
             remake_chats(packet);
         else
-            close_window();
+            close_window(miniwindow);
     }
     else if (!mx_strcmp(packet_type, "msg_s"))
         create_row_system(client_context, packet);

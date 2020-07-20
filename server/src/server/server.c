@@ -88,9 +88,18 @@ static void *handle_server(void *param) {
          */
         for (connected_client_list_t *p = ctx.head.next; p != NULL; p = p->next) {
             if (FD_ISSET(p->sock_fd, &read_descriptors)) {
+                printf("%s\n","1" );
                 char *packet = packet_receive(p->sock_fd);
-                printf("packet on server.c: %s\n\n", packet);
- 
+                printf(">>>>%s\n",packet );
+                if (packet == NULL)
+                    mx_null_value_error("handle_server");
+                printf("%s\n", packet);
+                char *logout = get_value_by_key(packet, "TYPE");
+                if (!mx_strcmp(logout, "logout_c")) {
+                    socket_list_remove(&ctx.head, p->sock_fd);
+                    break ;
+                }
+
                 // Modify db and forms packet, which must be send to specified in packet client(login).
                 char *send_packet = mx_database_communication(packet);
                 if (send_packet == NULL) // Connection was closed but update has not been made yet.

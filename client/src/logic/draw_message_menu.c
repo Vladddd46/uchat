@@ -1,6 +1,32 @@
 #include "client.h"
 
 
+void logout_system(GtkWidget *widget, gpointer data){
+    close_window(editwindow);
+    gtk_widget_destroy(fixed);
+    g_idle_add ((int (*)(void *))show_widget, window);
+    fixed = gtk_fixed_new();
+    char *packet = json_packet_former(1, "TYPE:logout_c");
+    packet = packet_len_prefix_adder(packet);
+    send(client_context->sockfd, packet, mx_strlen(packet), 0);
+    printf(">>>>%s\n",packet );
+    gtk_container_add(GTK_CONTAINER(window), fixed);
+    main_menu();
+
+}
+
+void change_password_system(GtkWidget* widget, gpointer data){
+    char *password = (char *)gtk_entry_get_text(GTK_ENTRY(widget));
+    password = mx_strjoin("TO:",password);
+    char *login = mx_strjoin("LOGIN:",client_context->username);
+    char *packet = json_packet_former(3, "TYPE:change_password_c", login, password);
+    packet = packet_len_prefix_adder(packet);
+    send(client_context->sockfd, packet, mx_strlen(packet), 0);
+
+}
+
+
+
 void draw_edit_profile(GtkWidget *widget, gpointer data){
     editwindow = gtk_window_new(GTK_WINDOW_TOPLEVEL);
     gtk_window_set_resizable (GTK_WINDOW(editwindow), FALSE);
@@ -10,11 +36,40 @@ void draw_edit_profile(GtkWidget *widget, gpointer data){
 
     editfixed = gtk_fixed_new();
     gtk_container_add(GTK_CONTAINER(editwindow), editfixed);
+
+    editgrid = gtk_grid_new();
+    gtk_fixed_put(GTK_FIXED(editfixed),editgrid,25,100);
+    //gtk_widget_set_size_request(editgrid, 180, 300);
+    gtk_widget_set_name(editgrid,"editgrid");
+
+    themelabel = gtk_label_new("Dark mode");
+    gtk_grid_attach(GTK_GRID(editgrid),themelabel, 0, 0, 1, 1);
+
+    switchtheme = gtk_switch_new();
+    gtk_grid_attach(GTK_GRID(editgrid),switchtheme, 0, 1, 1, 1);
+    gtk_widget_set_size_request(switchtheme,25,25);
+
+    languagelabel = gtk_label_new("Ukrainan");
+    gtk_grid_attach(GTK_GRID(editgrid),languagelabel, 0, 2, 1, 1);
+    
+    switchlanguage = gtk_switch_new();
+    gtk_grid_attach(GTK_GRID(editgrid),switchlanguage, 0, 3, 1, 1); 
+
+    changepassword = gtk_entry_new();
+    gtk_entry_set_placeholder_text(GTK_ENTRY(changepassword),"Change password");
+    gtk_grid_attach(GTK_GRID(editgrid),changepassword, 0, 4, 2, 1);
+    g_signal_connect(changepassword,"activate", G_CALLBACK(change_password_system), NULL);
+
+    logout = gtk_button_new_with_label("logout");
+     gtk_grid_attach(GTK_GRID(editgrid),logout, 0, 5, 1, 1);
+    g_signal_connect(logout,"clicked", G_CALLBACK(logout_system), NULL);
+
+
     g_idle_add ((int (*)(void *))show_widget, editwindow);
 }
 
 void download_messages(GtkWidget *widget, gpointer data){
- 
+  
     cJSON *packet = cJSON_CreateObject();
     char  *packet_str = NULL;
     cJSON *type = cJSON_CreateString((char*)"msg_c");
@@ -116,6 +171,7 @@ gboolean button_release (GtkWidget *widget, GdkEventKey *event, gpointer data) {
 
 gboolean draw_message_menu(void *data){
     t_s_glade *gui = (t_s_glade *)data;
+    client_context->flag = FALSE;
     GtkPositionType *pos = NULL;
     //отрисовка основного меню с чатами и комнатами
     gtk_widget_destroy(fixed);
