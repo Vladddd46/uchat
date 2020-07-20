@@ -96,7 +96,7 @@ static void *handle_server(void *param) {
                 printf("%s\n", packet);
                 char *logout = get_value_by_key(packet, "TYPE");
                 if (!mx_strcmp(logout, "logout_c")) {
-                    socket_list_remove(&ctx.head, p->sock_fd);
+                    p->is_logged = false;
                     break ;
                 }
 
