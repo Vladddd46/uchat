@@ -24,6 +24,7 @@ void gui(int argc, char **argv, client_context_t *client_context) {
 
     fixed = gtk_fixed_new();
     gtk_container_add(GTK_CONTAINER(window), fixed);
+    client_context->Ukraine = FALSE;
     main_menu();
 
     gtk_main(); 

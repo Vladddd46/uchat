@@ -1,5 +1,19 @@
 #include "client.h"
+        
 
+void switchlanguage_system(GtkSwitch *widget,
+               gboolean   state,
+               gpointer   user_data){
+    if (state == TRUE){
+        printf("%s\n","UKraine" );
+        system("open ./media/gimn.mp3");
+        client_context->Ukraine = TRUE;
+    }
+    if (state == FALSE) {
+        client_context->Ukraine = FALSE;
+        printf("%s\n","English" ); 
+    }
+}        
 
 void logout_system(GtkWidget *widget, gpointer data){
     close_window(editwindow);
@@ -22,6 +36,7 @@ void change_password_system(GtkWidget* widget, gpointer data){
     char *packet = json_packet_former(3, "TYPE:change_password_c", login, password);
     packet = packet_len_prefix_adder(packet);
     send(client_context->sockfd, packet, mx_strlen(packet), 0);
+    close_window(editwindow);
 
 }
 
@@ -31,7 +46,10 @@ void draw_edit_profile(GtkWidget *widget, gpointer data){
     editwindow = gtk_window_new(GTK_WINDOW_TOPLEVEL);
     gtk_window_set_resizable (GTK_WINDOW(editwindow), FALSE);
     gtk_window_set_transient_for (GTK_WINDOW(editwindow),GTK_WINDOW(window));
-    gtk_window_set_title(GTK_WINDOW(editwindow),"Settings");
+    if (client_context->Ukraine == FALSE)
+        gtk_window_set_title(GTK_WINDOW(editwindow),"Settings");
+    else
+        gtk_window_set_title(GTK_WINDOW(editwindow),"Налаштування");
     gtk_widget_set_size_request(GTK_WIDGET(editwindow),300,500);
 
     editfixed = gtk_fixed_new();
@@ -41,26 +59,39 @@ void draw_edit_profile(GtkWidget *widget, gpointer data){
     gtk_fixed_put(GTK_FIXED(editfixed),editgrid,25,100);
     //gtk_widget_set_size_request(editgrid, 180, 300);
     gtk_widget_set_name(editgrid,"editgrid");
-
-    themelabel = gtk_label_new("Dark mode");
+    if (client_context->Ukraine == FALSE)
+        themelabel = gtk_label_new("Dark mode");
+    else
+        themelabel = gtk_label_new("Темна тема");
     gtk_grid_attach(GTK_GRID(editgrid),themelabel, 0, 0, 1, 1);
 
     switchtheme = gtk_switch_new();
     gtk_grid_attach(GTK_GRID(editgrid),switchtheme, 0, 1, 1, 1);
     gtk_widget_set_size_request(switchtheme,25,25);
-
-    languagelabel = gtk_label_new("Ukrainan");
+     if (client_context->Ukraine == FALSE)
+        languagelabel = gtk_label_new("Ukrainan");
+    else
+        languagelabel = gtk_label_new("Українська");
     gtk_grid_attach(GTK_GRID(editgrid),languagelabel, 0, 2, 1, 1);
     
     switchlanguage = gtk_switch_new();
-    gtk_grid_attach(GTK_GRID(editgrid),switchlanguage, 0, 3, 1, 1); 
+    if(client_context->Ukraine == TRUE)
+        gtk_switch_set_state(GTK_SWITCH(switchlanguage),TRUE);
+    gtk_grid_attach(GTK_GRID(editgrid),switchlanguage, 0, 3, 1, 1);
+    g_signal_connect(switchlanguage,"state-set", G_CALLBACK(switchlanguage_system), NULL);
 
     changepassword = gtk_entry_new();
-    gtk_entry_set_placeholder_text(GTK_ENTRY(changepassword),"Change password");
+    if (client_context->Ukraine == FALSE)
+        gtk_entry_set_placeholder_text(GTK_ENTRY(changepassword),"Change password");
+    else
+        gtk_entry_set_placeholder_text(GTK_ENTRY(changepassword),"Змінити пароль");
     gtk_grid_attach(GTK_GRID(editgrid),changepassword, 0, 4, 2, 1);
     g_signal_connect(changepassword,"activate", G_CALLBACK(change_password_system), NULL);
 
-    logout = gtk_button_new_with_label("logout");
+     if (client_context->Ukraine == FALSE)
+        logout = gtk_button_new_with_label("logout");
+    else
+        logout = gtk_button_new_with_label("Вихід");
      gtk_grid_attach(GTK_GRID(editgrid),logout, 0, 5, 1, 1);
     g_signal_connect(logout,"clicked", G_CALLBACK(logout_system), NULL);
 

@@ -266,8 +266,10 @@ void touch_room_signal(GtkWidget *listbox, void *socket){
         gtk_widget_set_size_request(downbox,724,50);
         gtk_widget_set_name(downbox,"downbox");
         gtk_container_add(GTK_CONTAINER(scrollnewmess), downbox);
-
-        buttonrefresh = gtk_button_new_with_label("download old messages"); 
+        if (client_context->Ukraine == FALSE)
+            buttonrefresh = gtk_button_new_with_label("download old messages");
+        else
+            buttonrefresh = gtk_button_new_with_label("Викачати старі повідомлення"); 
         gtk_box_pack_start(GTK_BOX(rightbox),buttonrefresh,FALSE,FALSE,0);
         g_signal_connect(buttonrefresh,"clicked", G_CALLBACK(download_messages), NULL);
 

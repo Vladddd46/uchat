@@ -21,6 +21,7 @@ typedef struct client_context_s {
 	int counter;
 	char **mas;
 	bool flag;
+	bool Ukraine;
 } client_context_t;
 
 struct struct_type {

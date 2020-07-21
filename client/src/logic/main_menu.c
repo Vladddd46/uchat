@@ -33,7 +33,10 @@ void main_menu() {
     // gtk_widget_set_size_request(imagemorph, 1024,768);
 
     login = gtk_entry_new();
-    gtk_entry_set_placeholder_text(GTK_ENTRY(login),"Login");
+    if (client_context->Ukraine == FALSE)
+         gtk_entry_set_placeholder_text(GTK_ENTRY(login),"Login");
+    else
+        gtk_entry_set_placeholder_text(GTK_ENTRY(login),"Логін");
     gtk_widget_set_name(login,"login");
     gtk_grid_attach(GTK_GRID(grid), login, 1, 99, 1, 1);
 
@@ -41,7 +44,10 @@ void main_menu() {
     gtk_grid_attach(GTK_GRID(grid), labell, 1, 100, 1, 1);
 
     Password = gtk_entry_new();
-    gtk_entry_set_placeholder_text(GTK_ENTRY(Password),"Password");
+     if (client_context->Ukraine == FALSE)
+         gtk_entry_set_placeholder_text(GTK_ENTRY(Password),"Password");
+    else
+        gtk_entry_set_placeholder_text(GTK_ENTRY(Password),"Пароль");
     gtk_widget_set_name(Password,"Password");
     gtk_grid_attach(GTK_GRID(grid), Password, 1, 101, 1, 1);
     gtk_entry_set_visibility(GTK_ENTRY(Password),FALSE);
@@ -50,7 +56,10 @@ void main_menu() {
     labell2 = gtk_label_new("");
     gtk_grid_attach(GTK_GRID(grid), labell2, 1, 102, 1, 1);
 
-    entryspawn = gtk_button_new_with_label("Login");
+    if (client_context->Ukraine == FALSE)
+         entryspawn = gtk_button_new_with_label("Login");
+    else
+         entryspawn = gtk_button_new_with_label("Логін");
     gtk_widget_set_name(entryspawn,"log");
     g_signal_connect(entryspawn, "clicked", G_CALLBACK(do_login), client_context);
     gtk_grid_attach(GTK_GRID(grid), entryspawn, 1, 103, 1, 1);
@@ -58,7 +67,10 @@ void main_menu() {
     labell3 = gtk_label_new("");
     gtk_grid_attach(GTK_GRID(grid), labell3, 1, 104, 1, 1);
 
-    Registration = gtk_button_new_with_label("Sign In");
+    if (client_context->Ukraine == FALSE)
+         Registration = gtk_button_new_with_label("Sign In");
+    else
+         Registration = gtk_button_new_with_label("Зареєструватися");
     gtk_widget_set_name(Registration,"reg");
     g_signal_connect(Registration, "clicked", G_CALLBACK(make_registration), client_context);
     //g_signal_connect(Registration, "clicked", G_CALLBACK(mx_show_dialog), "hello");

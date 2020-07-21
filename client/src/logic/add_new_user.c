@@ -12,6 +12,7 @@
 
 gboolean add_new_friend(GtkWidget *widget, gpointer data) {
    char  *login = g_object_get_data(G_OBJECT(widget),"name user");
+   printf("%s\n",login );
 
   	cJSON *packet = cJSON_CreateObject();
     char  *packet_str = NULL;
@@ -26,7 +27,7 @@ gboolean add_new_friend(GtkWidget *widget, gpointer data) {
     char *packet_str1 =  packet_len_prefix_adder(packet_str);
     if (packet_str1 == NULL)
         mx_null_error("27: add_new_friend");
-
+    printf(">>>>>>>>>>>>>%s\n",packet_str1 );
     send(client_context->sockfd, mx_strdup(packet_str1), (int)strlen(packet_str1), 0);
     free(packet_str);
     free(packet_str1);
@@ -130,7 +131,10 @@ void add_new_user(GtkWidget *newchatbutton, gpointer data){
 	miniwindow = gtk_window_new(GTK_WINDOW_TOPLEVEL);
     gtk_window_set_resizable (GTK_WINDOW(miniwindow), FALSE);
     gtk_window_set_transient_for (GTK_WINDOW(miniwindow),GTK_WINDOW(window));
-    gtk_window_set_title(GTK_WINDOW(miniwindow),"Find Users");
+    if (client_context->Ukraine == FALSE)
+        gtk_window_set_title(GTK_WINDOW(miniwindow),"Find User");
+    else
+        buttonrefresh = gtk_button_new_with_label("Знайти Користувача"); 
     gtk_widget_set_size_request(GTK_WIDGET(miniwindow),300,500);
 
     minifixed = gtk_fixed_new();
@@ -140,7 +144,10 @@ void add_new_user(GtkWidget *newchatbutton, gpointer data){
     gtk_fixed_put(GTK_FIXED (minifixed), minientry, 50,50);
     gtk_widget_set_size_request(GTK_WIDGET(minientry),200,40);
 
-    minibuttonfind = gtk_button_new_with_label("Find User");
+    if (client_context->Ukraine == FALSE)
+        minibuttonfind = gtk_button_new_with_label("Find User");
+    else
+        minibuttonfind = gtk_button_new_with_label("Знайти Користувача");
     gtk_widget_set_name(minibuttonfind,"minibuttonfind");
     gtk_fixed_put(GTK_FIXED (minifixed), minibuttonfind, 90,10);
     g_signal_connect (G_OBJECT (minibuttonfind), "clicked", G_CALLBACK (mini_button_release), NULL);
