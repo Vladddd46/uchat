@@ -83,6 +83,7 @@ char* mx_chat_render(char* packet);
 char* mx_add_message_by_id(char* packet);
 char* mx_find_user(char* packet);
 char* mx_add_contact(char* packet);
+char* mx_change_password(char* pakcet);
 
 
 // additional 
