@@ -85,9 +85,11 @@ void create_row_system(client_context_t *client_context, char *packet);
 
 // additional
 void mx_null_error(char *msg);
+char *mx_get_time();
 
 
 //mini приставка для виджетов в окне добавления юзеров
+GtkWidget *stickermessage;
 GtkWidget *stickerebox;
 GtkWidget *stickerimage;
 GtkWidget *stickerfixed;

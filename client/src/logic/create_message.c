@@ -61,7 +61,8 @@ gboolean create_message(void *data){
     char *sender = get_value_by_key(pack->pack,mx_strjoin("SENDER",mx_itoa(pack->number)));
     int messagenum = atoi(get_value_by_key(pack->pack,mx_strjoin("ID",mx_itoa(pack->number))));
     char *messagetext = get_value_by_key(pack->pack,mx_strjoin("MESSAGE",mx_itoa(pack->number)));
-    char *timemessage = get_value_by_key(pack->pack,mx_strjoin("TIME",mx_itoa(pack->number)));    // почисти память
+    char *timemessage = get_value_by_key(pack->pack,mx_strjoin("TIME",mx_itoa(pack->number)));
+    char *type = get_value_by_key(pack->pack,mx_strjoin("MSGTYPE",mx_itoa(pack->number)));    // почисти память
 
     adj = gtk_adjustment_new(10000, 100000, -1000, 100, 10000, 10000);
     row = gtk_list_box_row_new();
@@ -92,12 +93,20 @@ gboolean create_message(void *data){
     gtk_box_pack_start(GTK_BOX(verticalbox),labellmenu, FALSE, FALSE, 0);
 
     //char *messageBuff = get_text_of_textview(newmessedgentry);
+    if(mx_strcmp(type,"sticker") == 0){
+        iconn = gdk_pixbuf_new_from_file(messagetext,NULL);
+        iconn = gdk_pixbuf_scale_simple(iconn, 100,100, GDK_INTERP_BILINEAR);
+        stickermessage = gtk_image_new_from_pixbuf(iconn);
+        gtk_box_pack_start(GTK_BOX(verticalbox),stickermessage, FALSE, FALSE, 0);
+    }
+    else{
     labellmenu2 = gtk_label_new(messagetext);
-    gtk_widget_set_name(labellmenu2,"labellmenu2");
-    gtk_box_pack_start(GTK_BOX(verticalbox),labellmenu2, FALSE, FALSE, 0);
+        gtk_widget_set_name(labellmenu2,"labellmenu2");
+        gtk_box_pack_start(GTK_BOX(verticalbox),labellmenu2, FALSE, FALSE, 0);
+        }
 
-    labellmenu3 = gtk_label_new(timemessage);
-    gtk_box_pack_start(GTK_BOX(messagebox),labellmenu3, FALSE, FALSE, 0);
+        labellmenu3 = gtk_label_new(timemessage);
+        gtk_box_pack_start(GTK_BOX(messagebox),labellmenu3, FALSE, FALSE, 0);
 
  
  //menu with edit and delete button
@@ -116,14 +125,13 @@ gboolean create_message(void *data){
 
     
     g_idle_add ((int (*)(void *))show_widget, window);
-    //gtk_widget_show_all(window);
     gtk_scrolled_window_set_vadjustment(GTK_SCROLLED_WINDOW(scrollmess), adj);
     client_context->counter+=1;
     pack->number+=1;
     return 0;
 }
 
-static char *mx_get_time() {
+ char *mx_get_time() {
     time_t rawtime;
     struct tm * timeinfo;
     char *date = NULL;
@@ -147,6 +155,7 @@ gboolean create_message_system(void *data){
     char  *packet_str = NULL;
     cJSON *packet = cJSON_CreateObject();
     cJSON *type   = cJSON_CreateString("add_msg_c");
+    cJSON *type2  = cJSON_CreateString("string");
     char *current_time = mx_get_time();
     if (current_time == NULL)
          mx_null_error("150: current_time is NULL");
@@ -159,6 +168,7 @@ gboolean create_message_system(void *data){
     cJSON *username    = cJSON_CreateString(client_context -> username);
     
     cJSON_AddItemToObject(packet, "TYPE", type);
+    cJSON_AddItemToObject(packet, "TYPE2", type2);
     cJSON_AddItemToObject(packet, "MESSAGEID", message_id);
     cJSON_AddItemToObject(packet, "TIME", time);
     cJSON_AddItemToObject(packet, "TO", allusers);

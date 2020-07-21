@@ -121,7 +121,7 @@ char* mx_add_contact(char* packet) {
         sprintf(sql, "INSERT INTO CHATS(CHATNAME, LASTMESSAGE) VALUES('%s %s', 'created chat');", login, mylogin);
         check = sqlite3_exec(db, sql, NULL, 0, &message_error);
         dberror(db, check, "INSERT INTO CHATS(CHATNAME, LASMESSAGE) VALUES");
-        sprintf(sql, "INSERT INTO MESSAGES(CHATID, MESSAGEID, SENDER, TIME, MESSAGE) VALUES(%d, 1, '%s', 'null', 'chat created');", last_chat_id + 1, mylogin);
+        sprintf(sql, "INSERT INTO MESSAGES(CHATID, MSGTYPE, MESSAGEID, SENDER, TIME, MESSAGE) VALUES(%d, 'string', 1, '%s', 'null', 'chat created');", last_chat_id + 1, mylogin);
         check = sqlite3_exec(db, sql, NULL, 0, &message_error);
         dberror(db, check, "INSERT INTO MESSAGES(CHATID, MESSAGEID, SENDER, TIME, MESSAGE)");
         chats_t *chat = mx_get_users_chats(mylogin);

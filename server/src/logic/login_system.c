@@ -61,10 +61,6 @@ static void add_lists_of_chats(cJSON *packet, int list_len, chats_t *chat) {
     }
 }
 
-// static char *json_packet_former_from_list_auditor() {
-    
-// }
-
 static char *json_packet_former_from_list(chats_t *chat, char *status, char *login) {
     int   list_len    = mx_chats_list_len(chat);
     cJSON *packet     = cJSON_CreateObject();
@@ -108,17 +104,14 @@ static void free_chats_list(chats_t **chats) {
 char *login_system(char *packet) {
     char *login         = get_value_by_key(packet, "LOGIN");
     char *password      = get_value_by_key(packet, "PASSWORD");
-    char *return_status;
+    if (login == NULL || password == NULL)
+        mx_null_value_error("login_system"); 
+    char *return_status = mx_confirm_users_password(login, password);
     char *sendback_packet = NULL;
     chats_t *chat         = NULL;
 
-    if (login == NULL || password == NULL) {
-        mx_null_value_error("login_system"); 
-    }
-    return_status = mx_confirm_users_password(login, password);
-    if (!strcmp(return_status, "success")) {
+    if (!strcmp(return_status, "success"))
         chat = mx_get_users_chats(login);
-    }
     sendback_packet = json_packet_former_from_list(chat, return_status, login);
     free(login);
     free(password);

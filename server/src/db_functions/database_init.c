@@ -27,6 +27,7 @@ void database_init() {
 
     sql = "CREATE TABLE IF NOT EXISTS MESSAGES("
         "CHATID     INTEGER, " 
+        "MSGTYPE    TEXT NOT NULL, "
         "MESSAGEID  INTEGER, "
         "SENDER     TEXT NOT NULL, "
         "TIME       TEXT NOT NULL, "

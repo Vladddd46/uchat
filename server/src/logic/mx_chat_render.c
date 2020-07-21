@@ -31,19 +31,20 @@ static chat_message_t *mx_fill_list(char *chat_id, int from, int to, int amount_
     char sql[100];
     bzero(sql, 100);
 
-    sprintf(sql, "SELECT SENDER, TIME, MESSAGE FROM MESSAGES WHERE CHATID='%s';", chat_id);
+    sprintf(sql, "SELECT SENDER, TIME, MESSAGE, MSGTYPE FROM MESSAGES WHERE CHATID='%s';", chat_id);
     int exit = sqlite3_prepare_v2(db, sql, -1, &res, 0);
     dberror(db, exit, "Error inserting to table");
     for(int i = 0; i <= from; i++)
         sqlite3_step(res);
 
     for(int i = 0; i < amount_of_msg && sqlite3_column_text(res, 0) != NULL; i++) {
-        char *sender  = (char*)sqlite3_column_text(res, 0);
-        char *time    = (char*)sqlite3_column_text(res, 1);
-        char *message = (char*)sqlite3_column_text(res, 2);
+        char *sender   = (char*)sqlite3_column_text(res, 0);
+        char *time     = (char*)sqlite3_column_text(res, 1);
+        char *message  = (char*)sqlite3_column_text(res, 2);
+        char *msg_type = (char*)sqlite3_column_text(res, 3);
         if (!sender || !time || !message)
             db_null_error();
-        mx_push_back_message_node(&list, mx_string_copy(sender), mx_string_copy(time), mx_string_copy(message));
+        mx_push_back_message_node(&list, mx_string_copy(sender), mx_string_copy(time), mx_string_copy(message), mx_string_copy(msg_type));
         sqlite3_step(res);
     }
     
@@ -120,6 +121,8 @@ static char *mx_json_packet_former_from_list(chat_message_t* chat, int from, cha
         cJSON_AddItemToObject(packet, "SENDER0", json_value);
         json_value = cJSON_CreateString("Just now");
         cJSON_AddItemToObject(packet, "TIME0", json_value);
+        json_value = cJSON_CreateString("string");
+        cJSON_AddItemToObject(packet, "MSGTYPE", json_value);
         json_value = cJSON_CreateString("chat created");
         cJSON_AddItemToObject(packet, "MESSAGE0", json_value);
     }
@@ -138,6 +141,9 @@ static char *mx_json_packet_former_from_list(chat_message_t* chat, int from, cha
         cJSON_AddItemToObject(packet, packet_former, json_value);
         json_value = cJSON_CreateString(chat -> time);
         sprintf(packet_former, "TIME%d", i);
+        cJSON_AddItemToObject(packet, packet_former, json_value);
+        json_value = cJSON_CreateString(chat -> msg_type);
+        sprintf(packet_former, "MSGTYPE%d", i);
         cJSON_AddItemToObject(packet, packet_former, json_value);
         json_value = cJSON_CreateString(chat -> message);
         sprintf(packet_former, "MESSAGE%d", i);

@@ -43,6 +43,7 @@ typedef struct chat_message {
 	char *sender;
     char *time;
     char *message;
+    char *msg_type;
     struct chat_message *next; 
 } chat_message_t;
 
@@ -87,7 +88,7 @@ char* mx_change_password(char* pakcet);
 
 
 // additional 
-void mx_push_back_message_node(chat_message_t **list, char *sender, char *time, char *message);
+void mx_push_back_message_node(chat_message_t **list, char *sender, char *time, char *message, char* msg_type);
 int mx_chats_list_len(chats_t *chat);
 int mx_get_last_message_id(int chat_id);
 void mx_null_value_error(char *func_name);
