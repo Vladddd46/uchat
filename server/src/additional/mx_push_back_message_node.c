@@ -1,6 +1,7 @@
 #include "server.h"
 
-static chat_message_t *create_message_node(char *sender, char *time, char *message, char* msg_type) {
+static chat_message_t *create_message_node(char *sender, char *time, 
+                                          char *message, char* msg_type) {
     chat_message_t *node = (chat_message_t *)malloc(sizeof(chat_message_t));
     char *msg;
 
@@ -17,7 +18,8 @@ static chat_message_t *create_message_node(char *sender, char *time, char *messa
     return node;
 }
 
-void mx_push_back_message_node(chat_message_t **list, char *sender, char *time, char *message, char* msg_type) {
+void mx_push_back_message_node(chat_message_t **list, char *sender, char *time,
+                               char *message, char* msg_type) {
     chat_message_t *node = create_message_node(sender, time, message, msg_type);
     chat_message_t *tmp;
 
