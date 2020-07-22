@@ -76,7 +76,7 @@ int socket_list_remove(connected_client_list_t *head, int sock_fd);
 connected_client_list_t *socket_list_find(connected_client_list_t *head, int sock_fd);
 
 // Logic
-char *mx_database_communication(char *packet, connected_client_list_t **client_node);
+char *mx_database_communication(char *packet);
 char *login_system(char *packet);
 char *registration_system(char *packet);
 chats_t *mx_get_users_chats(char *user);

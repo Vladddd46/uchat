@@ -7,7 +7,7 @@ void registration_system(int socket, char *packet) {
     client_context->username = get_value_by_key(packet,"TO");
 
     if (!strcmp(status, "success")) {
-        gdk_threads_add_idle_full(G_PRIORITY_HIGH_IDLE, draw_message_menu, NULL, 0);
+        main_menu();
     }
     else {
         printf("%s\n", status);
