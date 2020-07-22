@@ -60,8 +60,6 @@ int  listening_socket_init(int port);
 void argv_validator(int argc);
 void mx_login_user_socket(connected_client_list_t *p, char *send_packet, char **receivers);
 int  mx_user_is_already_logged_in(connected_client_list_t *list, char *user_login);
-bool mx_update_connections(fd_set *descriptors, server_context_t ctx, pthread_mutex_t ctx_mutex);
-
 
 // Database functions.
 void    database_init();
