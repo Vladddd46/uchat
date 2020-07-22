@@ -64,6 +64,18 @@ static char **mx_packet_receivers_determine(char *packet) {
 }
 
 
+// static void 
+
+/*
+ * Going through each opened socket and determine, whether socket is active.
+ * if true => receive packet from socket => alalyze this packet =>
+ * change db if it`s needed and form new packet to send.
+ * Go through linked list with opened sockets(connected clients) and check,
+ * whether socket node has the same attribute(user_login) as specified in new packet.
+ * if node was found -> send packet to socket, specified in it. Otherwise, just 
+ * change db depending on packet => as user is getting logged, all new data retrieves 
+ * from db.
+ */
 static void *handle_server(void *param) {
     int status;
     fd_set read_descriptors;
@@ -76,32 +88,19 @@ static void *handle_server(void *param) {
         if (status <= 0) continue;
         
         pthread_mutex_lock(&ctx_mutex);
-        /*
-         * Going through each opened socket and determine, whether socket is active.
-         * if true => receive packet from socket => alalyze this packet =>
-         * change db if it`s needed and form new packet to send.
-         * Go through linked list with opened sockets(connected clients) and check,
-         * whether socket node has the same attribute(user_login) as specified in new packet.
-         * if node was found -> send packet to socket, specified in it. Otherwise, just 
-         * change db depending on packet => as user is getting logged, all new data retrieves 
-         * from db.
-         */
         for (connected_client_list_t *p = ctx.head.next; p != NULL; p = p->next) {
             if (FD_ISSET(p->sock_fd, &read_descriptors)) {
                 char *packet = packet_receive(p->sock_fd);
                 if (packet == NULL) continue;
                 char *send_packet = mx_database_communication(packet, &p);
                 if (send_packet == NULL) continue;
-
                 char **receivers  = mx_packet_receivers_determine(send_packet);
-                mx_login_user_socket(p, send_packet, receivers);
 
-            
+                mx_login_user_socket(p, send_packet, receivers);
                 for (connected_client_list_t *s = ctx.head.next; s != NULL; s = s->next) {
                     if (s->is_logged && mx_str_in_arr(s->login, receivers))
                         mx_send(s->sock_fd, send_packet);
                 }          
-    
                 free(send_packet);
                 free(packet);
             }            
@@ -113,53 +112,35 @@ static void *handle_server(void *param) {
 }
 
 
+/* 
+ * Loop, which waits for incomming requests.
+ * accept() creates new socket, which will be used for certain client.
+ * Place new socket in linked list of opening sockets and in fd_set array. 
+ */
 int main(int argc, char **argv) {
     argv_validator(argc);
     int port             = get_port(argv);
     int listening_socket = listening_socket_init(port);
     database_init();
     server_context_init();
-
-    /* 
-     * Making sockfd listening for incomming requests.
-     * The second argument - number of max. number of requests. 
-     */
     listen(listening_socket, 128);
-
     pthread_t server_thread;
     int err = pthread_create(&server_thread, NULL, handle_server, NULL);
     error("Can not create new thread", err);
 
-    /* 
-     * Loop, which waits for incomming requests.
-     * accept() creates new socket, which will be used for certain client.
-     * Place new socket in linked list of opening sockets and in fd_set array. 
-     */
     while(!quit) {
         struct sockaddr_in client;
         socklen_t client_len = sizeof(client);
         int newsockfd = accept(listening_socket, (struct sockaddr *)&client, &client_len);
-
-        // if acception error, continue the loop.
         if (newsockfd < 0) continue;
-
-        /*
-         * When new connection comes in, created socket is getting placed in 
-         * linked list with opening sockets. If socket was successfully placed in llist,
-         * it is also getting placed in fd_set bitarray (it`s needed for select.)
-         * * Mutex is used because `ctx.head` is also used in handle_server thread.
-         */
         pthread_mutex_lock(&ctx_mutex);
         int status = socket_list_add(&ctx.head, newsockfd);
-        if (status == 0) {
+        if (status == 0)
             FD_SET(newsockfd, &ctx.read_descriptors);
-            printf("New connection was accepted, socket = %d\n", newsockfd);
-        }
         pthread_mutex_unlock(&ctx_mutex);
         error("Unable to add socket descriptor to the list", status);
     }
     sleep(2);
     server_context_free();
-    printf("Main thread was finished\n");
     exit(0);
 }
