@@ -23,7 +23,8 @@ void gui(int argc, char **argv, client_context_t *client_context) {
     gtk_window_set_position(GTK_WINDOW(window), GTK_WIN_POS_CENTER);
 
     fixed = gtk_fixed_new();
-    gtk_container_add(GTK_CONTAINER(window), fixed);
+    gtk_widget_set_name(fixed,"fixedd");
+    gtk_container_add(GTK_CONTAINER(window), fixed); 
     client_context->Ukraine = FALSE;
     main_menu();
 

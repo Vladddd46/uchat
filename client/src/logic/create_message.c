@@ -100,9 +100,65 @@ gboolean create_message(void *data){
         gtk_box_pack_start(GTK_BOX(verticalbox),stickermessage, FALSE, FALSE, 0);
     }
     else{
-    labellmenu2 = gtk_label_new(messagetext);
-        gtk_widget_set_name(labellmenu2,"labellmenu2");
-        gtk_box_pack_start(GTK_BOX(verticalbox),labellmenu2, FALSE, FALSE, 0);
+        if (messagetext[0] == '\\') {
+            if (messagetext[1] == 'b'){
+                char *messagetextnew = mx_strnew(mx_strlen(&messagetext[2]));
+                mx_strcpy(messagetextnew,&messagetext[2]);
+                labellmenu2 = gtk_label_new(messagetextnew);
+                gtk_widget_set_name(labellmenu2,"labellmenu2bold");
+                gtk_box_pack_start(GTK_BOX(verticalbox),labellmenu2, FALSE, FALSE, 0); 
+            }
+            else
+            if (messagetext[1] == 'i'){
+                char *messagetextnew = mx_strnew(mx_strlen(&messagetext[2]));
+                mx_strcpy(messagetextnew,&messagetext[2]);
+                labellmenu2 = gtk_label_new(messagetextnew);
+                gtk_widget_set_name(labellmenu2,"labellmenu2italic");
+                gtk_box_pack_start(GTK_BOX(verticalbox),labellmenu2, FALSE, FALSE, 0); 
+            }
+            else
+            if (messagetext[1] == 'r'){
+                char *messagetextnew = mx_strnew(mx_strlen(&messagetext[2]));
+                mx_strcpy(messagetextnew,&messagetext[2]);
+                labellmenu2 = gtk_label_new(messagetextnew);
+                gtk_widget_set_name(labellmenu2,"labellmenu2red");
+                gtk_box_pack_start(GTK_BOX(verticalbox),labellmenu2, FALSE, FALSE, 0); 
+            }
+            else
+            if (messagetext[1] == '1'){
+                char *messagetextnew = mx_strnew(mx_strlen(&messagetext[2]));
+                mx_strcpy(messagetextnew,&messagetext[2]);
+                labellmenu2 = gtk_label_new(messagetextnew);
+                gtk_widget_set_name(labellmenu2,"labellmenu2small");
+                gtk_box_pack_start(GTK_BOX(verticalbox),labellmenu2, FALSE, FALSE, 0); 
+            }
+            else
+            if (messagetext[1] == 'y'){
+                char *messagetextnew = mx_strnew(mx_strlen(&messagetext[2]));
+                mx_strcpy(messagetextnew,&messagetext[2]);
+                labellmenu2 = gtk_label_new(messagetextnew);
+                gtk_widget_set_name(labellmenu2,"labellmenu2yellow");
+                gtk_box_pack_start(GTK_BOX(verticalbox),labellmenu2, FALSE, FALSE, 0); 
+            }
+            else
+            if (messagetext[1] == '9'){
+                char *messagetextnew = mx_strnew(mx_strlen(&messagetext[2]));
+                mx_strcpy(messagetextnew,&messagetext[2]);
+                labellmenu2 = gtk_label_new(messagetextnew);
+                gtk_widget_set_name(labellmenu2,"labellmenu2big");
+                gtk_box_pack_start(GTK_BOX(verticalbox),labellmenu2, FALSE, FALSE, 0); 
+            }
+            else{
+                labellmenu2 = gtk_label_new(messagetext);
+                gtk_widget_set_name(labellmenu2,"labellmenu2");
+                gtk_box_pack_start(GTK_BOX(verticalbox),labellmenu2, FALSE, FALSE, 0);
+            }
+        }
+        else{
+            labellmenu2 = gtk_label_new(messagetext);
+            gtk_widget_set_name(labellmenu2,"labellmenu2");
+            gtk_box_pack_start(GTK_BOX(verticalbox),labellmenu2, FALSE, FALSE, 0);
+        }
         }
 
         labellmenu3 = gtk_label_new(timemessage);

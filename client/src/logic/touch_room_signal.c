@@ -1,76 +1,4 @@
 #include "client.h"
-//bool flagG = FALSE;
-
-
-gboolean send_sticker(void *data){
-    t_s_glade *pack = (t_s_glade *)data;  
-  GtkAdjustment *adj;
-  printf("%s\n",pack->pack );
-
-    // char *nameuser = client_context->username;
-    // char *sender = get_value_by_key(pack->pack,mx_strjoin("SENDER",mx_itoa(pack->number)));
-    // int messagenum = atoi(get_value_by_key(pack->pack,mx_strjoin("ID",mx_itoa(pack->number))));
-    // char *messagetext = get_value_by_key(pack->pack,mx_strjoin("MESSAGE",mx_itoa(pack->number)));
-    // char *timemessage = get_value_by_key(pack->pack,mx_strjoin("TIME",mx_itoa(pack->number)));    // почисти память
-
-    adj = gtk_adjustment_new(10000, 100000, -1000, 100, 10000, 10000);
-    row = gtk_list_box_row_new();
-    gtk_list_box_row_set_selectable (GTK_LIST_BOX_ROW(row),FALSE);
-    gtk_list_box_insert (GTK_LIST_BOX(listboxmess),row,0);
-
-    horizontalbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL,0);
-    gtk_container_add(GTK_CONTAINER(row), horizontalbox);
-
-    // if (!strcmp(nameuser,sender))
-    //     gtk_box_pack_end(GTK_BOX(horizontalbox),messagebox, FALSE, FALSE, 0);
-    // else
-    //     gtk_box_pack_start(GTK_BOX(horizontalbox),messagebox, FALSE, FALSE, 0);
-    GdkPixbuf *iconn = gdk_pixbuf_new_from_file("./media/img/pokemon-2.png",NULL);
-    iconn = gdk_pixbuf_scale_simple(iconn, 32,32, GDK_INTERP_BILINEAR);
-    icon = gtk_image_new_from_pixbuf(iconn);
-    gtk_box_pack_start(GTK_BOX(horizontalbox),icon, FALSE, FALSE, 0);
-
-    // labellmenu = gtk_label_new(sender);
-    // gtk_widget_set_name(labellmenu,"labellmenu");
-    // gtk_box_pack_start(GTK_BOX(verticalbox),labellmenu, FALSE, FALSE, 0);
-    iconn = gdk_pixbuf_new_from_file(pack->pack,NULL);
-    iconn = gdk_pixbuf_scale_simple(iconn, 100,100, GDK_INTERP_BILINEAR);
-    stickermessage = gtk_image_new_from_pixbuf(iconn);
-    gtk_box_pack_start(GTK_BOX(horizontalbox),stickermessage, FALSE, FALSE, 0);
-
-    // labellmenu3 = gtk_label_new(timemessage);
-    // gtk_box_pack_start(GTK_BOX(messagebox),labellmenu3, FALSE, FALSE, 0);
-
- 
- //menu with edit and delete button
-    // fileMenu = gtk_menu_new();
-    // g_signal_connect_swapped(G_OBJECT(ebox), "button-press-event", G_CALLBACK(show_popup), fileMenu);
-
-    // edit = gtk_menu_item_new_with_label("Edit");
-    // g_idle_add ((int (*)(void *))show_widget, edit);
-    // gtk_menu_shell_append(GTK_MENU_SHELL(fileMenu), edit);
-    // g_signal_connect (edit, "activate", G_CALLBACK (edit_message), labellmenu2);
-
-    // delet = gtk_menu_item_new_with_label("Delete");
-    // g_idle_add ((int (*)(void *))show_widget, delet);
-    // gtk_menu_shell_append (GTK_MENU_SHELL (fileMenu), delet);  
-    // g_signal_connect (delet, "activate", G_CALLBACK (delete_message), row);
-
-    
-    g_idle_add ((int (*)(void *))show_widget, window);
-    //gtk_widget_show_all(window);
-    gtk_scrolled_window_set_vadjustment(GTK_SCROLLED_WINDOW(scrollmess), adj);
-    client_context->counter+=1;
-    pack->number+=1;
-    return 0;
-}
-
-
-
-
-
-
-
 
 void sticker_send_system(GtkWidget* widget, gpointer data){
     char *path = g_object_get_data(G_OBJECT(widget),"sticker path");
@@ -106,9 +34,6 @@ void sticker_send_system(GtkWidget* widget, gpointer data){
     send(client_context->sockfd, packet_str1, (int)strlen(packet_str1), 0);
     free(packet_str);
     free(packet_str1);
-    // t_s_glade *gui = (t_s_glade *)malloc(sizeof(t_s_glade));
-    // gui->pack = mx_strdup(path);
-    // gdk_threads_add_idle_full(G_PRIORITY_HIGH_IDLE, send_sticker, gui, 0);
 }
 
 void sticker_menu(GtkWidget* widget, gpointer data){

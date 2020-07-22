@@ -43,9 +43,11 @@ void change_password_system(GtkWidget* widget, gpointer data){
 
 
 void draw_edit_profile(GtkWidget *widget, gpointer data){
+    printf("%s\n","Start Edit profile" );
     editwindow = gtk_window_new(GTK_WINDOW_TOPLEVEL);
     gtk_window_set_resizable (GTK_WINDOW(editwindow), FALSE);
     gtk_window_set_transient_for (GTK_WINDOW(editwindow),GTK_WINDOW(window));
+    printf("%s\n","Create Window" );
     if (client_context->Ukraine == FALSE)
         gtk_window_set_title(GTK_WINDOW(editwindow),"Settings");
     else
@@ -93,10 +95,14 @@ void draw_edit_profile(GtkWidget *widget, gpointer data){
     else
         logout = gtk_button_new_with_label("Вихід");
      gtk_grid_attach(GTK_GRID(editgrid),logout, 0, 5, 1, 1);
+     printf("%s\n","Create all widgets" );
     g_signal_connect(logout,"clicked", G_CALLBACK(logout_system), NULL);
+    printf("%s\n","Create signal" );
 
 
     g_idle_add ((int (*)(void *))show_widget, editwindow);
+    sleep(1);
+    printf("%s\n","Finish" );
 }
 
 void download_messages(GtkWidget *widget, gpointer data){
@@ -201,6 +207,7 @@ gboolean button_release (GtkWidget *widget, GdkEventKey *event, gpointer data) {
 }
 
 gboolean draw_message_menu(void *data){
+    printf("%s\n","Start draw menu" );
     t_s_glade *gui = (t_s_glade *)data;
     client_context->flag = FALSE;
     GtkPositionType *pos = NULL;
@@ -251,8 +258,10 @@ gboolean draw_message_menu(void *data){
     gtk_widget_set_name(listbox,"listboxleft");
     gtk_widget_set_size_request(scroll,300,718);
     gtk_container_add(GTK_CONTAINER(scroll), listbox);
+    printf("%s\n","draw all widgets" );
 
     g_signal_connect(listbox,"row-activated", G_CALLBACK(touch_room_signal), &client_context->sockfd);
     g_idle_add ((int (*)(void *))show_widget, window);
+    printf("%s\n","Finish draw widgets draw message menu" );
     return 0;
 }

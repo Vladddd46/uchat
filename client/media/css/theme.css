@@ -1,9 +1,10 @@
 window{
-	/* The image used */
-  background-image: url("../img/background2.jpg");
+	  background-image: url("../img/background2.jpg");
 
   background-position: center;
   background-size: cover;
+}
+#fixed{
 }
 #gride {
   background: #ffffff;
@@ -72,6 +73,7 @@ border: none;
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
+  /*background-color: black;*/
 }
 #message{
   background-color: #ffffff;
@@ -90,6 +92,36 @@ border: none;
 #stickerwindow{
   background-color: white;
   background-image:none;
+}
+#labellmenu2bold{
+font-weight: bold;
+background: transparent;
+border: none;
+}
+#labellmenu2italic{
+font-style: italic;
+background: transparent;
+border: none;
+}
+#labellmenu2red{
+color:red;
+background: transparent;
+border: none;
+}
+#labellmenu2big{
+font-size: 30px;
+ background: transparent;
+border: none; 
+}
+#labellmenu2small{
+  font-size: 10px;
+ background: transparent;
+border: none; 
+}
+#labellmenu2yellow{
+  color:yellow;
+background: transparent;
+border: none;
 }
 /*#minibuttonfind{
   box-shadow:inset 0px 1px 0px 0px #bbdaf7;
