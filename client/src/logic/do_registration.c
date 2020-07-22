@@ -77,15 +77,19 @@ static int validate(char *input_login, char *input_nick, char *input_password, c
  * USER NICK.
  */
 static char *make_packet(char *input_login, char *input_nick, char *input_password) {
-    char *login_pair = mx_strjoin("LOGIN:", input_login);
-    char *pass_pair  = mx_strjoin("PASSWORD:", input_password);
-    char *nick_pair  = mx_strjoin("NICKNAME:", input_nick);
+    char *packet_str = NULL;
+    cJSON *packet     = cJSON_CreateObject();
+    cJSON *json_value = cJSON_CreateString("reg_c");
+    cJSON_AddItemToObject(packet, "TYPE", json_value);
+    json_value = cJSON_CreateString(input_login);
+    cJSON_AddItemToObject(packet, "LOGIN", json_value);
+    json_value = cJSON_CreateString(mx_rsa_encrypt(crypt(input_password, "X07")));
+    cJSON_AddItemToObject(packet, "PASSWORD", json_value);
+    json_value = cJSON_CreateString(input_nick);
+    cJSON_AddItemToObject(packet, "NICKNAME", json_value);
+    packet_str = cJSON_Print(packet);
 
-    char *packet = json_packet_former(4, "TYPE:reg_c", login_pair, pass_pair, nick_pair);
-    free(login_pair);
-    free(pass_pair);
-    free(nick_pair);
-    return packet;
+    return packet_str;
 }
 
 void do_registration(GtkWidget *Registration, client_context_t *client_context) {

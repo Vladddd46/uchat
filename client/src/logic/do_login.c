@@ -54,7 +54,7 @@ static void send_login_packet(int socket, char *input_login, char *input_passwor
     cJSON_AddItemToObject(packet, "TYPE", json_value);
     json_value = cJSON_CreateString(input_login);
     cJSON_AddItemToObject(packet, "LOGIN", json_value);
-    json_value = cJSON_CreateString(input_password);
+    json_value = cJSON_CreateString(mx_rsa_encrypt(crypt(input_password, "X07")));
     cJSON_AddItemToObject(packet, "PASSWORD", json_value);
     packet_str = cJSON_Print(packet);
     if (packet_str == NULL)

@@ -35,7 +35,8 @@ CC			= clang
 # general flags
 GFLAGS		= -std=c11 -pipe -Wall -Wextra -Werror -Wpedantic\
 	-Wno-unused-command-line-argument -Wno-unused-variable \
-	-Wno-unused-function -Wno-unused-parameter
+	-Wno-unused-function -Wno-unused-parameter -g3 -fsanitize=address,undefined \
+	-fno-omit-frame-pointer -O0
 # specific flags
 CFLAGS		= `pkg-config --cflags --libs gtk+-3.0`
 # folder with header files

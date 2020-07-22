@@ -53,7 +53,7 @@ static int mx_get_last_chat_id() {
     sprintf(sql, "SELECT MAX(CHATID) FROM USERCHAT;");
     int check = sqlite3_prepare_v2(db, sql, -1, &res, 0);
     dberror(db, check, "SELECT MAX(CHATID) FROM USERCHAT");
-    sqlite3_step(res);
+    sqlite3_step(res); 
     if(sqlite3_column_text(res, 0) != NULL) {
         last_chat_id = atoi(mx_string_copy((char*)sqlite3_column_text(res, 0)));
     }
@@ -68,30 +68,33 @@ static char *json_packet_former_from_list(chats_t *chat, char *status, char* log
     char* packet_str = NULL;
     cJSON *json_value = cJSON_CreateString("add_new_user_s");
     char *nickname = mx_get_nickname_by_login(login);
-
+    char to_users[100];
+    
+    bzero(to_users, 100);
+    sprintf(to_users, "%s %s", login, mylogin);
     cJSON_AddItemToObject(packet, "TYPE", json_value);
     json_value = cJSON_CreateString(status);
     cJSON_AddItemToObject(packet, "STATUS", json_value);
-    json_value = cJSON_CreateString(nickname);
-    cJSON_AddItemToObject(packet, "NICKNAME", json_value);
-    json_value =  cJSON_CreateString(login);
+    // json_value = cJSON_CreateString(nickname);
+    // cJSON_AddItemToObject(packet, "NICKNAME", json_value);
+    json_value =  cJSON_CreateString(to_users);
     cJSON_AddItemToObject(packet, "TO", json_value);
-    json_value =  cJSON_CreateString(mx_itoa(list_len));
+    json_value =  cJSON_CreateString("1");
     cJSON_AddItemToObject(packet, "LENGTH", json_value);
-    for(int i = 0; i < list_len; i++) {
+    // for(int i = 0; i < list_len; i++) {
         char chat_name_former[100];
 
-        sprintf(chat_name_former, "CHATNAME=%d", i);
-        json_value = cJSON_CreateString(chat -> chat_name);
+        sprintf(chat_name_former, "CHATNAME=%d", 0);
+        json_value = cJSON_CreateString(to_users);
         cJSON_AddItemToObject(packet, chat_name_former, json_value);
-        json_value = cJSON_CreateString(chat -> last_message);
-        sprintf(chat_name_former, "LASTMESSAGE=%d", i);
+        json_value = cJSON_CreateString("chat created");
+        sprintf(chat_name_former, "LASTMESSAGE=%d", 0);
         cJSON_AddItemToObject(packet, chat_name_former, json_value);
-        json_value = cJSON_CreateString(chat -> chat_id);
-        sprintf(chat_name_former, "CHATID=%d", i);
+        json_value = cJSON_CreateString(mx_itoa(mx_get_last_chat_id()));
+        sprintf(chat_name_former, "CHATID=%d", 0);
         cJSON_AddItemToObject(packet, chat_name_former, json_value);
         chat = chat -> next;
-    }
+    // }
     packet_str = cJSON_Print(packet);
     free(nickname);
     return packet_str;

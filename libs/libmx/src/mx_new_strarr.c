@@ -10,6 +10,10 @@ char **mx_new_strarr(int size) {
         write(2, msg, (int)strlen(msg));
         exit(1);
     }
+
+    for (int i = 0; i < size; i++) {
+    	arr[i] = NULL;
+    }
     arr[size] = NULL;
     return arr;
 }

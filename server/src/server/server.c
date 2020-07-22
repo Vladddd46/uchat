@@ -89,13 +89,20 @@ static void *handle_server(void *param) {
         for (connected_client_list_t *p = ctx.head.next; p != NULL; p = p->next) {
             if (FD_ISSET(p->sock_fd, &read_descriptors)) {
                 char *packet = packet_receive(p->sock_fd);
-                if (packet == NULL)
+                if (packet == NULL || !mx_strcmp("", packet)) {
+                    printf("%s\n", "packet is null");
+                    continue;
                     mx_null_value_error("handle_server");
+                }
                 printf("%s\n", packet);
                 char *logout = get_value_by_key(packet, "TYPE");
+                if (logout == NULL) {
+                    printf("LOGOUT NULL");
+                    continue;
+                }
                 if (!mx_strcmp(logout, "logout_c")) {
                     p->is_logged = false;
-                    break ;
+                    break;
                 }
 
                 printf("%s\n",packet );
@@ -123,7 +130,6 @@ static void *handle_server(void *param) {
                     if (s->is_logged && mx_str_in_arr(s->login, receivers))
                         send(s->sock_fd, send_back_packet_prefixed, (int)strlen(send_back_packet_prefixed), 0);
                 }          
-       
                 free(send_back_packet_prefixed);
                 // free(client_login)
                 // mx_del_strarr(&receivers); выдает сигфолт

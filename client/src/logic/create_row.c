@@ -10,8 +10,10 @@ gboolean create_row(void *data){
     gtk_widget_set_name(row,"chatrow");
     gtk_list_box_insert (GTK_LIST_BOX(listbox),row,gui->number); 
     g_object_set_data(G_OBJECT(row),"row number",&(gui->number));
+    printf("erqeqgre\n");
     client_context->mas[gui->number] = get_value_by_key(gui->pack, mx_strjoin("CHATID=",mx_itoa(gui->number)));
 
+    printf("3254654\n");
     gridmenu = gtk_grid_new();
     gtk_container_add(GTK_CONTAINER(row), gridmenu);
     GdkPixbuf *iconn = gdk_pixbuf_new_from_file("./media/img/pokemon-2.png",NULL);

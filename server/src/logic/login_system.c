@@ -103,7 +103,7 @@ static void free_chats_list(chats_t **chats) {
 
 char *login_system(char *packet) {
     char *login         = get_value_by_key(packet, "LOGIN");
-    char *password      = get_value_by_key(packet, "PASSWORD");
+    char *password      = mx_rsa_decode(get_value_by_key(packet, "PASSWORD"));
     if (login == NULL || password == NULL)
         mx_null_value_error("login_system"); 
     char *return_status = mx_confirm_users_password(login, password);

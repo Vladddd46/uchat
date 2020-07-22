@@ -20,10 +20,14 @@ void logout_system(GtkWidget *widget, gpointer data){
     gtk_widget_destroy(fixed);
     g_idle_add ((int (*)(void *))show_widget, window);
     fixed = gtk_fixed_new();
-    char *packet = json_packet_former(1, "TYPE:logout_c");
-    packet = packet_len_prefix_adder(packet);
-    send(client_context->sockfd, packet, mx_strlen(packet), 0);
-    printf(">>>>%s\n",packet );
+    char *packet_str = NULL;
+    cJSON *packet     = cJSON_CreateObject();
+    cJSON *json_value = cJSON_CreateString("logout_c");
+    cJSON_AddItemToObject(packet, "TYPE", json_value);
+    packet_str = cJSON_Print(packet);
+    char *packet_with_prefix = packet_len_prefix_adder(packet_str);
+    send(client_context->sockfd, packet_with_prefix, (int)strlen(packet_with_prefix), 0);
+    // printf(">>>>%s\n",packet );
     gtk_container_add(GTK_CONTAINER(window), fixed);
     main_menu();
 
@@ -31,11 +35,18 @@ void logout_system(GtkWidget *widget, gpointer data){
 
 void change_password_system(GtkWidget* widget, gpointer data){
     char *password = (char *)gtk_entry_get_text(GTK_ENTRY(widget));
-    password = mx_strjoin("TO:",password);
-    char *login = mx_strjoin("LOGIN:",client_context->username);
-    char *packet = json_packet_former(3, "TYPE:change_password_c", login, password);
-    packet = packet_len_prefix_adder(packet);
-    send(client_context->sockfd, packet, mx_strlen(packet), 0);
+
+    char *packet_str = NULL;
+    cJSON *packet     = cJSON_CreateObject();
+    cJSON *json_value = cJSON_CreateString("change_password_c");
+    cJSON_AddItemToObject(packet, "TYPE", json_value);
+    json_value = cJSON_CreateString(mx_rsa_encrypt(crypt(password, "X07")));
+    cJSON_AddItemToObject(packet, "TO", json_value);
+    json_value = cJSON_CreateString(client_context->username);
+    cJSON_AddItemToObject(packet, "LOGIN", json_value);
+    packet_str = cJSON_Print(packet);
+    char *packet_with_prefix = packet_len_prefix_adder(packet_str);
+    send(client_context->sockfd, packet_with_prefix, (int)strlen(packet_with_prefix), 0);
     close_window(editwindow);
 
 }

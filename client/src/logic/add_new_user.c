@@ -1,14 +1,4 @@
-                                                 #include "client.h"
-
-// gboolean mini_my_keypress_function (GtkWidget *widget, GdkEventKey *event, gpointer data) {
-//     if (event->keyval == 65505 || event->keyval == 65507) {
-//         release_button = TRUE;
-//     }
-//     if (event->keyval == 65293 && release_button == FALSE){
-//         //create_message_client(newmessedgentry, NULL);
-//     }
-//     return FALSE;
-// }
+#include "client.h"
 
 gboolean add_new_friend(GtkWidget *widget, gpointer data) {
    char  *login = g_object_get_data(G_OBJECT(widget),"name user");
@@ -34,7 +24,8 @@ gboolean add_new_friend(GtkWidget *widget, gpointer data) {
     return FALSE;
 }
 
-void draw_list_box_system(char *packet){
+gboolean draw_list_box_system(void *data){
+    char *packet = (char *)data;
     char *len_str = get_value_by_key(packet,"LENGTH");
     if (len_str == NULL)
         mx_null_error("38: draw_list_box_system");
@@ -76,9 +67,10 @@ void draw_list_box_system(char *packet){
         pack->nickname = mx_string_copy(pack->nickname);
 		gdk_threads_add_idle_full(G_PRIORITY_HIGH_IDLE, draw_list_box, pack, 0);
 	}
+    return 0;
 
 }
-
+ 
 gboolean draw_list_box(void *data){
 	t_s_glade *pack = (t_s_glade *)data; 
     minirow = gtk_list_box_row_new();
@@ -91,11 +83,10 @@ gboolean draw_list_box(void *data){
 	gtk_grid_attach(GTK_GRID(minibox),minilabell, 0, 0, 1, 1);
 
 	minilabell2 = gtk_label_new(pack->nickname);
-	gtk_grid_attach(GTK_GRID(minibox),minilabell2, 0, 1, 1, 1);
+	gtk_grid_attach(GTK_GRID(minibox),minilabell2, 0, 1, 1, 1); 
 
     minieventbox = gtk_event_box_new();
     g_object_set_data(G_OBJECT(minieventbox),"name user",pack->login);
-    gtk_widget_set_name(minieventbox,"minieventbox");
     GdkPixbuf *iconn = gdk_pixbuf_new_from_file("./media/img/plus_icon.png",NULL);
     iconn = gdk_pixbuf_scale_simple(iconn, 32,32, GDK_INTERP_BILINEAR);
     icon = gtk_image_new_from_pixbuf(iconn);

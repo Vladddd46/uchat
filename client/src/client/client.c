@@ -58,17 +58,16 @@ static void received_packet_analyzer(char *packet_type, char *packet) {
 
     printf("[received packet]%s\n", packet);
     if (!mx_strcmp(packet_type, "reg_s"))
-        registration_system(client_context->sockfd, packet);
+        gdk_threads_add_idle_full(G_PRIORITY_HIGH_IDLE, registration_system, (void *)mx_strdup(packet), 0);
     else if (!mx_strcmp(packet_type, "login_s"))
         login_system(client_context, packet);
-    else if (!mx_strcmp(packet_type, "find_user_s"))
-        draw_list_box_system(packet);
+    else if (!mx_strcmp(packet_type, "find_user_s")){
+        gdk_threads_add_idle_full(G_PRIORITY_HIGH_IDLE, draw_list_box_system, (void *)mx_strdup(packet), 0);
+    }
     else if (!mx_strcmp(packet_type, "add_new_user_s")) {
 
        if(mx_strcmp(get_value_by_key(packet, "STATUS"), "false") != 0)
             remake_chats(packet);
-        else
-            close_window(miniwindow);
     }
     else if (!mx_strcmp(packet_type, "msg_s"))
         create_row_system(client_context, packet);

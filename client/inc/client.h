@@ -67,7 +67,7 @@ int show_popup(GtkWidget *widget, GdkEvent *event);
 void add_new_user(GtkWidget *newchatbutton, gpointer data);
 gboolean mini_button_release (GtkWidget *widget, GdkEventKey *event, gpointer data);
 gboolean add_new_friend (GtkWidget *widget, gpointer data);
-void draw_list_box_system(char *packet);
+gboolean draw_list_box_system(void *data);
 void dialog(GtkWidget *widget, gpointer data );
 gboolean draw_list_box(void *data);
 // gboolean mini_my_keypress_function (GtkWidget *widget, GdkEventKey *event, gpointer data);
@@ -80,7 +80,7 @@ struct sockaddr_in mx_client_address_describer(int port);
 
 // Logic
 void do_registration(GtkWidget *Registration, client_context_t *client_context);
-void registration_system(int socket, char *packet);
+gboolean registration_system(void *data);
 void login_system(client_context_t *client_context, char *packet);
 void create_row_system(client_context_t *client_context, char *packet);
 
@@ -90,6 +90,7 @@ char *mx_get_time();
 
 
 //mini приставка для виджетов в окне добавления юзеров
+GtkWidget *back;
 GtkWidget *stickermessage;
 GtkWidget *stickerebox;
 GtkWidget *stickerimage;

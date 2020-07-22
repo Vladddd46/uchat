@@ -2,12 +2,10 @@
 
 void back_to_menu(GtkWidget *back, client_context_t *client_context){
     gtk_widget_destroy(grid);
-    gtk_widget_destroy(back);
-    main_menu(client_context->sockfd);
+    main_menu(); 
 }
 
 void make_registration(GtkWidget *Registration, client_context_t *client_context){
-    GtkWidget *back;
 
     gtk_widget_destroy(grid);
 

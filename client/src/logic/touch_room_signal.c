@@ -239,16 +239,26 @@ void touch_room_signal(GtkWidget *listbox, void *socket){
     char *chat_name = client_context->username;
     char chat_id[40];
     bzero(chat_id, 40);
-    chat_name = mx_strjoin("CHATNAME:", chat_name);
     sprintf(chat_id, "CHATID:%d", ++indexrow);
     char* chat_id_str = mx_strjoin("CHATIDFROMDB:", client_context->mas[client_context->indexrow]);
 
-    char *packet = json_packet_former(6, "TYPE:msg_c", chat_name, chat_id, "FROMMSG:0", "TOMSG:15", chat_id_str);
-    packet = packet_len_prefix_adder(packet);
-    printf("PACKet berfore send %s\n\n", packet);
+    char *packet_str = NULL;
+    cJSON *packet     = cJSON_CreateObject();
+    cJSON *json_value = cJSON_CreateString("msg_c");
+    cJSON_AddItemToObject(packet, "TYPE", json_value);
+    json_value = cJSON_CreateString(chat_name);
+    cJSON_AddItemToObject(packet, "CHATNAME", json_value);
+    json_value = cJSON_CreateString(mx_itoa(++indexrow));
+    cJSON_AddItemToObject(packet, "CHATID", json_value);
+    json_value = cJSON_CreateString("0");
+    cJSON_AddItemToObject(packet, "FROMMSG", json_value);
+    json_value = cJSON_CreateString("15");
+    cJSON_AddItemToObject(packet, "TOMSG", json_value);
+    json_value = cJSON_CreateString(client_context->mas[client_context->indexrow]);
+    cJSON_AddItemToObject(packet, "CHATIDFROMDB", json_value);
+    packet_str = cJSON_Print(packet);
+    char *packet_with_prefix = packet_len_prefix_adder(packet_str);
+    send(client_context->sockfd, packet_with_prefix, (int)strlen(packet_with_prefix), 0);
 
-    printf("%d\n", client_context->sockfd);
-    
-    send(client_context->sockfd, packet, mx_strlen(packet), 0);
      printf("%s\n","packet sended" );
 }

@@ -2,12 +2,14 @@
 
 client_context_t *client_context;
 
-void registration_system(int socket, char *packet) {
+gboolean registration_system(void *data) {
+    char *packet = (char *)data;
     char *status = get_value_by_key(packet, "STATUS");
     client_context->username = get_value_by_key(packet,"TO");
 
     if (!strcmp(status, "success")) {
-        main_menu();
+        gtk_widget_destroy(grid);
+        main_menu(); 
     }
     else {
         printf("%s\n", status);
@@ -17,4 +19,5 @@ void registration_system(int socket, char *packet) {
         * причина неуспешной регестрации хранится в char *status (printf(status))
         */
     }
+    return 0;
 }
