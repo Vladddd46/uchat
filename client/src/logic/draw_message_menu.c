@@ -1,10 +1,30 @@
 #include "client.h"
         
+void delete_profile(GtkWidget *widget, gpointer data){
+    close_window(editwindow);
+    gtk_widget_destroy(fixed);
+    g_idle_add ((int (*)(void *))show_widget, window);
+    fixed = gtk_fixed_new();
 
+    char  *packet_str = NULL;
+    cJSON *packet = cJSON_CreateObject();
+    cJSON *type   = cJSON_CreateString("delete_user_c");
+    cJSON *user   = cJSON_CreateString(client_context->username);
+ 
+    cJSON_AddItemToObject(packet, "TYPE", type);
+    cJSON_AddItemToObject(packet, "USER", user);
+
+    packet_str = mx_string_copy(cJSON_Print(packet));
+
+    char *packet_str1 =  packet_len_prefix_adder(packet_str);
+    send(client_context->sockfd, packet_str1, (int)strlen(packet_str1), 0);
+    gtk_container_add(GTK_CONTAINER(window), fixed);
+    main_menu();
+}
 void switchlanguage_system(GtkSwitch *widget,
                gboolean   state,
                gpointer   user_data){
-    if (state == TRUE){
+    if (state == TRUE){ 
         printf("%s\n","UKraine" );
         system("open ./media/gimn.mp3");
         client_context->Ukraine = TRUE;
@@ -37,7 +57,7 @@ void change_password_system(GtkWidget* widget, gpointer data){
     packet = packet_len_prefix_adder(packet);
     send(client_context->sockfd, packet, mx_strlen(packet), 0);
     close_window(editwindow);
-
+ 
 }
 
 
@@ -61,15 +81,7 @@ void draw_edit_profile(GtkWidget *widget, gpointer data){
     gtk_fixed_put(GTK_FIXED(editfixed),editgrid,25,100);
     //gtk_widget_set_size_request(editgrid, 180, 300);
     gtk_widget_set_name(editgrid,"editgrid");
-    if (client_context->Ukraine == FALSE)
-        themelabel = gtk_label_new("Dark mode");
-    else
-        themelabel = gtk_label_new("Темна тема");
-    gtk_grid_attach(GTK_GRID(editgrid),themelabel, 0, 0, 1, 1);
-
-    switchtheme = gtk_switch_new();
-    gtk_grid_attach(GTK_GRID(editgrid),switchtheme, 0, 1, 1, 1);
-    gtk_widget_set_size_request(switchtheme,25,25);
+    
      if (client_context->Ukraine == FALSE)
         languagelabel = gtk_label_new("Ukrainan");
     else
@@ -95,6 +107,14 @@ void draw_edit_profile(GtkWidget *widget, gpointer data){
     else
         logout = gtk_button_new_with_label("Вихід");
      gtk_grid_attach(GTK_GRID(editgrid),logout, 0, 5, 1, 1);
+
+     if (client_context->Ukraine == FALSE)
+        editbuttondelete = gtk_button_new_with_label("Delete User");
+    else
+        editbuttondelete = gtk_button_new_with_label("Видалити Користувача");
+    gtk_grid_attach(GTK_GRID(editgrid),editbuttondelete, 0, 6, 1, 1);
+    g_signal_connect(editbuttondelete,"clicked", G_CALLBACK(delete_profile), NULL);
+
      printf("%s\n","Create all widgets" );
     g_signal_connect(logout,"clicked", G_CALLBACK(logout_system), NULL);
     printf("%s\n","Create signal" );
@@ -150,7 +170,7 @@ void download_messages(GtkWidget *widget, gpointer data){
     cJSON_AddItemToObject(packet, "TOMSG", to);
     cJSON_AddItemToObject(packet, "CHATNAME", chat_name);
     cJSON_AddItemToObject(packet, "TO", to_user);
-    cJSON_AddItemToObject(packet, "CHATIDFROMDB:", chat_id_sql);
+    cJSON_AddItemToObject(packet, "CHATIDFROMDB", chat_id_sql);
 
     packet_str         = mx_string_copy(cJSON_Print(packet));
     char *packet_str1 =  packet_len_prefix_adder(packet_str);

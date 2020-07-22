@@ -1,19 +1,8 @@
-                                                 #include "client.h"
-
-// gboolean mini_my_keypress_function (GtkWidget *widget, GdkEventKey *event, gpointer data) {
-//     if (event->keyval == 65505 || event->keyval == 65507) {
-//         release_button = TRUE;
-//     }
-//     if (event->keyval == 65293 && release_button == FALSE){
-//         //create_message_client(newmessedgentry, NULL);
-//     }
-//     return FALSE;
-// }
+#include "client.h"
 
 gboolean add_new_friend(GtkWidget *widget, gpointer data) {
    char  *login = g_object_get_data(G_OBJECT(widget),"name user");
    printf("%s\n",login );
-
   	cJSON *packet = cJSON_CreateObject();
     char  *packet_str = NULL;
   	cJSON *type = cJSON_CreateString("add_contact_c");

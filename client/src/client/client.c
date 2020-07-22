@@ -1,12 +1,10 @@
 #include "client.h"
- /// все вызовы функций гтк запихни в мейн поток(Денис для Дениса)
 client_context_t *client_context;
 
 static void destroy(GtkWidget *widget, gpointer data){
   gtk_main_quit();
 }
 
-// Main window init.
 void gui(int argc, char **argv, client_context_t *client_context) {
     gtk_init(&argc, &argv);
 
@@ -19,7 +17,6 @@ void gui(int argc, char **argv, client_context_t *client_context) {
     window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
     g_signal_connect(window,"destroy",G_CALLBACK(gtk_main_quit), NULL);
     gtk_window_set_resizable(GTK_WINDOW(window),FALSE);
-    //window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
     gtk_window_set_position(GTK_WINDOW(window), GTK_WIN_POS_CENTER);
 
     fixed = gtk_fixed_new();
@@ -27,7 +24,6 @@ void gui(int argc, char **argv, client_context_t *client_context) {
     gtk_container_add(GTK_CONTAINER(window), fixed); 
     client_context->Ukraine = FALSE;
     main_menu();
-
     gtk_main(); 
 }
 

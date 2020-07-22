@@ -90,6 +90,7 @@ char *mx_get_time();
 
 
 //mini приставка для виджетов в окне добавления юзеров
+GtkWidget *editbuttondelete;
 GtkWidget *stickermessage;
 GtkWidget *stickerebox;
 GtkWidget *stickerimage;
