@@ -29,6 +29,8 @@ char *mx_database_communication(char *packet) {
         send_back_packet = mx_add_contact(packet);
     else if (!strcmp(packet_type, "change_password_c"))
         send_back_packet = mx_change_password(packet);
+    else if (!strcmp(packet_type, "delete_user_c"))
+        send_back_packet = mx_delete_user(packet);
     free(packet_type);
     return send_back_packet;
 }

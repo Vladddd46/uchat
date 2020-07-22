@@ -4,10 +4,10 @@ client_context_t *client_context;
 
 void registration_system(int socket, char *packet) {
     char *status = get_value_by_key(packet, "STATUS");
-    client_context->username = get_value_by_key(packet,"TO");
+    gtk_widget_destroy(grid);
 
     if (!strcmp(status, "success")) {
-        gdk_threads_add_idle_full(G_PRIORITY_HIGH_IDLE, draw_message_menu, NULL, 0);
+        main_menu();
     }
     else {
         printf("%s\n", status);
