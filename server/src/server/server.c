@@ -89,34 +89,21 @@ static void *handle_server(void *param) {
         for (connected_client_list_t *p = ctx.head.next; p != NULL; p = p->next) {
             if (FD_ISSET(p->sock_fd, &read_descriptors)) {
                 char *packet = packet_receive(p->sock_fd);
-                if (packet == NULL)
-                    mx_null_value_error("handle_server");
-                printf("%s\n", packet);
-                char *logout = get_value_by_key(packet, "TYPE");
-                if (!mx_strcmp(logout, "logout_c")) {
-                    p->is_logged = false;
-                    break ;
-                }
+                if (packet == NULL) continue;
+                char *send_packet = mx_database_communication(packet, &p);
+                if (send_packet == NULL) continue;
 
-                // Modify db and forms packet, which must be send to specified in packet client(login).
-                char *send_packet = mx_database_communication(packet);
-                if (send_packet == NULL) // Connection was closed but update has not been made yet.
-                    continue;
-                printf("6\n");
                 char **receivers  = mx_packet_receivers_determine(send_packet);
                 mx_login_user_socket(p, send_packet, receivers);
-                printf("7\n");
-                char *send_back_packet_prefixed =  packet_len_prefix_adder(send_packet);
-                free(send_packet);
-                free(packet);
+
+            
                 for (connected_client_list_t *s = ctx.head.next; s != NULL; s = s->next) {
                     if (s->is_logged && mx_str_in_arr(s->login, receivers))
-                        send(s->sock_fd, send_back_packet_prefixed, (int)strlen(send_back_packet_prefixed), 0);
+                        mx_send(s->sock_fd, send_packet);
                 }          
-       
-                free(send_back_packet_prefixed);
-                // free(client_login)
-                // mx_del_strarr(&receivers); выдает сигфолт
+    
+                free(send_packet);
+                free(packet);
             }            
         }
         pthread_mutex_unlock(&ctx_mutex);

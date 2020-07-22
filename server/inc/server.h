@@ -76,7 +76,7 @@ int socket_list_remove(connected_client_list_t *head, int sock_fd);
 connected_client_list_t *socket_list_find(connected_client_list_t *head, int sock_fd);
 
 // Logic
-char *mx_database_communication(char *packet);
+char *mx_database_communication(char *packet, connected_client_list_t **client_node);
 char *login_system(char *packet);
 char *registration_system(char *packet);
 chats_t *mx_get_users_chats(char *user);
@@ -85,7 +85,7 @@ char* mx_add_message_by_id(char* packet);
 char* mx_find_user(char* packet);
 char* mx_add_contact(char* packet);
 char* mx_change_password(char* pakcet);
-char *mx_delete_user(char *packet);
+
 
 // additional 
 void mx_push_back_message_node(chat_message_t **list, char *sender, char *time, char *message, char* msg_type);

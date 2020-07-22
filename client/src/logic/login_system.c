@@ -11,9 +11,8 @@ void login_system(client_context_t *client_context, char *packet) {
 	t_s_glade *gui = (t_s_glade *)malloc(sizeof(t_s_glade));
 	gui->pack = packet;
 	gui->pack = mx_strdup(gui->pack);
-	gui->number = 0; 
-	client_context->mas = mx_new_strarr(len);
-	//g_timeout_add(300, (GSourceFunc)draw_message_menu, gui);
+	gui->number = 0;
+	client_context->mas =mx_new_strarr(len);
 	gdk_threads_add_idle_full(G_PRIORITY_HIGH_IDLE, draw_message_menu, gui, 0);
 	printf("%s\n","Start draw rows ");
 	int i = 0;

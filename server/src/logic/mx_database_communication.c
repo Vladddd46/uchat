@@ -1,5 +1,11 @@
 #include "server.h"
 
+static void logout(connected_client_list_t **client_node) {
+    connected_client_list_t *tmp = *client_node;
+    tmp->is_logged = false;
+}
+
+
 /*
  * Receive packet and determines type of this packet. 
  * Modifies db if it`s needed and forms new packet,
@@ -7,7 +13,7 @@
  * {to: client_login1; type: login; status_code: success}
  * {to: client_login2; from: client_login1; type: msg_update; data: "Hello"}
  */
-char *mx_database_communication(char *packet) {
+char *mx_database_communication(char *packet, connected_client_list_t **client_node) {
     printf("packet databasecomminication %s\n\n", packet);
     if (!strcmp(packet, ""))
         return NULL;
@@ -29,8 +35,9 @@ char *mx_database_communication(char *packet) {
         send_back_packet = mx_add_contact(packet);
     else if (!strcmp(packet_type, "change_password_c"))
         send_back_packet = mx_change_password(packet);
-    else if (!strcmp(packet_type, "delete_user_c"))
-        send_back_packet = mx_delete_user(packet);
+    else if (!mx_strcmp(packet_type, "logout_c"))
+        logout(client_node);
+
     free(packet_type);
     return send_back_packet;
 }
