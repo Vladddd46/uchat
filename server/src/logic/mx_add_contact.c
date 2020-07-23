@@ -81,9 +81,8 @@ static char *json_packet_former_from_list(chats_t *chat, char *status, char* log
     cJSON_AddItemToObject(packet, "TO", json_value);
     json_value =  cJSON_CreateString("1");
     cJSON_AddItemToObject(packet, "LENGTH", json_value);
-    // for(int i = 0; i < list_len; i++) {
         char chat_name_former[100];
-
+        bzero(chat_name_former, 100);
         sprintf(chat_name_former, "CHATNAME=%d", 0);
         json_value = cJSON_CreateString(to_users);
         cJSON_AddItemToObject(packet, chat_name_former, json_value);
@@ -101,12 +100,13 @@ static char *json_packet_former_from_list(chats_t *chat, char *status, char* log
 }
 
 char* mx_add_contact(char* packet) {
+    printf(">>>\n");
     char* login = get_value_by_key(packet, "USER");
     char* mylogin = get_value_by_key(packet, "TO");
     char* sendback_packet;
     char* message_error;
     sqlite3 *db = opening_db();
-
+    printf("00\n");
     if(!mx_check_contact_exits(mylogin, login)) {
         int mylogin_id = mx_get_user_id(mylogin);
         int login_id = mx_get_user_id(login);
@@ -132,8 +132,11 @@ char* mx_add_contact(char* packet) {
         
     }
     else {
+        printf("11\n");
         chats_t *chat = mx_get_users_chats(mylogin);
+        printf("22\n");
         sendback_packet = json_packet_former_from_list(chat, "false", mylogin, login);
+        printf("33\n");
     }
     sqlite3_close(db);
     return sendback_packet;

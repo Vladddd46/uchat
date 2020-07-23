@@ -49,7 +49,7 @@ static char* mx_get_current_password(char* login) {
 char* mx_change_password(char* packet) {
     char* login = get_value_by_key(packet, "LOGIN");
     char* current_password = mx_get_current_password(login);
-    char* new_password = mx_rsa_decode(get_value_by_key(packet, "TO"));
+    char* new_password = get_value_by_key(packet, "TO");
     char* status = mx_pass_validator(new_password, current_password);
     char* send_back_packet = mx_json_packet_former_from_list(status, login);
 

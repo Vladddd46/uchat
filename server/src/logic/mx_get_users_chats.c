@@ -81,6 +81,7 @@ static char** mx_get_users_chat_id(char* user_id) {
     *(chat_id_arr + arr_index) = NULL;
     sqlite3_finalize(res);
     sqlite3_close(db);
+    printf("mx_get_users_chat_id\n" );
     return chat_id_arr;
 }
 
@@ -95,7 +96,7 @@ chats_t *mx_get_users_chats(char *user) {
     char** chats_arr = mx_get_users_chat_id(user_id);
     int arr_index = 0;
 
-    
+    printf("233434\n");
     sqlite3 *db = opening_db();
 
     while(*(chats_arr + arr_index) != NULL) {

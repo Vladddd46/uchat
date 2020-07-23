@@ -88,22 +88,9 @@ static char *json_packet_former_from_list(chats_t *chat, char *status, char *log
     return packet_str;
 }
 
-static void free_chats_list(chats_t **chats) {
-    chats_t *chat = *chats;
-    chats_t *del;
-
-    while(chat) {
-        del = chat;
-        chat = chat->next;
-        // free(del->chat_name);
-        // free(del->last_message);
-        // free(del);
-    }
-}
-
 char *login_system(char *packet) {
     char *login         = get_value_by_key(packet, "LOGIN");
-    char *password      = mx_rsa_decode(get_value_by_key(packet, "PASSWORD"));
+    char *password      = get_value_by_key(packet, "PASSWORD");
     if (login == NULL || password == NULL)
         mx_null_value_error("login_system"); 
     char *return_status = mx_confirm_users_password(login, password);
@@ -113,9 +100,5 @@ char *login_system(char *packet) {
     if (!strcmp(return_status, "success"))
         chat = mx_get_users_chats(login);
     sendback_packet = json_packet_former_from_list(chat, return_status, login);
-    // free(login);
-    // free(password);
-    // free(return_status);
-    // free_chats_list(&chat);
     return sendback_packet;
 }
