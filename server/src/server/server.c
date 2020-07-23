@@ -94,7 +94,7 @@ static void *handle_server(void *param) {
                     continue;
                     mx_null_value_error("handle_server");
                 }
-                printf("%s\n", packet);
+                printf("1\n");
                 char *logout = get_value_by_key(packet, "TYPE");
                 if (logout == NULL) {
                     printf("LOGOUT NULL");
@@ -104,19 +104,18 @@ static void *handle_server(void *param) {
                     p->is_logged = false;
                     break;
                 }
+                printf("2\n");
 
-                printf("%s\n",packet );
                 // Modify db and forms packet, which must be send to specified in packet client(login).
                 char *send_packet = mx_database_communication(packet);
                 if (send_packet == NULL) // Connection was closed but update has not been made yet.
                     continue;
-                printf("%s\n", send_packet);
+                printf("3\n\n\n\n\n");
                 char *logins = get_value_by_key(send_packet, "TO");
-                printf("%s\n", logins);
+                printf(">%s\n",logins );
                 char **receivers = mx_strsplit(logins, ' ');
-                printf("><<<<<<<<<<<<<<<%s\n",receivers[0] );
-                printf("<<<<<<<<<<<<<<<<%s\n",receivers[1] );
 
+                printf("4\n");
                 int x = 0;
                 while(receivers[x]) {
                     printf("====>%s\n", receivers[x]);
@@ -124,13 +123,13 @@ static void *handle_server(void *param) {
                 }
                 mx_login_user_socket(p, send_packet, receivers);
                 char *send_back_packet_prefixed =  packet_len_prefix_adder(send_packet);
-                free(send_packet);
-                free(packet);
+                // free(send_packet);
+                // free(packet);
                 for (connected_client_list_t *s = ctx.head.next; s != NULL; s = s->next) {
                     if (s->is_logged && mx_str_in_arr(s->login, receivers))
                         send(s->sock_fd, send_back_packet_prefixed, (int)strlen(send_back_packet_prefixed), 0);
                 }          
-                free(send_back_packet_prefixed);
+                // free(send_back_packet_prefixed);
                 // free(client_login)
                 // mx_del_strarr(&receivers); выдает сигфолт
             }            

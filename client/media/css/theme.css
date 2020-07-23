@@ -69,11 +69,11 @@ background: transparent;
 border: none;
 }
 #listboxmess{
-  background-image: url("../img/background2.jpg");
+ /* background-image: url("../img/background2.jpg");
   background-position: center;
   background-repeat: no-repeat;
-  background-size: cover;
-  /*background-color: black;*/
+  background-size: cover;*/
+  background: linear-gradient(to left, #6988eb 0%, #3333cd 53%, #1d9090 100%);
 }
 #message{
   background-color: #ffffff;

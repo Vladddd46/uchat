@@ -9,7 +9,7 @@ OBJ_DIR		= obj/
 INC_DIR		= inc/
 # list of subdirs in src/
 DIRS		= $(notdir $(wildcard $(SRC_DIR)*))
-# list of only source C-files without extansions
+# list of only source C-files without extansions 
 FILES		= $(foreach dir, $(DIRS), $(basename $(wildcard \
 			  $(SRC_DIR)$(dir)/*.c)))
 # adding extansions .c to FILES
@@ -36,7 +36,10 @@ CC			= clang
 # general flags
 GFLAGS		= -std=c11 -pipe -Wall -Wextra -Werror -Wpedantic\
 	-Wno-unused-command-line-argument -Wno-unused-variable \
-	-Wno-unused-function -Wno-unused-parameter -g
+	-Wno-unused-function -Wno-unused-parameter -g 
+
+# 	-g3 -fsanitize=address,undefined \
+# 	-fno-omit-frame-pointer -O0
 # specific flags
 CFLAGS		= -lsqlite3 -lpthread
 # folder with header files

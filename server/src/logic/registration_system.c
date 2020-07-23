@@ -92,7 +92,7 @@ static char *form_sendback_packet(char *login, char *password, char *nickname) {
     if (sendback_packet == NULL)
         mx_null_value_error("form_sendback_packet");
 
-    free(return_status);
+    // free(return_status);
     return sendback_packet;
 }
 
@@ -105,8 +105,8 @@ char *registration_system(char *packet) {
         mx_null_value_error("registration_system");
     char *sendback_packet = form_sendback_packet(login, password, nickname);
 
-    free(login);
-    free(password);
-    free(nickname);
+    // free(login);
+    // free(password);
+    // free(nickname);
     return sendback_packet;
 }

@@ -177,20 +177,20 @@ char *mx_chat_render(char *packet) {
     char *all_users      = mx_get_all_users(chat_id);
     char *return_packet  = mx_json_packet_former_from_list(list, from, chat_name, all_users);
 
-    free(chat_id_str);
-    free(from_str);
-    free(to_str);
-    free(chat_name);
-    free(all_users);
+    // free(chat_id_str);
+    // free(from_str);
+    // free(to_str);
+    // free(chat_name);
+    // free(all_users);
 
-    chat_message_t *node_to_del;
-    while(list) {
-        node_to_del = list;
-        list        = list->next;
-        free(node_to_del->sender);
-        free(node_to_del->time);
-        free(node_to_del->message);
-        free(node_to_del);
-    }
+    // chat_message_t *node_to_del;
+    // while(list) {
+    //     node_to_del = list;
+    //     list        = list->next;
+    //     free(node_to_del->sender);
+    //     free(node_to_del->time);
+    //     free(node_to_del->message);
+    //     free(node_to_del);
+    // }
     return return_packet;   
 }

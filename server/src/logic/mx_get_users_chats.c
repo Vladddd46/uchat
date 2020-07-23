@@ -112,7 +112,7 @@ chats_t *mx_get_users_chats(char *user) {
     }
 
     sqlite3_close(db);
-    free(user_id);
+    // free(user_id);
     return chat;
 }
 

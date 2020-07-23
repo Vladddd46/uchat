@@ -95,9 +95,9 @@ static void free_chats_list(chats_t **chats) {
     while(chat) {
         del = chat;
         chat = chat->next;
-        free(del->chat_name);
-        free(del->last_message);
-        free(del);
+        // free(del->chat_name);
+        // free(del->last_message);
+        // free(del);
     }
 }
 
@@ -113,9 +113,9 @@ char *login_system(char *packet) {
     if (!strcmp(return_status, "success"))
         chat = mx_get_users_chats(login);
     sendback_packet = json_packet_former_from_list(chat, return_status, login);
-    free(login);
-    free(password);
-    free(return_status);
-    free_chats_list(&chat);
+    // free(login);
+    // free(password);
+    // free(return_status);
+    // free_chats_list(&chat);
     return sendback_packet;
 }

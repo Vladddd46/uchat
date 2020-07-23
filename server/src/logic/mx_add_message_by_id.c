@@ -90,12 +90,12 @@ char* mx_add_message_by_id(char *packet) {
     printf("2\n");
     char *return_packet = mx_json_packet_former_from_list(message, time, sender, chat_id, to, msg_type);
     printf("3s\n");
-    free(message_id_str);
-    free(time);
-    free(message);
-    free(chat_id_str);
-    free(sender);
-    free(to);
+    // free(message_id_str);
+    // free(time);
+    // free(message);
+    // free(chat_id_str);
+    // free(sender);
+    // free(to);
     printf("4\n");
     return return_packet;
 }

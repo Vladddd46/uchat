@@ -12,9 +12,10 @@ char *mx_database_communication(char *packet) {
     if (!strcmp(packet, ""))
         return NULL;
 
+    printf("a\n");
     char *packet_type      = get_value_by_key(packet, "TYPE");
     char *send_back_packet = NULL;
-
+    printf("b\n");
     if (!strcmp(packet_type, "login_c"))
         send_back_packet = login_system(packet); // 
     else if (!strcmp(packet_type, "reg_c"))
