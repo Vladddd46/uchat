@@ -40,7 +40,7 @@ void change_password_system(GtkWidget* widget, gpointer data){
     cJSON *packet     = cJSON_CreateObject();
     cJSON *json_value = cJSON_CreateString("change_password_c");
     cJSON_AddItemToObject(packet, "TYPE", json_value);
-    json_value = cJSON_CreateString(mx_rsa_encrypt(crypt(password, "X07")));
+    json_value = cJSON_CreateString(password);
     cJSON_AddItemToObject(packet, "TO", json_value);
     json_value = cJSON_CreateString(client_context->username);
     cJSON_AddItemToObject(packet, "LOGIN", json_value);

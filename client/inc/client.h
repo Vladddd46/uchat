@@ -82,7 +82,7 @@ struct sockaddr_in mx_client_address_describer(int port);
 void do_registration(GtkWidget *Registration, client_context_t *client_context);
 gboolean registration_system(void *data);
 void login_system(client_context_t *client_context, char *packet);
-void create_row_system(client_context_t *client_context, char *packet);
+gboolean create_row_system(void *data);
 
 // additional
 void mx_null_error(char *msg);

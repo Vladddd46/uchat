@@ -1,8 +1,9 @@
 #include "client.h"
 
-void create_row_system(client_context_t *client_context, char *packet) {
+gboolean create_row_system(void *data) {
+	char *packet = (char *)data;
 	char *length = get_value_by_key(packet,"MSGLEN");
-	if (length == NULL)
+	if (length == NULL) 
 	 	mx_null_error("6:create_row_system: get_value_by_key(length) retunred NULL");
 	int len = atoi(length);
 
@@ -28,6 +29,7 @@ void create_row_system(client_context_t *client_context, char *packet) {
 	for (int i = 0; len > i; i++){
 		gdk_threads_add_idle(create_message, pack);
 	}
+	return 0;
 }
 
 void create_row_system_new(client_context_t *client_context, char *packet) {

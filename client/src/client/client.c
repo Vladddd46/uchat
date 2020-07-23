@@ -7,7 +7,7 @@ static void destroy(GtkWidget *widget, gpointer data){
 }
 
 // Main window init.
-void gui(int argc, char **argv, client_context_t *client_context) {
+static void gui(int argc, char **argv, client_context_t *client_context) {
     gtk_init(&argc, &argv);
 
     GtkCssProvider *provider = gtk_css_provider_new();
@@ -15,11 +15,9 @@ void gui(int argc, char **argv, client_context_t *client_context) {
     gtk_style_context_add_provider_for_screen(gdk_screen_get_default(),
                                GTK_STYLE_PROVIDER(provider),
                                GTK_STYLE_PROVIDER_PRIORITY_USER);
-
     window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
     g_signal_connect(window,"destroy",G_CALLBACK(gtk_main_quit), NULL);
     gtk_window_set_resizable(GTK_WINDOW(window),FALSE);
-    //window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
     gtk_window_set_position(GTK_WINDOW(window), GTK_WIN_POS_CENTER);
 
     fixed = gtk_fixed_new();
@@ -70,7 +68,7 @@ static void received_packet_analyzer(char *packet_type, char *packet) {
             remake_chats(packet);
     }
     else if (!mx_strcmp(packet_type, "msg_s"))
-        create_row_system(client_context, packet);
+        gdk_threads_add_idle_full(G_PRIORITY_HIGH_IDLE, create_row_system, (void *)mx_strdup(packet), 0);
      else if (!mx_strcmp(packet_type, "add_msg_s"))
         create_row_system_new(client_context, packet);
 
