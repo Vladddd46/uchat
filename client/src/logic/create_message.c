@@ -180,7 +180,7 @@ gboolean create_message(void *data){
     // g_signal_connect (delet, "activate", G_CALLBACK (delete_message), row);
 
     
-    // g_idle_add ((int (*)(void *))show_widget, window);
+    g_idle_add ((int (*)(void *))show_widget, window);
     gtk_scrolled_window_set_vadjustment(GTK_SCROLLED_WINDOW(scrollmess), adj);
     client_context->counter+=1;
     pack->number+=1;

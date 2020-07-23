@@ -192,5 +192,6 @@ char *mx_chat_render(char *packet) {
     //     free(node_to_del->message);
     //     free(node_to_del);
     // }
+    printf("Packet back to client: %s\n\n", return_packet);
     return return_packet;   
 }

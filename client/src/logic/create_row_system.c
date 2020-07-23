@@ -17,7 +17,7 @@ gboolean create_row_system(void *data) {
 		mx_null_error("16:create_row_system: malloc retunred NULL");
 	pack->pack = mx_string_copy(packet);
 	pack->number = 0;
-		
+		printf(">>>>>>>>>>>>>>>>>>>%s\n",packet );
 
 	GtkWidget *scrolll = gtk_widget_get_parent(listboxmess);
 	gtk_widget_destroy(listboxmess);
@@ -27,6 +27,7 @@ gboolean create_row_system(void *data) {
 	g_idle_add((int (*)(void *))show_widget, window);
 
 	for (int i = 0; len > i; i++){
+		printf("%s\n","dfdfd" );
 		gdk_threads_add_idle(create_message, pack);
 	}
 	return 0;
