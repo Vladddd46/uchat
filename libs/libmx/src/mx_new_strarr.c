@@ -2,7 +2,7 @@
 
 // Allocates memmory for new array.
 char **mx_new_strarr(int size) {
-    char **arr = (char **)malloc(size + 1);
+    char **arr = (char **)malloc(sizeof(char *) * (size + 1));
     char *msg;
 
     if (arr == NULL) {

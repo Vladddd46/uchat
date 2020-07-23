@@ -64,7 +64,7 @@ gboolean create_message(void *data){
     char *timemessage = get_value_by_key(pack->pack,mx_strjoin("TIME",mx_itoa(pack->number)));
     char *type = get_value_by_key(pack->pack,mx_strjoin("MSGTYPE",mx_itoa(pack->number)));    // почисти память
 
-    adj = gtk_adjustment_new(10000, 100000, -1000, 100, 10000, 10000);
+    adj = gtk_adjustment_new(10000, 100000, 1, 1000, 10000, 10000);
     row = gtk_list_box_row_new();
     ebox = gtk_event_box_new();
     gtk_container_add(GTK_CONTAINER(row), ebox);
@@ -166,21 +166,21 @@ gboolean create_message(void *data){
 
  
  //menu with edit and delete button
-    fileMenu = gtk_menu_new();
-    g_signal_connect_swapped(G_OBJECT(ebox), "button-press-event", G_CALLBACK(show_popup), fileMenu);
+    // fileMenu = gtk_menu_new();
+    // g_signal_connect_swapped(G_OBJECT(ebox), "button-press-event", G_CALLBACK(show_popup), fileMenu);
 
-    edit = gtk_menu_item_new_with_label("Edit");
-    g_idle_add ((int (*)(void *))show_widget, edit);
-    gtk_menu_shell_append(GTK_MENU_SHELL(fileMenu), edit);
-    g_signal_connect (edit, "activate", G_CALLBACK (edit_message), labellmenu2);
+    // edit = gtk_menu_item_new_with_label("Edit");
+    // g_idle_add ((int (*)(void *))show_widget, edit);
+    // gtk_menu_shell_append(GTK_MENU_SHELL(fileMenu), edit);
+    // g_signal_connect (edit, "activate", G_CALLBACK (edit_message), labellmenu2);
 
-    delet = gtk_menu_item_new_with_label("Delete");
-    g_idle_add ((int (*)(void *))show_widget, delet);
-    gtk_menu_shell_append (GTK_MENU_SHELL (fileMenu), delet);  
-    g_signal_connect (delet, "activate", G_CALLBACK (delete_message), row);
+    // delet = gtk_menu_item_new_with_label("Delete");
+    // g_idle_add ((int (*)(void *))show_widget, delet);
+    // gtk_menu_shell_append (GTK_MENU_SHELL (fileMenu), delet);  
+    // g_signal_connect (delet, "activate", G_CALLBACK (delete_message), row);
 
     
-    g_idle_add ((int (*)(void *))show_widget, window);
+    // g_idle_add ((int (*)(void *))show_widget, window);
     gtk_scrolled_window_set_vadjustment(GTK_SCROLLED_WINDOW(scrollmess), adj);
     client_context->counter+=1;
     pack->number+=1;

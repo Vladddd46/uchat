@@ -9,9 +9,9 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <gtk/gtk.h>
-#include "cJSON.h"
 #include "libmx.h"
 #include "utils.h"
+#include "cJSON.h"
 
 typedef struct client_context_s {
 	int sockfd;
@@ -22,6 +22,9 @@ typedef struct client_context_s {
 	char **mas;
 	bool flag;
 	bool Ukraine;
+	bool edit;
+	bool find;
+	bool sticker;
 } client_context_t;
 
 struct struct_type {
@@ -42,6 +45,9 @@ typedef struct s_s_glade {
 
 client_context_t *client_context;
 // какие то непонятные функции Дениса. PS. структурируй их пожалуйста.
+void stickerbool (GtkWidget* widget,gpointer data);
+void findbool (GtkWidget* widget,gpointer data);
+void editbool (GtkWidget* widget,gpointer data);
 void close_window(GtkWidget *widget);
 gboolean button_release (GtkWidget *widget, GdkEventKey *event, gpointer data);
 void download_messages(GtkWidget *widget, gpointer data);

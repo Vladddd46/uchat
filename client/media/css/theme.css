@@ -1,8 +1,8 @@
 window{
-/*	  background-image: url("../img/background2.jpg");
+	  background-image: url("../img/background2.jpg");
 
   background-position: center;
-  background-size: cover;*/
+  background-size: cover;
 }
 #fixed{
 }
@@ -69,11 +69,9 @@ background: transparent;
 border: none;
 }
 #listboxmess{
- /* background-image: url("../img/background2.jpg");
+  background-image: url("../img/back3.jpg");
   background-position: center;
-  background-repeat: no-repeat;
-  background-size: cover;*/
-  background: linear-gradient(to left, #6988eb 0%, #3333cd 53%, #1d9090 100%);
+  background-repeat: repeat;
 }
 #message{
   background-color: #ffffff;
