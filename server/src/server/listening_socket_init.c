@@ -5,17 +5,11 @@
  * Returns structure sockaddr_in with description.
  */
 static struct sockaddr_in serv_address_description(int port) {
-    /* <del>
-     * Создаем структуру, которая описывает адресс сервера:
-     * bzero -  заполняет структуру \0
-     * - семейство адрессов (aka тип - IPv4/IPv6)
-     * - сам адресс.
-     */
     struct sockaddr_in serv_addr;
     bzero((char *)&serv_addr, sizeof(serv_addr));
-    serv_addr.sin_family      = AF_INET;           // <del> семейство адрессов.
-    serv_addr.sin_addr.s_addr = htonl(INADDR_ANY); // <del> адресс IPv4 PS. INADDR_ANY это вроже любой доступный локальный адресс (это не точно)
-    serv_addr.sin_port        = htons(port);       // <del> номер порта
+    serv_addr.sin_family      = AF_INET; 
+    serv_addr.sin_addr.s_addr = htonl(INADDR_ANY);
+    serv_addr.sin_port        = htons(port);       
     return serv_addr;
 }
 
@@ -31,10 +25,8 @@ int listening_socket_init(int port) {
      */
     int sockfd = socket(AF_INET, SOCK_STREAM, 0);
     error("Creating socket error", sockfd);
-
     // Getting structure with server address description.
     struct sockaddr_in serv_addr = serv_address_description(port);
-
     /* 
      * Binding listening socket with certain address, describes in sructure serv_addr.
      * serv_addr must be cast to sockaddr.

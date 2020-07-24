@@ -1,5 +1,5 @@
 window{
-	  background-image: url("../img/background2.jpg");
+	  /*background-image: url("../img/background2.jpg");*/
 
   background-position: center;
   background-size: cover;
@@ -69,7 +69,8 @@ background: transparent;
 border: none;
 }
 #listboxmess{
-  background-image: url("../img/back3.jpg");
+  /*background-image: url("../img/back3.jpg");*/
+  background-color: grey;
   background-position: center;
   background-repeat: repeat;
 }
