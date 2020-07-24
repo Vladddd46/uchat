@@ -29,13 +29,17 @@ void login_system(client_context_t *client_context, char *packet) {
  	t_s_glade *gui = (t_s_glade *)malloc(sizeof(t_s_glade));
 	gui->pack = packet;
 	gui->pack = mx_strdup(gui->pack);
-	gui->number = 0;
+	printf(">>>>>>clientcont>>>%d\n",client_context->guinumber );
+	gui->number = client_context->guinumber;
 	GtkWidget *scroll = gtk_widget_get_parent(listbox);
 	// gtk_widget_destroy(listbox);
 	// listbox = gtk_list_box_new(); 
 	// gtk_widget_set_name(listbox,"listboxleft");
 	// gtk_container_add(GTK_CONTAINER(scroll), listbox);
 	//g_idle_add ((int (*)(void *))show_widget, window);
+
+    // if(strstr(get_value_by_key(gui->pack, "")))
+
 	g_signal_connect(listbox,"row-activated", G_CALLBACK(touch_room_signal), &client_context->sockfd);
 	while (len > i && !gtk_events_pending()){
 		gdk_threads_add_idle_full(G_PRIORITY_HIGH_IDLE, create_row, gui, 0);

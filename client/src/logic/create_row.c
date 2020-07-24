@@ -10,9 +10,9 @@ gboolean create_row(void *data){
     gtk_widget_set_name(row,"chatrow");
     gtk_list_box_insert (GTK_LIST_BOX(listbox),row,gui->number); 
     g_object_set_data(G_OBJECT(row),"row number",&(gui->number));
+    printf(">>Gui number>>>>>>%d",gui->number);
     printf("erqeqgre\n");
     client_context->mas[gui->number] = get_value_by_key(gui->pack, mx_strjoin("CHATID=",mx_itoa(gui->number)));
-
     printf("3254654\n");
     gridmenu = gtk_grid_new();
     gtk_container_add(GTK_CONTAINER(row), gridmenu);
@@ -29,6 +29,7 @@ gboolean create_row(void *data){
     gtk_widget_set_name(labellmenu2,"labellmenu2");
     gtk_grid_attach(GTK_GRID(gridmenu), labellmenu2, 1, 1, 1, 1);
     gui->number+=1;
+    client_context->guinumber = gui->number;
 
     // labellmenu3 = gtk_label_new("Yesterday");
     // gtk_grid_attach(GTK_GRID(gridmenu), labellmenu3, 2, 0, 1, 1);

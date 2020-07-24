@@ -220,6 +220,7 @@ gboolean create_message_system(void *data){
     cJSON *allusers    = cJSON_CreateString(all_users);
     cJSON *message_id  = cJSON_CreateString("0");
     int chat_id_client = client_context->indexrow;
+    printf("CHAT ID FROM DB : %s\n\n", client_context->mas[client_context->indexrow]);
     cJSON *chat_id     = cJSON_CreateString(client_context->mas[client_context->indexrow]);
     cJSON *username    = cJSON_CreateString(client_context -> username);
     

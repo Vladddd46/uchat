@@ -243,6 +243,7 @@ gboolean button_release (GtkWidget *widget, GdkEventKey *event, gpointer data) {
 }
 
 gboolean draw_message_menu(void *data){
+    client_context->guinumber = 0;
     client_context->edit = 0;
     client_context->find = 0;
     client_context->sticker = 0;

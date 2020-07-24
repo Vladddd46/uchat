@@ -259,6 +259,7 @@ void touch_room_signal(GtkWidget *listbox, void *socket){
     json_value = cJSON_CreateString("15");
     cJSON_AddItemToObject(packet, "TOMSG", json_value);
     json_value = cJSON_CreateString(client_context->mas[client_context->indexrow]);
+    printf("CHAT ID FROM DB : %s\n\n", client_context->mas[client_context->indexrow]);
     cJSON_AddItemToObject(packet, "CHATIDFROMDB", json_value);
     packet_str = cJSON_Print(packet);
     char *packet_with_prefix = packet_len_prefix_adder(packet_str);

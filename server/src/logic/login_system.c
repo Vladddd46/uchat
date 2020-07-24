@@ -100,5 +100,6 @@ char *login_system(char *packet) {
     if (!strcmp(return_status, "success"))
         chat = mx_get_users_chats(login);
     sendback_packet = json_packet_former_from_list(chat, return_status, login);
+    printf("packet back in login_system: %s\n\n", sendback_packet);
     return sendback_packet;
 }

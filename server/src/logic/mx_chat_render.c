@@ -134,8 +134,8 @@ static char *mx_json_packet_former_from_list(chat_message_t* chat, int from, cha
         cJSON_AddItemToObject(packet, packet_former, json_value);
         json_value = cJSON_CreateString(mx_itoa(list_len));
         cJSON_AddItemToObject(packet, "MSGLEN", json_value);
-        json_value = cJSON_CreateString(all_users);
-        cJSON_AddItemToObject(packet, "ALLUSERS", json_value);
+        // json_value = cJSON_CreateString(all_users);
+        // cJSON_AddItemToObject(packet, "ALLUSERS", json_value);
         json_value = cJSON_CreateString(chat -> sender);
         sprintf(packet_former, "SENDER%d", i);
         cJSON_AddItemToObject(packet, packet_former, json_value);
@@ -162,11 +162,15 @@ char *mx_chat_render(char *packet) {
     char *to_str      = get_value_by_key(packet, "TOMSG");
     char *chat_name   = get_value_by_key(packet, "CHATNAME");
 
+    printf("Error 1\n\n");
+    printf("Error 2\n\n");
     int chat_id         = atoi(chat_id_str);
+    printf("Error 2\n\n");
     int from            = atoi(from_str);
     int to              = atoi(to_str);
     int last_message_id = mx_get_last_message_id(chat_id);
     
+    printf("Error 2\n\n");
     int amount_of_msg = to - from;
     from = last_message_id - amount_of_msg - from;
     to   = from + to;
@@ -174,8 +178,11 @@ char *mx_chat_render(char *packet) {
         from = 0;
 
     chat_message_t *list = mx_fill_list(chat_id_str, from, to, amount_of_msg);
+    printf("Error 3\n\n");
     char *all_users      = mx_get_all_users(chat_id);
+    printf("Error 4\n\n");
     char *return_packet  = mx_json_packet_former_from_list(list, from, chat_name, all_users);
+    printf("Error 5\n\n");
 
     // free(chat_id_str);
     // free(from_str);

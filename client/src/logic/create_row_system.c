@@ -25,9 +25,9 @@ gboolean create_row_system(void *data) {
 	gtk_widget_set_name(listboxmess,"listboxmess");
 	gtk_container_add(GTK_CONTAINER(scrolll), listboxmess);
 	g_idle_add((int (*)(void *))show_widget, window);
+	printf("%s\n","dfdfd" );
 
 	for (int i = 0; len > i; i++){
-		printf("%s\n","dfdfd" );
 		gdk_threads_add_idle(create_message, pack);
 	}
 	return 0;

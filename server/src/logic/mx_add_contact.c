@@ -62,6 +62,28 @@ static int mx_get_last_chat_id() {
     return last_chat_id;
 }
 
+static int mx_get_amount_of_chats(int user_id) {
+    sqlite3 *db = opening_db();
+    sqlite3_stmt *res;
+    char sql[100];
+    bzero(sql, 100);
+    int counter = -1;
+    
+    int last_chat_id = 0;
+    
+    sprintf(sql, "SELECT CHATID FROM USERCHAT WHERE USERID = %d;", user_id);
+    int check = sqlite3_prepare_v2(db, sql, -1, &res, 0);
+    dberror(db, check, "SELECT CHATID FROM USERCHAT WHERE USERID");
+    sqlite3_step(res); 
+    while(sqlite3_column_text(res, 0) != NULL) {
+        counter++;
+        sqlite3_step(res);
+    }
+    sqlite3_finalize(res);
+    sqlite3_close(db);
+    return counter;
+}
+
 static char *json_packet_former_from_list(chats_t *chat, char *status, char* login, char* mylogin) {
     int list_len = mx_chats_list_len(chat);
     cJSON *packet = cJSON_CreateObject();
@@ -83,14 +105,23 @@ static char *json_packet_former_from_list(chats_t *chat, char *status, char* log
     cJSON_AddItemToObject(packet, "LENGTH", json_value);
         char chat_name_former[100];
         bzero(chat_name_former, 100);
-        sprintf(chat_name_former, "CHATNAME=%d", 0);
+        sprintf(chat_name_former, "CHATNAME=%d", mx_get_amount_of_chats(mx_get_user_id(login)));
+        json_value = cJSON_CreateString(to_users);
+        cJSON_AddItemToObject(packet, chat_name_former, json_value);
+        sprintf(chat_name_former, "CHATNAME=%d", mx_get_amount_of_chats(mx_get_user_id(mylogin)));
         json_value = cJSON_CreateString(to_users);
         cJSON_AddItemToObject(packet, chat_name_former, json_value);
         json_value = cJSON_CreateString("chat created");
-        sprintf(chat_name_former, "LASTMESSAGE=%d", 0);
+        sprintf(chat_name_former, "LASTMESSAGE=%d", mx_get_amount_of_chats(mx_get_user_id(login)));
+        cJSON_AddItemToObject(packet, chat_name_former, json_value);
+        json_value = cJSON_CreateString("chat created");
+        sprintf(chat_name_former, "LASTMESSAGE=%d", mx_get_amount_of_chats(mx_get_user_id(mylogin)));
         cJSON_AddItemToObject(packet, chat_name_former, json_value);
         json_value = cJSON_CreateString(mx_itoa(mx_get_last_chat_id()));
-        sprintf(chat_name_former, "CHATID=%d", 0);
+        sprintf(chat_name_former, "CHATID=%d", mx_get_amount_of_chats(mx_get_user_id(login)));  // last amount of users chats;
+        cJSON_AddItemToObject(packet, chat_name_former, json_value);
+        json_value = cJSON_CreateString(mx_itoa(mx_get_last_chat_id()));
+        sprintf(chat_name_former, "CHATID=%d", mx_get_amount_of_chats(mx_get_user_id(mylogin)));
         cJSON_AddItemToObject(packet, chat_name_former, json_value);
         chat = chat -> next;
     // }
@@ -100,7 +131,7 @@ static char *json_packet_former_from_list(chats_t *chat, char *status, char* log
 }
 
 char* mx_add_contact(char* packet) {
-    printf(">>>\n");
+    printf("====>%s\n", packet);
     char* login = get_value_by_key(packet, "USER");
     char* mylogin = get_value_by_key(packet, "TO");
     char* sendback_packet;
@@ -110,6 +141,10 @@ char* mx_add_contact(char* packet) {
     if(!mx_check_contact_exits(mylogin, login)) {
         int mylogin_id = mx_get_user_id(mylogin);
         int login_id = mx_get_user_id(login);
+
+        if(mylogin_id == login_id) {
+            return NULL;
+        }
         char sql[200];
         bzero(sql, 200);
         int last_chat_id = mx_get_last_chat_id();
@@ -138,6 +173,7 @@ char* mx_add_contact(char* packet) {
         sendback_packet = json_packet_former_from_list(chat, "false", mylogin, login);
         printf("33\n");
     }
+    printf("packet back to client: %s\n\n", sendback_packet);
     sqlite3_close(db);
     return sendback_packet;
 }

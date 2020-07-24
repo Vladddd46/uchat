@@ -25,6 +25,7 @@ typedef struct client_context_s {
 	bool edit;
 	bool find;
 	bool sticker;
+	int guinumber;
 } client_context_t;
 
 struct struct_type {
