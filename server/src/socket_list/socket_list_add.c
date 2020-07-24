@@ -4,7 +4,7 @@
  * Adds new node with socket (connection)
  * description in linked list.
  */
-int socket_list_add(connected_client_list_t *head, int new_sock_fd) {
+int mx_socket_list_add(connected_client_list_t *head, int new_sock_fd) {
     connected_client_list_t *p    = NULL;
     connected_client_list_t *prev = NULL;
     if (head == NULL) return -1;

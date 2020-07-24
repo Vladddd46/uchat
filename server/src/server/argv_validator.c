@@ -1,7 +1,7 @@
 #include "server.h"
 
 // Checks, wether user specified input correctly.
-void argv_validator(int argc) {
+void mx_argv_validator(int argc) {
     char *msg;
 
     if (argc != 2) {

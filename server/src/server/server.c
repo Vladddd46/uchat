@@ -27,7 +27,7 @@ static void server_context_free(void) {
     for (connected_client_list_t *p = ctx.head.next; p != NULL; p = p->next) {
         close(p->sock_fd);
     }
-    socket_list_free(&ctx.head);
+    mx_socket_list_free(&ctx.head);
     pthread_mutex_unlock(&ctx_mutex);
 }
 
@@ -46,7 +46,7 @@ static bool update_connections(fd_set *descriptors) {
             printf("Connection on socket with socket fd %d was closed\n", s->sock_fd);
             close(s->sock_fd);
             FD_CLR(s->sock_fd, &ctx.read_descriptors);
-            if (socket_list_remove(&ctx.head, s->sock_fd) < 0) {
+            if (mx_socket_list_remove(&ctx.head, s->sock_fd) < 0) {
                 status = false;
             }
         }
@@ -134,9 +134,9 @@ static void *handle_server(void *param) {
 
 
 int main(int argc, char **argv) {
-    argv_validator(argc);
-    int port             = get_port(argv);
-    int listening_socket = listening_socket_init(port);
+    mx_argv_validator(argc);
+    int port             = mx_get_port(argv);
+    int listening_socket = mx_listening_socket_init(port);
     mx_database_init();
     server_context_init();
 
@@ -170,7 +170,7 @@ int main(int argc, char **argv) {
          * * Mutex is used because `ctx.head` is also used in handle_server thread.
          */
         pthread_mutex_lock(&ctx_mutex);
-        int status = socket_list_add(&ctx.head, newsockfd);
+        int status = mx_socket_list_add(&ctx.head, newsockfd);
         if (status == 0) {
             FD_SET(newsockfd, &ctx.read_descriptors);
             printf("New connection was accepted, socket = %d\n", newsockfd);

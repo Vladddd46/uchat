@@ -5,7 +5,7 @@
  * If wrong port number - error msg prints + exit.
  * In case of success  - returns <int> port number.
  */
-int get_port(char **argv) {
+int mx_get_port(char **argv) {
     int port = atoi(argv[1]);
     char *msg;
 

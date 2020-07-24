@@ -55,9 +55,9 @@ typedef struct users_list {
 } users_list_t;
 
 // Server main functions.
-int  get_port(char **argv);
-int  listening_socket_init(int port);
-void argv_validator(int argc);
+int  mx_get_port(char **argv);
+int  mx_listening_socket_init(int port);
+void mx_argv_validator(int argc);
 void mx_login_user_socket(connected_client_list_t *p, char *send_packet, char **receivers);
 int  mx_user_is_already_logged_in(connected_client_list_t *list, char *user_login);
 
@@ -70,10 +70,10 @@ void mx_db_msg_error(int status, char *msg_error);
 char *mx_get_nickname_by_login(char *login);
 
 // Socket list.
-int socket_list_add(connected_client_list_t    *head, int new_sock_fd);
-int socket_list_free(connected_client_list_t   *head);
-int socket_list_remove(connected_client_list_t *head, int sock_fd);
-connected_client_list_t *socket_list_find(connected_client_list_t *head, int sock_fd);
+int mx_socket_list_add(connected_client_list_t    *head, int new_sock_fd);
+int mx_socket_list_free(connected_client_list_t   *head);
+int mx_socket_list_remove(connected_client_list_t *head, int sock_fd);
+connected_client_list_t *mx_socket_list_find(connected_client_list_t *head, int sock_fd);
 
 // Logic
 char *mx_database_communication(char *packet);
