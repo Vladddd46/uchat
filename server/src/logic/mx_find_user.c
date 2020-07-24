@@ -4,11 +4,9 @@ static bool mx_check_complability(char* login, char* nickname, char* user) {
     bool status = false;
 
     if(strstr(login, user) != NULL) {
-        printf("\nFOUND!!\n\n");
     	status = true;
     }
     else if(strstr(nickname, user) != NULL) {
-        printf("\nFOUND!!\n\n");
     	status = true;
     }
     return status;

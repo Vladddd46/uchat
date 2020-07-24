@@ -97,65 +97,56 @@ static char *json_packet_former_from_list(chats_t *chat, char *status, char* log
     cJSON_AddItemToObject(packet, "TYPE", json_value);
     json_value = cJSON_CreateString(status);
     cJSON_AddItemToObject(packet, "STATUS", json_value);
-    // json_value = cJSON_CreateString(nickname);
-    // cJSON_AddItemToObject(packet, "NICKNAME", json_value);
     json_value =  cJSON_CreateString(to_users);
     cJSON_AddItemToObject(packet, "TO", json_value);
     json_value =  cJSON_CreateString("1");
     cJSON_AddItemToObject(packet, "LENGTH", json_value);
-        char chat_name_former[100];
-        bzero(chat_name_former, 100);
-        sprintf(chat_name_former, "CHATNAME=%d", mx_get_amount_of_chats(mx_get_user_id(login)));
-        json_value = cJSON_CreateString(to_users);
-        cJSON_AddItemToObject(packet, chat_name_former, json_value);
-        sprintf(chat_name_former, "CHATNAME=%d", mx_get_amount_of_chats(mx_get_user_id(mylogin)));
-        json_value = cJSON_CreateString(to_users);
-        cJSON_AddItemToObject(packet, chat_name_former, json_value);
-        json_value = cJSON_CreateString("chat created");
-        sprintf(chat_name_former, "LASTMESSAGE=%d", mx_get_amount_of_chats(mx_get_user_id(login)));
-        cJSON_AddItemToObject(packet, chat_name_former, json_value);
-        json_value = cJSON_CreateString("chat created");
-        sprintf(chat_name_former, "LASTMESSAGE=%d", mx_get_amount_of_chats(mx_get_user_id(mylogin)));
-        cJSON_AddItemToObject(packet, chat_name_former, json_value);
-        json_value = cJSON_CreateString(mx_itoa(mx_get_last_chat_id()));
-        sprintf(chat_name_former, "CHATID=%d", mx_get_amount_of_chats(mx_get_user_id(login)));  // last amount of users chats;
-        cJSON_AddItemToObject(packet, chat_name_former, json_value);
-        json_value = cJSON_CreateString(mx_itoa(mx_get_last_chat_id()));
-        sprintf(chat_name_former, "CHATID=%d", mx_get_amount_of_chats(mx_get_user_id(mylogin)));
-        cJSON_AddItemToObject(packet, chat_name_former, json_value);
-        chat = chat -> next;
-    // }
+    char chat_name_former[100];
+    bzero(chat_name_former, 100);
+    sprintf(chat_name_former, "CHATNAME=%d", mx_get_amount_of_chats(mx_get_user_id(login)));
+    json_value = cJSON_CreateString(to_users);
+    cJSON_AddItemToObject(packet, chat_name_former, json_value);
+    sprintf(chat_name_former, "CHATNAME=%d", mx_get_amount_of_chats(mx_get_user_id(mylogin)));
+    json_value = cJSON_CreateString(to_users);
+    cJSON_AddItemToObject(packet, chat_name_former, json_value);
+    json_value = cJSON_CreateString("chat created");
+    sprintf(chat_name_former, "LASTMESSAGE=%d", mx_get_amount_of_chats(mx_get_user_id(login)));
+    cJSON_AddItemToObject(packet, chat_name_former, json_value);
+    json_value = cJSON_CreateString("chat created");
+    sprintf(chat_name_former, "LASTMESSAGE=%d", mx_get_amount_of_chats(mx_get_user_id(mylogin)));
+    cJSON_AddItemToObject(packet, chat_name_former, json_value);
+    json_value = cJSON_CreateString(mx_itoa(mx_get_last_chat_id()));
+    sprintf(chat_name_former, "CHATID=%d", mx_get_amount_of_chats(mx_get_user_id(login))); 
+    cJSON_AddItemToObject(packet, chat_name_former, json_value);
+    json_value = cJSON_CreateString(mx_itoa(mx_get_last_chat_id()));
+    sprintf(chat_name_former, "CHATID=%d", mx_get_amount_of_chats(mx_get_user_id(mylogin)));
+    cJSON_AddItemToObject(packet, chat_name_former, json_value);
+    chat = chat -> next;
     packet_str = cJSON_Print(packet);
     free(nickname);
     return packet_str;
 }
 
 char* mx_add_contact(char* packet) {
-    printf("====>%s\n", packet);
     char* login = get_value_by_key(packet, "USER");
     char* mylogin = get_value_by_key(packet, "TO");
     char* sendback_packet;
     char* message_error;
     sqlite3 *db = mx_opening_db();
-    printf("00\n");
     if(!mx_check_contact_exits(mylogin, login)) {
         int mylogin_id = mx_get_user_id(mylogin);
         int login_id = mx_get_user_id(login);
-
-        if(mylogin_id == login_id) {
+        if(mylogin_id == login_id)
             return NULL;
-        }
         char sql[200];
         bzero(sql, 200);
         int last_chat_id = mx_get_last_chat_id();
-        
         sprintf(sql, "INSERT INTO USERCHAT(USERID, CHATID) VALUES(%d, %d);", mylogin_id, last_chat_id + 1);
         int check = sqlite3_exec(db, sql, NULL, 0, &message_error);
         mx_dberror(db, check, "INSERT INTO USERCHAT(USERID, CHATID) VALUES 1");
         sprintf(sql, "INSERT INTO USERCHAT(USERID, CHATID) VALUES(%d, %d);", login_id, last_chat_id + 1);
         check = sqlite3_exec(db, sql, NULL, 0, &message_error);
         mx_dberror(db, check, "INSERT INTO USERCHAT(USERID, CHATID) VALUES 2");
-
         sprintf(sql, "INSERT INTO CHATS(CHATNAME, LASTMESSAGE) VALUES('%s %s', 'created chat');", login, mylogin);
         check = sqlite3_exec(db, sql, NULL, 0, &message_error);
         mx_dberror(db, check, "INSERT INTO CHATS(CHATNAME, LASMESSAGE) VALUES");
@@ -167,13 +158,9 @@ char* mx_add_contact(char* packet) {
         
     }
     else {
-        printf("11\n");
         chats_t *chat = mx_get_users_chats(mylogin);
-        printf("22\n");
         sendback_packet = json_packet_former_from_list(chat, "false", mylogin, login);
-        printf("33\n");
     }
-    printf("packet back to client: %s\n\n", sendback_packet);
     sqlite3_close(db);
     return sendback_packet;
 }
