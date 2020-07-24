@@ -57,7 +57,7 @@ static bool update_connections(fd_set *descriptors) {
 static char **mx_packet_receivers_determine(char *packet) {
     char *logins = mx_string_copy(get_value_by_key(packet, "TO"));
     char **receivers = mx_strsplit(logins, ' ');
-    // free(logins);
+
     return receivers;
 }
 
@@ -101,24 +101,24 @@ static void *handle_server(void *param) {
                     break;
                 }
 
+                printf("123 packet = %s\n", packet);
                 // Modify db and forms packet, which must be send to specified in packet client(login).
                 char *send_packet = mx_database_communication(packet);
+                printf("321 back packet = %s\n", send_packet);
                 if (send_packet == NULL) // Connection was closed but update has not been made yet.
                     continue;
                 char *logins = get_value_by_key(send_packet, "TO");
                 char **receivers = mx_strsplit(logins, ' ');
 
                 mx_login_user_socket(p, send_packet, receivers);
-                char *send_back_packet_prefixed =  packet_len_prefix_adder(send_packet);
                 for (connected_client_list_t *s = ctx.head.next; s != NULL; s = s->next) {
                     if (s->is_logged && mx_str_in_arr(s->login, receivers))
-                        send(s->sock_fd, send_back_packet_prefixed, (int)strlen(send_back_packet_prefixed), 0);
+                        mx_send(s->sock_fd, send_packet);
                 }          
             }            
         }
         pthread_mutex_unlock(&ctx_mutex);
     }
-    printf("handle_server thread was finished\n"); // Debug.
     return NULL;
 }
 
