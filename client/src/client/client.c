@@ -53,7 +53,6 @@ void client_context_init(int sockfd) {
 }
 
 static void received_packet_analyzer(char *packet_type, char *packet) {
-    printf("333\n");
     if (!mx_strcmp(packet_type, "reg_s"))
         gdk_threads_add_idle_full(G_PRIORITY_HIGH_IDLE, mx_registration_system, (void *)mx_strdup(packet), 0);
     else if (!mx_strcmp(packet_type, "login_s")){
@@ -70,8 +69,10 @@ static void received_packet_analyzer(char *packet_type, char *packet) {
     }
     else if (!mx_strcmp(packet_type, "msg_s"))
         gdk_threads_add_idle_full(G_PRIORITY_HIGH_IDLE, create_row_system, (void *)mx_strdup(packet), 0);
-     else if (!mx_strcmp(packet_type, "add_msg_s"))
+     else if (!mx_strcmp(packet_type, "add_msg_s")) {
+        write(1, "\a", 1);
         create_row_system_new(client_context, packet);
+    }
 
 }
 

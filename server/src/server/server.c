@@ -79,8 +79,10 @@ static void *handle_server(void *param) {
         for (connected_client_list_t *p = ctx.head.next; p != NULL; p = p->next) {
             if (FD_ISSET(p->sock_fd, &read_descriptors)) {
                 char *packet = packet_receive(p->sock_fd);
+                printf("receive => %s\n", packet);
                 if (packet == NULL || !mx_strcmp("", packet)) break;
                 char *send_packet = mx_database_communication(packet, &p);
+                printf("send => %s\n", send_packet);
                 if (send_packet == NULL) break;
                 char **receivers = packet_receivers_determine(send_packet);
                 mx_login_user_socket(p, send_packet, receivers);
