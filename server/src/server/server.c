@@ -62,6 +62,16 @@ static char **mx_packet_receivers_determine(char *packet) {
 }
 
 
+/*
+ * Going through each opened socket and determine, whether socket is active.
+ * if true => receive packet from socket => alalyze this packet =>
+ * change db if it`s needed and form new packet to send.
+ * Go through linked list with opened sockets(connected clients) and check,
+ * whether socket node has the same attribute(user_login) as specified in new packet.
+ * if node was found -> send packet to socket, specified in it. Otherwise, just 
+ * change db depending on packet => as user is getting logged, all new data retrieves 
+ * from db.
+ */
 static void *handle_server(void *param) {
     int status;
     fd_set read_descriptors;
@@ -74,25 +84,13 @@ static void *handle_server(void *param) {
         if (status <= 0) continue;
         
         pthread_mutex_lock(&ctx_mutex);
-        /*
-         * Going through each opened socket and determine, whether socket is active.
-         * if true => receive packet from socket => alalyze this packet =>
-         * change db if it`s needed and form new packet to send.
-         * Go through linked list with opened sockets(connected clients) and check,
-         * whether socket node has the same attribute(user_login) as specified in new packet.
-         * if node was found -> send packet to socket, specified in it. Otherwise, just 
-         * change db depending on packet => as user is getting logged, all new data retrieves 
-         * from db.
-         */
         for (connected_client_list_t *p = ctx.head.next; p != NULL; p = p->next) {
             if (FD_ISSET(p->sock_fd, &read_descriptors)) {
                 char *packet = packet_receive(p->sock_fd);
                 if (packet == NULL || !mx_strcmp("", packet)) {
                     printf("%s\n", "packet is null");
                     continue;
-                    mx_null_value_error("handle_server");
                 }
-                printf("1\n");
                 char *logout = get_value_by_key(packet, "TYPE");
                 if (logout == NULL) {
                     printf("LOGOUT NULL");
@@ -102,27 +100,16 @@ static void *handle_server(void *param) {
                     p->is_logged = false;
                     break;
                 }
-                printf("2\n");
 
                 // Modify db and forms packet, which must be send to specified in packet client(login).
                 char *send_packet = mx_database_communication(packet);
                 if (send_packet == NULL) // Connection was closed but update has not been made yet.
                     continue;
-                printf("3\n\n\n\n\n");
                 char *logins = get_value_by_key(send_packet, "TO");
-                printf(">%s\n",logins );
                 char **receivers = mx_strsplit(logins, ' ');
 
-                printf("4\n");
-                int x = 0;
-                while(receivers[x]) {
-                    printf("====>%s\n", receivers[x]);
-                    x++;
-                }
                 mx_login_user_socket(p, send_packet, receivers);
                 char *send_back_packet_prefixed =  packet_len_prefix_adder(send_packet);
-                // free(send_packet);
-                // free(packet);
                 for (connected_client_list_t *s = ctx.head.next; s != NULL; s = s->next) {
                     if (s->is_logged && mx_str_in_arr(s->login, receivers))
                         send(s->sock_fd, send_back_packet_prefixed, (int)strlen(send_back_packet_prefixed), 0);
