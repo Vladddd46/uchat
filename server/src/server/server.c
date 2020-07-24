@@ -1,17 +1,9 @@
 #include "server.h"
 #include <signal.h> 
 
-/*
- * Declaration of structure, which contains  server context.
- * a. fd_set read_descriptors - bitarray, which contains 
- *    all conected client sockets. (it is needed for select)
- * b. connected_client_list_t list - linked list of connected client sockets.
- */
 static server_context_t ctx;
-// Initialize mutex with default settings.
 static pthread_mutex_t ctx_mutex = PTHREAD_MUTEX_INITIALIZER;
-// if quit == true, server exits.
-static bool quit = false; 
+
 
 static void server_context_init(void) {
     pthread_mutex_lock(&ctx_mutex);
@@ -56,14 +48,22 @@ static bool update_connections(fd_set *descriptors) {
     return status;
 }
 
-static char **mx_packet_receivers_determine(char *packet) {
+static char **packet_receivers_determine(char *packet) {
     char *logins = mx_string_copy(get_value_by_key(packet, "TO"));
     char **receivers = mx_strsplit(logins, ' ');
-    // free(logins);
     return receivers;
 }
 
-
+/*
+ * Going through each opened socket and determine, whether socket is active.
+ * if true => receive packet from socket => alalyze this packet =>
+ * change db if it`s needed and form new packet to send.
+ * Go through linked list with opened sockets(connected clients) and check,
+ * whether socket node has the same attribute(user_login) as specified in new packet.
+ * if node was found -> send packet to socket, specified in it. Otherwise, just 
+ * change db depending on packet => as user is getting logged, all new data retrieves 
+ * from db.
+  */
 static void *handle_server(void *param) {
     int status;
     fd_set read_descriptors;
@@ -76,44 +76,15 @@ static void *handle_server(void *param) {
         if (status <= 0) continue;
         
         pthread_mutex_lock(&ctx_mutex);
-        /*
-         * Going through each opened socket and determine, whether socket is active.
-         * if true => receive packet from socket => alalyze this packet =>
-         * change db if it`s needed and form new packet to send.
-         * Go through linked list with opened sockets(connected clients) and check,
-         * whether socket node has the same attribute(user_login) as specified in new packet.
-         * if node was found -> send packet to socket, specified in it. Otherwise, just 
-         * change db depending on packet => as user is getting logged, all new data retrieves 
-         * from db.
-         */
         for (connected_client_list_t *p = ctx.head.next; p != NULL; p = p->next) {
             if (FD_ISSET(p->sock_fd, &read_descriptors)) {
                 char *packet = packet_receive(p->sock_fd);
-                if (packet == NULL || !mx_strcmp("", packet)) {
-                    printf("%s\n", "packet is null");
-                    break;
-                    mx_null_value_error("handle_server");
-                }
-                char *logout = get_value_by_key(packet, "TYPE");
-                if (logout == NULL) {
-                    printf("LOGOUT NULL");
-                    break;
-                }
-                if (!mx_strcmp(logout, "logout_c")) {
-                    p->is_logged = false;
-                    break;
-                }
-
-                printf("packetych =>>> %s\n", packet);
-                char *send_packet = mx_database_communication(packet);
+                if (packet == NULL || !mx_strcmp("", packet)) break;
+                char *send_packet = mx_database_communication(packet, &p);
                 if (send_packet == NULL) break;
-                printf("sendback packetych = >> %s\n", send_packet);
-                char *logins = get_value_by_key(send_packet, "TO");
-                char **receivers = mx_strsplit(logins, ' ');
-
+                char **receivers = packet_receivers_determine(send_packet);
                 mx_login_user_socket(p, send_packet, receivers);
                 char *send_back_packet_prefixed =  packet_len_prefix_adder(send_packet);
- 
                 for (connected_client_list_t *s = ctx.head.next; s != NULL; s = s->next) {
                     if (s->is_logged && mx_str_in_arr(s->login, receivers))
                         send(s->sock_fd, send_back_packet_prefixed, (int)strlen(send_back_packet_prefixed), 0);
