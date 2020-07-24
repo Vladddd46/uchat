@@ -88,11 +88,11 @@ static char *json_packet_former_from_list(chats_t *chat, char *status, char *log
     return packet_str;
 }
 
-char *login_system(char *packet) {
+char *mx_login_system(char *packet) {
     char *login         = get_value_by_key(packet, "LOGIN");
     char *password      = get_value_by_key(packet, "PASSWORD");
     if (login == NULL || password == NULL)
-        mx_null_value_error("login_system"); 
+        mx_null_value_error("mx_login_system"); 
     char *return_status = mx_confirm_users_password(login, password);
     char *sendback_packet = NULL;
     chats_t *chat         = NULL;
@@ -100,6 +100,6 @@ char *login_system(char *packet) {
     if (!strcmp(return_status, "success"))
         chat = mx_get_users_chats(login);
     sendback_packet = json_packet_former_from_list(chat, return_status, login);
-    printf("packet back in login_system: %s\n\n", sendback_packet);
+    printf("packet back in mx_login_system: %s\n\n", sendback_packet);
     return sendback_packet;
 }

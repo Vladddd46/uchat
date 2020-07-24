@@ -1,7 +1,7 @@
 #include "client.h"
 
 
-void login_system(client_context_t *client_context, char *packet) {
+void mx_login_system(client_context_t *client_context, char *packet) {
 	printf("Packet from server after login: %s\n\n", packet);
 	char *length = get_value_by_key(packet,"LENGTH");
 	client_context->username = get_value_by_key(packet,"TO");

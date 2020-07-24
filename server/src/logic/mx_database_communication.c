@@ -18,9 +18,9 @@ char *mx_database_communication(char *packet, connected_client_list_t **p) {
     char *send_back_packet = NULL;
 
     if (!strcmp(packet_type, "login_c"))
-        send_back_packet = login_system(packet); // 
+        send_back_packet = mx_login_system(packet); // 
     else if (!strcmp(packet_type, "reg_c"))
-        send_back_packet = registration_system(packet); //
+        send_back_packet = mx_registration_system(packet); //
     else if (!strcmp(packet_type, "msg_c"))
         send_back_packet = mx_chat_render(packet);
     else if (!strcmp(packet_type, "find_user_c")) 

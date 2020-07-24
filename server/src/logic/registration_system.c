@@ -96,13 +96,13 @@ static char *form_sendback_packet(char *login, char *password, char *nickname) {
     return sendback_packet;
 }
 
-char *registration_system(char *packet) {
+char *mx_registration_system(char *packet) {
     char *login           = get_value_by_key(packet, "LOGIN");
     char *password        = get_value_by_key(packet, "PASSWORD");
     char *nickname        = get_value_by_key(packet, "NICKNAME");
     
     if (login == NULL || password == NULL || nickname == NULL)
-        mx_null_value_error("registration_system");
+        mx_null_value_error("mx_registration_system");
     char *sendback_packet = form_sendback_packet(login, password, nickname);
 
     // free(login);

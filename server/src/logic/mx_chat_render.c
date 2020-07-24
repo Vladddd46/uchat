@@ -47,7 +47,6 @@ static chat_message_t *mx_fill_list(char *chat_id, int from, int to, int amount_
         mx_push_back_message_node(&list, mx_string_copy(sender), mx_string_copy(time), mx_string_copy(message), mx_string_copy(msg_type));
         sqlite3_step(res);
     }
-    
     sqlite3_finalize(res);
     sqlite3_close(db);
     return list;
@@ -184,21 +183,7 @@ char *mx_chat_render(char *packet) {
     char *return_packet  = mx_json_packet_former_from_list(list, from, chat_name, all_users);
     printf("Error 5\n\n");
 
-    // free(chat_id_str);
-    // free(from_str);
-    // free(to_str);
-    // free(chat_name);
-    // free(all_users);
 
-    // chat_message_t *node_to_del;
-    // while(list) {
-    //     node_to_del = list;
-    //     list        = list->next;
-    //     free(node_to_del->sender);
-    //     free(node_to_del->time);
-    //     free(node_to_del->message);
-    //     free(node_to_del);
-    // }
     printf("Packet back to client: %s\n\n", return_packet);
     return return_packet;   
 }

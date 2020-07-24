@@ -2,7 +2,7 @@
 
 client_context_t *client_context;
 
-gboolean registration_system(void *data) {
+gboolean mx_registration_system(void *data) {
     char *packet = (char *)data;
     char *status = get_value_by_key(packet, "STATUS");
     client_context->username = get_value_by_key(packet,"TO");

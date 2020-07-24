@@ -77,8 +77,8 @@ connected_client_list_t *mx_socket_list_find(connected_client_list_t *head, int 
 
 // Logic
 char *mx_database_communication(char *packet, connected_client_list_t **p);
-char *login_system(char *packet);
-char *registration_system(char *packet);
+char *mx_login_system(char *packet);
+char *mx_registration_system(char *packet);
 chats_t *mx_get_users_chats(char *user);
 char* mx_chat_render(char* packet);
 char* mx_add_message_by_id(char* packet);
