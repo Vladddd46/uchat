@@ -29,8 +29,8 @@ static users_list_t* mx_fill_users_list(char* user) {
 	char* sql = "SELECT * FROM USERS;";
 	users_list_t* list = (users_list_t*)malloc(sizeof(users_list_t));
     list -> login = NULL;
-    list -> next = NULL;
-	users_list_t* head = list;
+    list -> next  = NULL;
+	users_list_t *head = list;
 
     sqlite3_prepare_v2(db, sql, -1, &res, 0);
     sqlite3_step(res);
@@ -58,41 +58,43 @@ static users_list_t* mx_fill_users_list(char* user) {
     return head;
 }
 
+static char *packet_former(users_list_t* list, char* login_to) {
+    int list_len = mx_list_len(list);
+    cJSON *packet = cJSON_CreateObject();
+    char* packet_str = NULL;
+    cJSON *json_value = cJSON_CreateString("find_user_s");
+
+    cJSON_AddItemToObject(packet, "TYPE", json_value);
+    json_value = cJSON_CreateString(login_to);
+    cJSON_AddItemToObject(packet, "TO", json_value);
+    json_value = cJSON_CreateString(mx_itoa(list_len));
+    cJSON_AddItemToObject(packet, "LENGTH", json_value);
+    for(int i = 0; i < list_len; i++) {
+        char packet_former[100];
+        sprintf(packet_former, "ID%d", i);
+        json_value = cJSON_CreateString(mx_itoa(list -> id));
+        cJSON_AddItemToObject(packet, packet_former, json_value);
+        json_value = cJSON_CreateString(list -> nickname);
+        sprintf(packet_former, "NICKNAME%d", i);
+        cJSON_AddItemToObject(packet, packet_former, json_value);
+        json_value = cJSON_CreateString(list -> login);
+        sprintf(packet_former, "LOGIN%d", i);
+        cJSON_AddItemToObject(packet, packet_former, json_value);
+        list = list -> next;
+    }
+    packet_str = cJSON_Print(packet);
+    return packet_str;
+}
+
 static char *mx_json_packet_former_from_list(users_list_t* list, char* login_to) {
+    char* packet_str = NULL;
     if(list != NULL) {
-        int list_len = mx_list_len(list);
-        cJSON *packet = cJSON_CreateObject();
-        char* packet_str = NULL;
-        cJSON *json_value = cJSON_CreateString("find_user_s");
-
-        cJSON_AddItemToObject(packet, "TYPE", json_value);
-        json_value = cJSON_CreateString(login_to);
-        cJSON_AddItemToObject(packet, "TO", json_value);
-        json_value = cJSON_CreateString(mx_itoa(list_len));
-        cJSON_AddItemToObject(packet, "LENGTH", json_value);
-        for(int i = 0; i < list_len; i++) {
-            char packet_former[100];
-
-            sprintf(packet_former, "ID%d", i);
-            json_value = cJSON_CreateString(mx_itoa(list -> id));
-            cJSON_AddItemToObject(packet, packet_former, json_value);
-            json_value = cJSON_CreateString(list -> nickname);
-            sprintf(packet_former, "NICKNAME%d", i);
-            cJSON_AddItemToObject(packet, packet_former, json_value);
-            json_value = cJSON_CreateString(list -> login);
-            sprintf(packet_former, "LOGIN%d", i);
-            cJSON_AddItemToObject(packet, packet_former, json_value);
-            list = list -> next;
-        }
-        packet_str = cJSON_Print(packet);
-        
+        packet_str = packet_former(list, login_to);
         return packet_str;
     }
     else {
         cJSON *packet = cJSON_CreateObject();
-        char* packet_str = NULL;
         cJSON *json_value = cJSON_CreateString("find_user_s");
-
         cJSON_AddItemToObject(packet, "TYPE", json_value);
         json_value = cJSON_CreateString(login_to);
         cJSON_AddItemToObject(packet, "TO", json_value);

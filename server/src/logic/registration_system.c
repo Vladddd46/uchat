@@ -91,8 +91,6 @@ static char *form_sendback_packet(char *login, char *password, char *nickname) {
     sendback_packet = cJSON_Print(packet);
     if (sendback_packet == NULL)
         mx_null_value_error("form_sendback_packet");
-
-    // free(return_status);
     return sendback_packet;
 }
 
@@ -104,9 +102,5 @@ char *mx_registration_system(char *packet) {
     if (login == NULL || password == NULL || nickname == NULL)
         mx_null_value_error("mx_registration_system");
     char *sendback_packet = form_sendback_packet(login, password, nickname);
-
-    // free(login);
-    // free(password);
-    // free(nickname);
     return sendback_packet;
 }

@@ -34,7 +34,9 @@ static char *get_user_id_by_login(char *login) {
     return user_id;
 }
 
-static chats_t *create_chats_node(char *chat_name, char *last_message, char* chat_id) {
+static chats_t *create_chats_node(char *chat_name, 
+                                  char *last_message, 
+                                  char* chat_id) {
     chats_t *chat = (chats_t *)malloc(sizeof(chats_t));
     malloc_error_checker(chat);
     chat->chat_name    = chat_name;
@@ -44,7 +46,8 @@ static chats_t *create_chats_node(char *chat_name, char *last_message, char* cha
     return chat; 
 }
 
-static void push_chats_front(chats_t **chats, char *chat_name, char *last_message, char* chat_id) {
+static void push_chats_front(chats_t **chats, char *chat_name, 
+                            char *last_message, char* chat_id) {
     chats_t *chat = create_chats_node(chat_name, last_message, chat_id);
     chats_t *tmp;
 
@@ -74,14 +77,12 @@ static char** mx_get_users_chat_id(char* user_id) {
     
     while(sqlite3_column_text(res, 0) != NULL) {
         *(chat_id_arr + arr_index) = mx_string_copy((char *)sqlite3_column_text(res, 0));
-        printf("%s\n", mx_string_copy((char *)sqlite3_column_text(res, 0)));
         arr_index++;
         sqlite3_step(res);
     }
     *(chat_id_arr + arr_index) = NULL;
     sqlite3_finalize(res);
     sqlite3_close(db);
-    printf("mx_get_users_chat_id\n" );
     return chat_id_arr;
 }
 
@@ -92,13 +93,10 @@ chats_t *mx_get_users_chats(char *user) {
     bzero(sql, 200);
     char* message_error = NULL;
     char *user_id = get_user_id_by_login(user);
-
     char** chats_arr = mx_get_users_chat_id(user_id);
     int arr_index = 0;
 
-    printf("233434\n");
     sqlite3 *db = mx_opening_db();
-
     while(*(chats_arr + arr_index) != NULL) {
         sprintf(sql, "SELECT CHATNAME, LASTMESSAGE FROM CHATS WHERE ID=%s;", *(chats_arr + arr_index));
         int check = sqlite3_prepare_v2(db, sql, -1, &res, 0);
@@ -111,9 +109,7 @@ chats_t *mx_get_users_chats(char *user) {
         sqlite3_finalize(res);
         arr_index++;
     }
-
     sqlite3_close(db);
-    // free(user_id);
     return chat;
 }
 
