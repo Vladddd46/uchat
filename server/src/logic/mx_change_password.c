@@ -32,7 +32,7 @@ static char* mx_pass_validator(char *password_1, char *password_2) {
 static char* mx_get_current_password(char* login) {
     char sql[150];
     bzero(sql, 150);
-    sqlite3 *db = opening_db();
+    sqlite3 *db = mx_opening_db();
     sqlite3_stmt *res;
     char* password = NULL;
     
@@ -54,7 +54,7 @@ char* mx_change_password(char* packet) {
     char* send_back_packet = mx_json_packet_former_from_list(status, login);
 
     if(!mx_strcmp(status, "ok")) {
-    	sqlite3 *db = opening_db();
+    	sqlite3 *db = mx_opening_db();
 	    char *message_error;
 	    char sql[500];
 	    bzero(sql, 500);

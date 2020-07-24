@@ -2,7 +2,7 @@
 
 // Initialize database, if it does not exist.
 void mx_database_init() {
-    sqlite3 *db = opening_db();
+    sqlite3 *db = mx_opening_db();
     int exit = 0;
     char *message_error;
     char *sql = "CREATE TABLE IF NOT EXISTS USERS("

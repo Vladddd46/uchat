@@ -12,7 +12,7 @@
  * returns "success"/"false"
  */
 static char *mx_confirm_users_password(char *user, char *password) {
-    sqlite3 *db = opening_db();
+    sqlite3 *db = mx_opening_db();
     char sql[400];
     bzero(sql, 400);
     char *return_status = "false";

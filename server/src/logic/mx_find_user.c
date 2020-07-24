@@ -26,7 +26,7 @@ static int mx_list_len(users_list_t* chat) {
 }
 
 static users_list_t* mx_fill_users_list(char* user) {
-	sqlite3 *db = opening_db();
+	sqlite3 *db = mx_opening_db();
 	sqlite3_stmt *res;
 	char* sql = "SELECT * FROM USERS;";
 	users_list_t* list = (users_list_t*)malloc(sizeof(users_list_t));

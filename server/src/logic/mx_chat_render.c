@@ -26,7 +26,7 @@ static void db_null_error() {
  */
 static chat_message_t *mx_fill_list(char *chat_id, int from, int to, int amount_of_msg) {
     chat_message_t *list = NULL;
-    sqlite3 *db = opening_db();
+    sqlite3 *db = mx_opening_db();
     sqlite3_stmt *res;
     char sql[100];
     bzero(sql, 100);
@@ -59,7 +59,7 @@ static chat_message_t *mx_fill_list(char *chat_id, int from, int to, int amount_
  * separated with space.
  */
 static char *mx_get_all_users(int chat_id) {
-    sqlite3 *db = opening_db();
+    sqlite3 *db = mx_opening_db();
     sqlite3_stmt *res;
     char sql[500];
     bzero(sql, 500);

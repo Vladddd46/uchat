@@ -6,7 +6,7 @@
  */
 
 static int mx_add_user(char* login, char* password, char* nickname) {
-    sqlite3 *db = opening_db();
+    sqlite3 *db = mx_opening_db();
 
     char *message_error;
     char sql[400];
@@ -21,8 +21,8 @@ static int mx_add_user(char* login, char* password, char* nickname) {
     return 0;
 }
 
-void def_database() {
-    sqlite3 *db = opening_db();
+void mx_def_database() {
+    sqlite3 *db = mx_opening_db();
     int exit;
     char *message_error;
     char *sql;

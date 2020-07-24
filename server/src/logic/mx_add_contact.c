@@ -4,7 +4,7 @@ static int mx_get_user_id(char* login) {
     int user_id = 0;
     char sql[150];
     bzero(sql, 150);
-    sqlite3 *db = opening_db();
+    sqlite3 *db = mx_opening_db();
     sqlite3_stmt *res;
     
     sprintf(sql, "SELECT ID FROM USERS WHERE LOGIN='%s'", login);
@@ -21,7 +21,7 @@ static int mx_get_user_id(char* login) {
 
 static bool mx_check_contact_exits(char* mylogin, char *login) {
     bool status = false;
-    sqlite3 *db = opening_db();
+    sqlite3 *db = mx_opening_db();
     sqlite3_stmt *res;
     sqlite3_stmt *res1;
     char *sql = "SELECT CHATNAME FROM CHATS";
@@ -43,7 +43,7 @@ static bool mx_check_contact_exits(char* mylogin, char *login) {
 }
 
 static int mx_get_last_chat_id() {
-    sqlite3 *db = opening_db();
+    sqlite3 *db = mx_opening_db();
     sqlite3_stmt *res;
     char sql[100];
     bzero(sql, 100);
@@ -63,7 +63,7 @@ static int mx_get_last_chat_id() {
 }
 
 static int mx_get_amount_of_chats(int user_id) {
-    sqlite3 *db = opening_db();
+    sqlite3 *db = mx_opening_db();
     sqlite3_stmt *res;
     char sql[100];
     bzero(sql, 100);
@@ -136,7 +136,7 @@ char* mx_add_contact(char* packet) {
     char* mylogin = get_value_by_key(packet, "TO");
     char* sendback_packet;
     char* message_error;
-    sqlite3 *db = opening_db();
+    sqlite3 *db = mx_opening_db();
     printf("00\n");
     if(!mx_check_contact_exits(mylogin, login)) {
         int mylogin_id = mx_get_user_id(mylogin);

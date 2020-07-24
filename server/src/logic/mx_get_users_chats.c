@@ -16,7 +16,7 @@ static void malloc_error_checker(chats_t *chat) {
 }
 
 static char *get_user_id_by_login(char *login) {
-    sqlite3 *db = opening_db();
+    sqlite3 *db = mx_opening_db();
     char sql[200];
     bzero(sql, 200);
     sqlite3_stmt *res;
@@ -62,7 +62,7 @@ static char** mx_get_users_chat_id(char* user_id) {
     char sql[200];
     bzero(sql, 200);
     char* message_error = NULL;
-    sqlite3 *db = opening_db();
+    sqlite3 *db = mx_opening_db();
     char** chat_id_arr = mx_new_strarr(2000);
     int arr_index = 0;
     sqlite3_stmt *res;
@@ -97,7 +97,7 @@ chats_t *mx_get_users_chats(char *user) {
     int arr_index = 0;
 
     printf("233434\n");
-    sqlite3 *db = opening_db();
+    sqlite3 *db = mx_opening_db();
 
     while(*(chats_arr + arr_index) != NULL) {
         sprintf(sql, "SELECT CHATNAME, LASTMESSAGE FROM CHATS WHERE ID=%s;", *(chats_arr + arr_index));

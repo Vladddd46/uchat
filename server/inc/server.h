@@ -63,8 +63,8 @@ int  mx_user_is_already_logged_in(connected_client_list_t *list, char *user_logi
 
 // Database functions.
 void    mx_database_init();
-sqlite3 *opening_db();
-void def_database();
+sqlite3 *mx_opening_db();
+void mx_def_database();
 void mx_dberror(sqlite3 *db, int status, char *msg);
 void mx_db_msg_error(int status, char *msg_error);
 char *mx_get_nickname_by_login(char *login);

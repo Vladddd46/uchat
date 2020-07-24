@@ -9,7 +9,7 @@ static void db_null_error() {
 
 // Gets last msg id from chat with chat_id.
 int mx_get_last_message_id(int chat_id) {
-    sqlite3 *db = opening_db();
+    sqlite3 *db = mx_opening_db();
     sqlite3_stmt *res;
     char sql[200];
     bzero(sql, 200);

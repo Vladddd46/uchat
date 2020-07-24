@@ -1,7 +1,7 @@
 #include "server.h"
 
 char *mx_get_nickname_by_login(char *login) {
-    sqlite3 *db = opening_db();
+    sqlite3 *db = mx_opening_db();
     char sql[200];
     bzero(sql, 200);
 

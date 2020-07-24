@@ -1,6 +1,6 @@
 #include "server.h"
 
-sqlite3 *opening_db() {
+sqlite3 *mx_opening_db() {
     sqlite3 *db;
     int status = sqlite3_open("uchat.db", &db);
     if (status != SQLITE_OK) {

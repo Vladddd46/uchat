@@ -60,7 +60,7 @@ static int success(sqlite3 *db, char *login ,char *nickname, char *password) {
  * In case of error returns the corresponding status.
  */
 static char *add_user(char *login, char *password, char *nickname) {
-    sqlite3 *db = opening_db();
+    sqlite3 *db = mx_opening_db();
     char *status = NULL;
 
     if (login_exists(db, login))
