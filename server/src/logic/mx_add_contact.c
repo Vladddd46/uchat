@@ -9,7 +9,7 @@ static int mx_get_user_id(char* login) {
     
     sprintf(sql, "SELECT ID FROM USERS WHERE LOGIN='%s'", login);
     int check = sqlite3_prepare_v2(db, sql, -1, &res, 0);
-    dberror(db, check, "SELECT ID FROM USERS WHERE LOGIN");
+    mx_dberror(db, check, "SELECT ID FROM USERS WHERE LOGIN");
     sqlite3_step(res);
     user_id = atoi(mx_string_copy((char*)sqlite3_column_text(res, 0)));
     sqlite3_finalize(res);
@@ -27,7 +27,7 @@ static bool mx_check_contact_exits(char* mylogin, char *login) {
     char *sql = "SELECT CHATNAME FROM CHATS";
 
     int check = sqlite3_prepare_v2(db, sql, -1, &res, 0);
-    dberror(db, check, "SELECT CHATNAME FROM CHATS");
+    mx_dberror(db, check, "SELECT CHATNAME FROM CHATS");
     sqlite3_step(res);
 
     while(sqlite3_column_text(res, 0) != NULL && status == false) {
@@ -52,7 +52,7 @@ static int mx_get_last_chat_id() {
     
     sprintf(sql, "SELECT MAX(CHATID) FROM USERCHAT;");
     int check = sqlite3_prepare_v2(db, sql, -1, &res, 0);
-    dberror(db, check, "SELECT MAX(CHATID) FROM USERCHAT");
+    mx_dberror(db, check, "SELECT MAX(CHATID) FROM USERCHAT");
     sqlite3_step(res); 
     if(sqlite3_column_text(res, 0) != NULL) {
         last_chat_id = atoi(mx_string_copy((char*)sqlite3_column_text(res, 0)));
@@ -73,7 +73,7 @@ static int mx_get_amount_of_chats(int user_id) {
     
     sprintf(sql, "SELECT CHATID FROM USERCHAT WHERE USERID = %d;", user_id);
     int check = sqlite3_prepare_v2(db, sql, -1, &res, 0);
-    dberror(db, check, "SELECT CHATID FROM USERCHAT WHERE USERID");
+    mx_dberror(db, check, "SELECT CHATID FROM USERCHAT WHERE USERID");
     sqlite3_step(res); 
     while(sqlite3_column_text(res, 0) != NULL) {
         counter++;
@@ -151,17 +151,17 @@ char* mx_add_contact(char* packet) {
         
         sprintf(sql, "INSERT INTO USERCHAT(USERID, CHATID) VALUES(%d, %d);", mylogin_id, last_chat_id + 1);
         int check = sqlite3_exec(db, sql, NULL, 0, &message_error);
-        dberror(db, check, "INSERT INTO USERCHAT(USERID, CHATID) VALUES 1");
+        mx_dberror(db, check, "INSERT INTO USERCHAT(USERID, CHATID) VALUES 1");
         sprintf(sql, "INSERT INTO USERCHAT(USERID, CHATID) VALUES(%d, %d);", login_id, last_chat_id + 1);
         check = sqlite3_exec(db, sql, NULL, 0, &message_error);
-        dberror(db, check, "INSERT INTO USERCHAT(USERID, CHATID) VALUES 2");
+        mx_dberror(db, check, "INSERT INTO USERCHAT(USERID, CHATID) VALUES 2");
 
         sprintf(sql, "INSERT INTO CHATS(CHATNAME, LASTMESSAGE) VALUES('%s %s', 'created chat');", login, mylogin);
         check = sqlite3_exec(db, sql, NULL, 0, &message_error);
-        dberror(db, check, "INSERT INTO CHATS(CHATNAME, LASMESSAGE) VALUES");
+        mx_dberror(db, check, "INSERT INTO CHATS(CHATNAME, LASMESSAGE) VALUES");
         sprintf(sql, "INSERT INTO MESSAGES(CHATID, MSGTYPE, MESSAGEID, SENDER, TIME, MESSAGE) VALUES(%d, 'string', 1, '%s', 'null', 'chat created');", last_chat_id + 1, mylogin);
         check = sqlite3_exec(db, sql, NULL, 0, &message_error);
-        dberror(db, check, "INSERT INTO MESSAGES(CHATID, MESSAGEID, SENDER, TIME, MESSAGE)");
+        mx_dberror(db, check, "INSERT INTO MESSAGES(CHATID, MESSAGEID, SENDER, TIME, MESSAGE)");
         chats_t *chat = mx_get_users_chats(mylogin);
         sendback_packet = json_packet_former_from_list(chat, "success", mylogin, login);
         

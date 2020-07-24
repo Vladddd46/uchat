@@ -25,7 +25,7 @@ static char *get_user_id_by_login(char *login) {
 
     sprintf(sql, "SELECT ID FROM USERS WHERE LOGIN='%s';", login);
     check = sqlite3_prepare_v2(db, sql, -1, &res, 0);
-    dberror(db, check, "Error select ID from LOGIN");
+    mx_dberror(db, check, "Error select ID from LOGIN");
     sqlite3_step(res);
     char *resx = (char *)sqlite3_column_text(res, 0);
     user_id = mx_string_copy(resx);
@@ -69,7 +69,7 @@ static char** mx_get_users_chat_id(char* user_id) {
 
     sprintf(sql, "SELECT CHATID FROM USERCHAT WHERE USERID=%s;", user_id);
     int check = sqlite3_prepare_v2(db, sql, -1, &res, 0);
-    dberror(db, check, "Error select CHATID from USERCHAT");
+    mx_dberror(db, check, "Error select CHATID from USERCHAT");
     sqlite3_step(res);
     
     while(sqlite3_column_text(res, 0) != NULL) {
@@ -102,7 +102,7 @@ chats_t *mx_get_users_chats(char *user) {
     while(*(chats_arr + arr_index) != NULL) {
         sprintf(sql, "SELECT CHATNAME, LASTMESSAGE FROM CHATS WHERE ID=%s;", *(chats_arr + arr_index));
         int check = sqlite3_prepare_v2(db, sql, -1, &res, 0);
-        dberror(db, check, "Error select CHATNAME, LASTMESSAGE from CHATs");
+        mx_dberror(db, check, "Error select CHATNAME, LASTMESSAGE from CHATs");
         sqlite3_step(res);
         char *chat_id      = mx_string_copy(*(chats_arr + arr_index)); 
         char *chat_name    = mx_string_copy((char *)sqlite3_column_text(res, 0));

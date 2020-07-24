@@ -51,7 +51,7 @@ static int success(sqlite3 *db, char *login ,char *nickname, char *password) {
             login, nickname, password);
 
     st = sqlite3_exec(db, sql, NULL, 0, &message_error);
-    dberror(db, st, message_error);
+    mx_dberror(db, st, message_error);
     return 1;
 }
 

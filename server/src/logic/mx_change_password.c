@@ -38,7 +38,7 @@ static char* mx_get_current_password(char* login) {
     
     sprintf(sql, "SELECT PASSWORD FROM USERS WHERE LOGIN='%s'", login);
     int check = sqlite3_prepare_v2(db, sql, -1, &res, 0);
-    dberror(db, check, "SELECT PASSWORD FROM USERS WHERE LOGIN");
+    mx_dberror(db, check, "SELECT PASSWORD FROM USERS WHERE LOGIN");
     sqlite3_step(res);
     password = ((char*)sqlite3_column_text(res, 0));
     sqlite3_finalize(res);

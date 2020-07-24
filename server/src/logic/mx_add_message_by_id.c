@@ -17,7 +17,7 @@ static void mx_add_last_message(int chat_id, char *message, char *time, char *se
     sprintf(sql ,"INSERT INTO MESSAGES (CHATID, MSGTYPE, MESSAGEID, SENDER, TIME, MESSAGE) VALUES(%d, '%s', %d, '%s', '%s', '%s');", 
                                  chat_id, msg_type, message_id, sender, mx_delete_slesh_n(time), mx_delete_slesh_n(message));
     check = sqlite3_exec(db, sql, NULL, 0, &message_error);
-    dberror(db, check, "Error inserting to table");
+    mx_dberror(db, check, "Error inserting to table");
     sqlite3_close(db);
     free(chat_id_str);
     free(message_id_str);

@@ -137,7 +137,7 @@ int main(int argc, char **argv) {
     argv_validator(argc);
     int port             = get_port(argv);
     int listening_socket = listening_socket_init(port);
-    database_init();
+    mx_database_init();
     server_context_init();
 
     /* 

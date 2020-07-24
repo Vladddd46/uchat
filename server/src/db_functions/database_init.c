@@ -1,7 +1,7 @@
 #include "server.h"
 
 // Initialize database, if it does not exist.
-void database_init() {
+void mx_database_init() {
     sqlite3 *db = opening_db();
     int exit = 0;
     char *message_error;
@@ -11,19 +11,19 @@ void database_init() {
         "PASSWORD TEXT NOT NULL, "
         "NICKNAME TEXT NOT NULL);";
     exit = sqlite3_exec(db, sql, NULL, 0, &message_error);
-    dberror(db, exit, "Error to create USERS table");
+    mx_dberror(db, exit, "Error to create USERS table");
     sql = "CREATE TABLE IF NOT EXISTS CHATS("
         "ID          INTEGER PRIMARY KEY AUTOINCREMENT, "
         "CHATNAME    TEXT NOT NULL, "
         "LASTMESSAGE TEXT NOT NULL);";
     exit = sqlite3_exec(db, sql, NULL, 0, &message_error);
-    dberror(db, exit, "Error to create CHATS table");
+    mx_dberror(db, exit, "Error to create CHATS table");
 
     sql = "CREATE TABLE IF NOT EXISTS USERCHAT("
         "USERID     INTEGER NOT NULL, "
         "CHATID     INTEGER NOT NULL);";
     exit = sqlite3_exec(db, sql, NULL, 0, &message_error);
-    dberror(db, exit, "Тут проблема 1");
+    mx_dberror(db, exit, "Тут проблема 1");
 
     sql = "CREATE TABLE IF NOT EXISTS MESSAGES("
         "CHATID     INTEGER, " 

@@ -33,7 +33,7 @@ static chat_message_t *mx_fill_list(char *chat_id, int from, int to, int amount_
 
     sprintf(sql, "SELECT SENDER, TIME, MESSAGE, MSGTYPE FROM MESSAGES WHERE CHATID='%s';", chat_id);
     int exit = sqlite3_prepare_v2(db, sql, -1, &res, 0);
-    dberror(db, exit, "Error inserting to table");
+    mx_dberror(db, exit, "Error inserting to table");
     for(int i = 0; i <= from; i++)
         sqlite3_step(res);
 
@@ -70,7 +70,7 @@ static char *mx_get_all_users(int chat_id) {
 
     sprintf(sql, "SELECT USERS.LOGIN FROM USERCHAT INNER JOIN USERS ON USERS.ID = USERCHAT.USERID AND USERCHAT.CHATID=%d;", chat_id);
     int exit = sqlite3_prepare_v2(db, sql, -1, &res, 0);
-    dberror(db, exit, "Error inserting to table");
+    mx_dberror(db, exit, "Error inserting to table");
     sqlite3_step(res);
 
     while(sqlite3_column_text(res, 0) != NULL) {

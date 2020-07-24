@@ -62,11 +62,11 @@ void mx_login_user_socket(connected_client_list_t *p, char *send_packet, char **
 int  mx_user_is_already_logged_in(connected_client_list_t *list, char *user_login);
 
 // Database functions.
-void    database_init();
+void    mx_database_init();
 sqlite3 *opening_db();
 void def_database();
-void dberror(sqlite3 *db, int status, char *msg);
-void db_msg_error(int status, char *msg_error);
+void mx_dberror(sqlite3 *db, int status, char *msg);
+void mx_db_msg_error(int status, char *msg_error);
 char *mx_get_nickname_by_login(char *login);
 
 // Socket list.
@@ -88,7 +88,8 @@ char* mx_change_password(char* pakcet);
 
 
 // additional 
-void mx_push_back_message_node(chat_message_t **list, char *sender, char *time, char *message, char* msg_type);
+void mx_push_back_message_node(chat_message_t **list, char *sender, char *time, 
+							   char *message, char* msg_type);
 int mx_chats_list_len(chats_t *chat);
 int mx_get_last_message_id(int chat_id);
 void mx_null_value_error(char *func_name);

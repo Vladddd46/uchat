@@ -15,7 +15,7 @@ static int mx_add_user(char* login, char* password, char* nickname) {
     login, password, nickname);
 
     int exit = sqlite3_exec(db, sql, NULL, 0, &message_error);
-    db_msg_error(exit, message_error);
+    mx_db_msg_error(exit, message_error);
 
     sqlite3_close(db);
     return 0;
