@@ -69,7 +69,7 @@ static void *handle_server(void *param) {
     fd_set read_descriptors;
     struct timeval tv = wait_time(1, 0);
 
-    while(!quit) {    
+    while(true) {    
         update_connections(&read_descriptors);
         printf("wait for incomming packets...\n");
         status = select(FD_SETSIZE, &read_descriptors, NULL, NULL, &tv);
@@ -105,81 +105,55 @@ static void *handle_server(void *param) {
                 }
 
                 printf("packetych =>>> %s\n", packet);
-                // Modify db and forms packet, which must be send to specified in packet client(login).
                 char *send_packet = mx_database_communication(packet);
-                if (send_packet == NULL) // Connection was closed but update has not been made yet.
-                    break;
+                if (send_packet == NULL) break;
                 printf("sendback packetych = >> %s\n", send_packet);
                 char *logins = get_value_by_key(send_packet, "TO");
                 char **receivers = mx_strsplit(logins, ' ');
 
                 mx_login_user_socket(p, send_packet, receivers);
                 char *send_back_packet_prefixed =  packet_len_prefix_adder(send_packet);
-                // free(send_packet);
-                // free(packet);
+ 
                 for (connected_client_list_t *s = ctx.head.next; s != NULL; s = s->next) {
                     if (s->is_logged && mx_str_in_arr(s->login, receivers))
                         send(s->sock_fd, send_back_packet_prefixed, (int)strlen(send_back_packet_prefixed), 0);
                 }          
-                // free(send_back_packet_prefixed);
-                // free(client_login)
-                // mx_del_strarr(&receivers); выдает сигфолт
             }            
         }
         pthread_mutex_unlock(&ctx_mutex);
     }
-    printf("handle_server thread was finished\n"); // Debug.
     return NULL;
 }
 
 
+/* 
+ * Loop, which waits for incomming requests.
+ * accept() creates new socket, which will be used for certain client.
+ * Place new socket in linked list of opening sockets and in fd_set array. 
+ */
 int main(int argc, char **argv) {
     mx_argv_validator(argc);
     int port             = mx_get_port(argv);
     int listening_socket = mx_listening_socket_init(port);
+
     mx_database_init();
     server_context_init();
-
-    /* 
-     * Making sockfd listening for incomming requests.
-     * The second argument - number of max. number of requests. 
-     */
     listen(listening_socket, 128);
 
     pthread_t server_thread;
     int err = pthread_create(&server_thread, NULL, handle_server, NULL);
     error("Can not create new thread", err);
 
-    /* 
-     * Loop, which waits for incomming requests.
-     * accept() creates new socket, which will be used for certain client.
-     * Place new socket in linked list of opening sockets and in fd_set array. 
-     */
-    while(!quit) {
+    while(true) {
         struct sockaddr_in client;
         socklen_t client_len = sizeof(client);
         int newsockfd = accept(listening_socket, (struct sockaddr *)&client, &client_len);
-
-        // if acception error, continue the loop.
         if (newsockfd < 0) continue;
-
-        /*
-         * When new connection comes in, created socket is getting placed in 
-         * linked list with opening sockets. If socket was successfully placed in llist,
-         * it is also getting placed in fd_set bitarray (it`s needed for select.)
-         * * Mutex is used because `ctx.head` is also used in handle_server thread.
-         */
         pthread_mutex_lock(&ctx_mutex);
         int status = mx_socket_list_add(&ctx.head, newsockfd);
-        if (status == 0) {
+        if (status == 0)
             FD_SET(newsockfd, &ctx.read_descriptors);
-            printf("New connection was accepted, socket = %d\n", newsockfd);
-        }
         pthread_mutex_unlock(&ctx_mutex);
         error("Unable to add socket descriptor to the list", status);
     }
-    sleep(2);
-    server_context_free();
-    printf("Main thread was finished\n");
-    exit(0);
 }
