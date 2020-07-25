@@ -74,22 +74,18 @@ static void *handle_server(void *param) {
         printf("wait for incomming packets...\n");
         status = select(FD_SETSIZE, &read_descriptors, NULL, NULL, &tv);
         if (status <= 0) continue;
-        
         pthread_mutex_lock(&ctx_mutex);
         for (connected_client_list_t *p = ctx.head.next; p != NULL; p = p->next) {
             if (FD_ISSET(p->sock_fd, &read_descriptors)) {
                 char *packet = packet_receive(p->sock_fd);
-                printf("receive => %s\n", packet);
                 if (packet == NULL || !mx_strcmp("", packet)) break;
                 char *send_packet = mx_database_communication(packet, &p);
-                printf("send => %s\n", send_packet);
                 if (send_packet == NULL) break;
                 char **receivers = packet_receivers_determine(send_packet);
                 mx_login_user_socket(p, send_packet, receivers);
-                char *send_back_packet_prefixed =  packet_len_prefix_adder(send_packet);
                 for (connected_client_list_t *s = ctx.head.next; s != NULL; s = s->next) {
                     if (s->is_logged && mx_str_in_arr(s->login, receivers))
-                        send(s->sock_fd, send_back_packet_prefixed, (int)strlen(send_back_packet_prefixed), 0);
+                        mx_send(s->sock_fd, send_packet);
                 }          
             }            
         }

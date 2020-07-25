@@ -17,8 +17,6 @@ static int mx_get_user_id(char* login) {
     return user_id;
 }
 
-
-
 static bool mx_check_contact_exits(char* mylogin, char *login) {
     bool status = false;
     sqlite3 *db = mx_opening_db();
@@ -128,10 +126,10 @@ static char *json_packet_former_from_list(chats_t *chat, char *status, char* log
 }
 
 char* mx_add_contact(char* packet) {
-    char* login = get_value_by_key(packet, "USER");
-    char* mylogin = get_value_by_key(packet, "TO");
-    char* sendback_packet;
-    char* message_error;
+    char *login   = get_value_by_key(packet, "USER");
+    char *mylogin = get_value_by_key(packet, "TO");
+    char *sendback_packet;
+    char *message_error;
     sqlite3 *db = mx_opening_db();
     if(!mx_check_contact_exits(mylogin, login)) {
         int mylogin_id = mx_get_user_id(mylogin);
