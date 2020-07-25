@@ -96,7 +96,7 @@ static char *form_sendback_packet(char *login, char *password, char *nickname) {
 
 char *mx_registration_system(char *packet) {
     char *login           = get_value_by_key(packet, "LOGIN");
-    char *password        = get_value_by_key(packet, "PASSWORD");
+    char *password        = mx_rsa_decode(get_value_by_key(packet, "PASSWORD"));
     char *nickname        = get_value_by_key(packet, "NICKNAME");
     
     if (login == NULL || password == NULL || nickname == NULL)

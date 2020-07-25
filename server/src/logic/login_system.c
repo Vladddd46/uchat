@@ -90,7 +90,7 @@ static char *json_packet_former_from_list(chats_t *chat, char *status, char *log
 
 char *mx_login_system(char *packet) {
     char *login         = get_value_by_key(packet, "LOGIN");
-    char *password      = get_value_by_key(packet, "PASSWORD");
+    char *password      = mx_rsa_decode(get_value_by_key(packet, "PASSWORD"));
     if (login == NULL || password == NULL)
         mx_null_value_error("mx_login_system"); 
     char *return_status = mx_confirm_users_password(login, password);

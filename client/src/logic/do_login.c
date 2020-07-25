@@ -54,18 +54,16 @@ static void send_login_packet(int socket, char *input_login, char *input_passwor
     cJSON_AddItemToObject(packet, "TYPE", json_value);
     json_value = cJSON_CreateString(input_login);
     cJSON_AddItemToObject(packet, "LOGIN", json_value);
-    json_value = cJSON_CreateString(input_password);
+    json_value = cJSON_CreateString(mx_rsa_encrypt(crypt(input_password, "X07")));
     cJSON_AddItemToObject(packet, "PASSWORD", json_value);
     packet_str = cJSON_Print(packet);
     if (packet_str == NULL)
         mx_null_error("61: send_login_packet");
-
     char *packet_with_prefix = packet_len_prefix_adder(packet_str);
+
     if (packet_with_prefix == NULL)
         mx_null_error("65: send_login_packet");
     send(socket, packet_with_prefix, (int)strlen(packet_with_prefix), 0);
-    // free(login_pair);
-    // free(pass_pair);
     free(packet_str);
     free(packet_with_prefix);
 }

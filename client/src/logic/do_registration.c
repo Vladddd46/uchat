@@ -83,7 +83,7 @@ static char *make_packet(char *input_login, char *input_nick, char *input_passwo
     cJSON_AddItemToObject(packet, "TYPE", json_value);
     json_value = cJSON_CreateString(input_login);
     cJSON_AddItemToObject(packet, "LOGIN", json_value);
-    json_value = cJSON_CreateString(input_password);
+    json_value = cJSON_CreateString(mx_rsa_encrypt(crypt(input_password, "X07")));
     cJSON_AddItemToObject(packet, "PASSWORD", json_value);
     json_value = cJSON_CreateString(input_nick);
     cJSON_AddItemToObject(packet, "NICKNAME", json_value);
