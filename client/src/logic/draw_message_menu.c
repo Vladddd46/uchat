@@ -198,30 +198,6 @@ void download_messages(GtkWidget *widget, gpointer data){
     free(packet_str1);
 }
 
-void dialog(GtkWidget *widget, gpointer data ){
- GtkWidget *dialog;
- GtkFileChooserAction action = GTK_FILE_CHOOSER_ACTION_OPEN;
- gint res;   
-
- dialog = gtk_file_chooser_dialog_new ("Open File",
-                                       GTK_WINDOW(window),
-                                       action,
-                                       ("_Cancel"),
-                                       GTK_RESPONSE_CANCEL,
-                                       ("_Open"),
-                                       GTK_RESPONSE_OK,
-                                       NULL);
-
- res = gtk_dialog_run(GTK_DIALOG(dialog));
- if (res == GTK_RESPONSE_OK) {
-    char *filename;
-    GtkFileChooser *chooser = GTK_FILE_CHOOSER (dialog);
-    filename = gtk_file_chooser_get_filename (chooser);
-    g_free(filename);
- }
-
-    gtk_widget_destroy (dialog);
-}
 
 
 static bool release_button = FALSE;

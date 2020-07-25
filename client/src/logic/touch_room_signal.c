@@ -208,7 +208,7 @@ void touch_room_signal(GtkWidget *listbox, void *socket){
         iconn = gdk_pixbuf_scale_simple(iconn, 32,32, GDK_INTERP_BILINEAR);
         icon = gtk_image_new_from_pixbuf(iconn);
         gtk_button_set_image (GTK_BUTTON (screp), icon);
-        g_signal_connect(screp, "clicked", G_CALLBACK(dialog), NULL);
+         g_signal_connect(screp, "clicked", G_CALLBACK(create_message_system), NULL);
 
 
         sticker = gtk_button_new();
@@ -223,8 +223,8 @@ void touch_room_signal(GtkWidget *listbox, void *socket){
         newmessedgentry = gtk_text_view_new_with_buffer(textbuffer);
         gtk_widget_set_name(newmessedgentry,"newmessedgentry");
         gtk_box_pack_start(GTK_BOX(downbox),newmessedgentry, TRUE, TRUE, 0);
-        g_signal_connect (G_OBJECT (newmessedgentry), "key_release_event", G_CALLBACK (button_release), NULL);
-        g_signal_connect (G_OBJECT (newmessedgentry), "key_press_event", G_CALLBACK (my_keypress_function), NULL);
+        // g_signal_connect (G_OBJECT (newmessedgentry), "key_release_event", G_CALLBACK (button_release), NULL);
+        // g_signal_connect (G_OBJECT (newmessedgentry), "key_press_event", G_CALLBACK (my_keypress_function), NULL);
         
         scrollmess = gtk_scrolled_window_new(0,0);
         gtk_fixed_put(GTK_FIXED (fixed), scrollmess, 300,50);
