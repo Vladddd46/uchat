@@ -11,6 +11,8 @@
 #include <sqlite3.h>
 #include <pthread.h>
 #include <stdbool.h>
+#include <sys/types.h>
+#include <sys/stat.h>
 #include "libmx.h"
 #include "cJSON.h"
 #include "utils.h"
@@ -60,6 +62,8 @@ int  mx_listening_socket_init(int port);
 void mx_argv_validator(int argc);
 void mx_login_user_socket(connected_client_list_t *p, char *send_packet, char **receivers);
 int  mx_user_is_already_logged_in(connected_client_list_t *list, char *user_login);
+void mx_deamon_start(void);
+void mx_write_to_log(char *msg, int stream);
 
 // Database functions.
 void    mx_database_init();
