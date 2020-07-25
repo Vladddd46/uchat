@@ -273,12 +273,6 @@ gboolean draw_message_menu(void *data){
     gtk_button_set_image (GTK_BUTTON (leftmenu), icon);
     g_signal_connect(leftmenu,"clicked", G_CALLBACK(draw_edit_profile), NULL);
 
-    // searchmenu = gtk_text_view_new();
-    // gtk_widget_set_size_request(searchmenu,150,50);
-    // gtk_widget_set_name(searchmenu,"searchmenu");
-    // gtk_box_pack_start(GTK_BOX(leftbox),searchmenu, TRUE, TRUE, 10);
-    
-
     newchatbutton = gtk_button_new();
     gtk_box_pack_end(GTK_BOX(leftbox), newchatbutton, TRUE, TRUE, 0);
     iconn = gdk_pixbuf_new_from_file("./media/img/plus_icon.png",NULL);

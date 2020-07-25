@@ -66,6 +66,10 @@ static char *mx_json_packet_former_from_list(char* message, char* time, char* se
     json_value = cJSON_CreateString(message);
     sprintf(packet_former, "MESSAGE0");
     cJSON_AddItemToObject(packet, packet_former, json_value);
+    json_value = cJSON_CreateString(mx_itoa(chat_id));
+    cJSON_AddItemToObject(packet, "CHATID", json_value);
+
+
     packet_str = cJSON_Print(packet);
     free(last_msg_id_str);
     return packet_str;
