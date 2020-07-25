@@ -20,9 +20,7 @@ int mx_get_last_message_id(int chat_id) {
     int exit = sqlite3_prepare_v2(db, sql, -1, &res, 0);
     mx_dberror(db, exit, "mx_get_last_message_id | SELECT error");
     sqlite3_step(res);
-    printf("Got here 0\n\n");
     if((sqlite3_column_text(res, 0)) != NULL) {
-        printf("Got here 1\n\n");
         last_message_id_str = mx_string_copy((char *)sqlite3_column_text(res, 0));
         if (last_message_id_str == NULL)
             db_null_error();

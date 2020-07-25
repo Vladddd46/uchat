@@ -53,6 +53,24 @@ static char **packet_receivers_determine(char *packet) {
     return receivers;
 }
 
+
+static int handle_connection(fd_set read_descriptors, connected_client_list_t *p) {
+    if (FD_ISSET(p->sock_fd, &read_descriptors)) {
+        char *packet = packet_receive(p->sock_fd);
+        if (packet == NULL || !mx_strcmp("", packet)) return 1;
+        char *send_packet = mx_database_communication(packet, &p);
+        if (send_packet == NULL) return 1;
+        char **receivers = packet_receivers_determine(send_packet);
+        mx_login_user_socket(p, send_packet, receivers);
+        char *send_back_packet_prefixed =  packet_len_prefix_adder(send_packet);
+        for (connected_client_list_t *s = ctx.head.next; s != NULL; s = s->next) {
+            if (s->is_logged && mx_str_in_arr(s->login, receivers))
+                send(s->sock_fd, send_back_packet_prefixed, (int)strlen(send_back_packet_prefixed), 0);
+        }          
+    }
+    return 0;         
+}
+
 /*
  * Going through each opened socket and determine, whether socket is active.
  * if true => receive packet from socket => alalyze this packet =>
@@ -76,19 +94,8 @@ static void *handle_server(void *param) {
         
         pthread_mutex_lock(&ctx_mutex);
         for (connected_client_list_t *p = ctx.head.next; p != NULL; p = p->next) {
-            if (FD_ISSET(p->sock_fd, &read_descriptors)) {
-                char *packet = packet_receive(p->sock_fd);
-                if (packet == NULL || !mx_strcmp("", packet)) break;
-                char *send_packet = mx_database_communication(packet, &p);
-                if (send_packet == NULL) break;
-                char **receivers = packet_receivers_determine(send_packet);
-                mx_login_user_socket(p, send_packet, receivers);
-                char *send_back_packet_prefixed =  packet_len_prefix_adder(send_packet);
-                for (connected_client_list_t *s = ctx.head.next; s != NULL; s = s->next) {
-                    if (s->is_logged && mx_str_in_arr(s->login, receivers))
-                        send(s->sock_fd, send_back_packet_prefixed, (int)strlen(send_back_packet_prefixed), 0);
-                }          
-            }            
+            if (handle_connection(read_descriptors, p))
+                break;
         }
         pthread_mutex_unlock(&ctx_mutex);
     }

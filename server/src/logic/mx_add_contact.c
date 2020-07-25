@@ -131,8 +131,6 @@ static char *json_packet_former_from_list(chats_t *chat, char *status, char* log
     return packet_str;
 }
 
-
-
 static char *mx_add_contact_success(char *message_error, char *login, char *mylogin, sqlite3 *db) {
     char *sendback_packet;
     int mylogin_id = mx_get_user_id(mylogin);
