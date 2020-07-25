@@ -1,15 +1,7 @@
 #include "client.h"
 
-void back_to_menu(GtkWidget *back, client_context_t *client_context){
-    gtk_widget_destroy(grid);
-    main_menu(); 
-}
-
 void make_registration(GtkWidget *Registration, client_context_t *client_context){
-
     gtk_widget_destroy(grid);
-
-
     grid = gtk_grid_new();
     gtk_widget_set_name(grid,"gride");
     gtk_fixed_put(GTK_FIXED (fixed), grid, 350,175);
@@ -17,9 +9,8 @@ void make_registration(GtkWidget *Registration, client_context_t *client_context
     GdkPixbuf *iconn = gdk_pixbuf_new_from_file("./media/img/pokeball.png",NULL);
     iconn = gdk_pixbuf_scale_simple(iconn, 128,128, GDK_INTERP_BILINEAR);
     GtkWidget *iconnn = gtk_image_new_from_pixbuf(iconn);
-     gtk_widget_set_name(iconnn,"image");
-     gtk_grid_attach(GTK_GRID(grid), iconnn, 1, 98, 1, 1);
-
+    gtk_widget_set_name(iconnn,"image");
+    gtk_grid_attach(GTK_GRID(grid), iconnn, 1, 98, 1, 1);
     login = gtk_entry_new();
     if (client_context->Ukraine == FALSE)
         gtk_entry_set_placeholder_text(GTK_ENTRY(login),"Login");
@@ -36,7 +27,6 @@ void make_registration(GtkWidget *Registration, client_context_t *client_context
 
     labell = gtk_label_new("");
     gtk_grid_attach(GTK_GRID(grid), labell, 1, 101, 1, 1);
-
     Password = gtk_entry_new();
     if (client_context->Ukraine == FALSE)
         gtk_entry_set_placeholder_text(GTK_ENTRY(Password),"Password");
@@ -52,10 +42,8 @@ void make_registration(GtkWidget *Registration, client_context_t *client_context
         gtk_entry_set_placeholder_text(GTK_ENTRY(SecondPassword),"Підтвердіть свій пароль");
     gtk_grid_attach(GTK_GRID(grid), SecondPassword, 1, 103, 1, 1);
     gtk_entry_set_visibility(GTK_ENTRY(SecondPassword),FALSE);
-
     labell2 = gtk_label_new("");
     gtk_grid_attach(GTK_GRID(grid), labell2, 1, 104, 1, 1);
-
     if (client_context->Ukraine == FALSE)
         Registration = gtk_button_new_with_label("Sign Up");
     else
@@ -73,6 +61,5 @@ void make_registration(GtkWidget *Registration, client_context_t *client_context
     gtk_widget_set_name(back,"log");
     g_signal_connect(back, "clicked", G_CALLBACK(back_to_menu), client_context);
     gtk_grid_attach(GTK_GRID(grid), back, 1, 107, 1, 1);
-
     g_idle_add ((int (*)(void *))show_widget, window);
 }

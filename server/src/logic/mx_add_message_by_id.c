@@ -1,9 +1,9 @@
 #include "server.h"
 
-static char* mx_delete_slesh_n(char *str) {
-    *(str + mx_strlen(str) - 1) = '\0';
-    return str; 
-}
+// static char* mx_delete_slesh_n(char *str) {
+//     *(str + mx_strlen(str) - 1) = '\0';
+//     return str; 
+// }
 
 static void mx_add_last_message(int chat_id, char *message, char *time, char *sender, char* msg_type) {
     char *message_error;
@@ -15,7 +15,7 @@ static void mx_add_last_message(int chat_id, char *message, char *time, char *se
     message_id++;
     sqlite3 *db = mx_opening_db();
     sprintf(sql ,"INSERT INTO MESSAGES (CHATID, MSGTYPE, MESSAGEID, SENDER, TIME, MESSAGE) VALUES(%d, '%s', %d, '%s', '%s', '%s');", 
-                                 chat_id, msg_type, message_id, sender, mx_delete_slesh_n(time), mx_delete_slesh_n(message));
+                                 chat_id, msg_type, message_id, sender, time, message);
     check = sqlite3_exec(db, sql, NULL, 0, &message_error);
     mx_dberror(db, check, "Error inserting to table");
     sqlite3_close(db);

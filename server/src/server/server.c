@@ -4,7 +4,6 @@
 static server_context_t ctx;
 static pthread_mutex_t ctx_mutex = PTHREAD_MUTEX_INITIALIZER;
 
-
 static void server_context_init(void) {
     pthread_mutex_lock(&ctx_mutex);
     FD_ZERO (&ctx.read_descriptors);

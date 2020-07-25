@@ -73,10 +73,19 @@ void end_message (GtkWidget *widget, GtkWidget *message);
 int show_popup(GtkWidget *widget, GdkEvent *event);
 void add_new_user(GtkWidget *newchatbutton, gpointer data);
 gboolean mini_button_release (GtkWidget *widget, GdkEventKey *event, gpointer data);
+void change_password_system(GtkWidget* widget, gpointer data);
+void editbool (GtkWidget* widget,gpointer data);
+void findbool (GtkWidget* widget,gpointer data);
+void draw_edit_profile(GtkWidget *widget, gpointer data);
+void stickerbool (GtkWidget* widget,gpointer data);
 gboolean add_new_friend (GtkWidget *widget, gpointer data);
 gboolean draw_list_box_system(void *data);
 void dialog(GtkWidget *widget, gpointer data );
+void logout_system(GtkWidget *widget, gpointer data);
 gboolean draw_list_box(void *data);
+void switchlanguage_system(GtkSwitch *widget,
+               gboolean   state,
+               gpointer   user_data);
 // gboolean mini_my_keypress_function (GtkWidget *widget, GdkEventKey *event, gpointer data);
 
 
