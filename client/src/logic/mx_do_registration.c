@@ -92,7 +92,7 @@ static char *make_packet(char *input_login, char *input_nick, char *input_passwo
     return packet_str;
 }
 
-void do_registration(GtkWidget *Registration, client_context_t *client_context) {
+void mx_do_registration(GtkWidget *Registration, client_context_t *client_context) {
     char *input_login            = (char *)gtk_entry_get_text(GTK_ENTRY(login));
     char *input_nick             = (char *)gtk_entry_get_text(GTK_ENTRY(nickname));
     char *input_password         = (char *)gtk_entry_get_text(GTK_ENTRY(Password));

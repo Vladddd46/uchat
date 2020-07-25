@@ -1,6 +1,6 @@
 #include "client.h"
 
-gboolean mini_button_release (GtkWidget *widget, GdkEventKey *event, gpointer data) {
+gboolean mx_mini_button_release (GtkWidget *widget, GdkEventKey *event, gpointer data) {
   	char *editbuff = (char *)gtk_entry_get_text(GTK_ENTRY(minientry));
   	cJSON *packet = cJSON_CreateObject();
     char  *packet_str = NULL;

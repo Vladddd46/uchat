@@ -10,10 +10,10 @@ void mx_login_system(client_context_t *client_context, char *packet) {
     gui->pack = mx_strdup(gui->pack);
     gui->number = 0;
     client_context->mas = mx_new_strarr(len + 1000);
-    gdk_threads_add_idle_full(G_PRIORITY_HIGH_IDLE, draw_message_menu, gui, 0);
+    gdk_threads_add_idle_full(G_PRIORITY_HIGH_IDLE, mx_draw_message_menu, gui, 0);
     int i = 0;
     while (len > i && !gtk_events_pending()){
-        gdk_threads_add_idle_full(G_PRIORITY_HIGH_IDLE, create_row, gui, 0);
+        gdk_threads_add_idle_full(G_PRIORITY_HIGH_IDLE, mx_create_row, gui, 0);
         i++;
     }
 }

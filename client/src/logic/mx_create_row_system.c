@@ -1,6 +1,6 @@
 #include "client.h"
 
-gboolean create_row_system(void *data) {
+gboolean mx_create_row_system(void *data) {
 	char *packet = (char *)data;
 	char *length = get_value_by_key(packet,"MSGLEN");
 	int len = atoi(length);
@@ -16,6 +16,6 @@ gboolean create_row_system(void *data) {
 	gtk_container_add(GTK_CONTAINER(scrolll), listboxmess);
 	g_idle_add((int (*)(void *))show_widget, window);
 	for (int i = 0; len > i; i++)
-		gdk_threads_add_idle(create_message, pack);
+		gdk_threads_add_idle(mx_create_message, pack);
 	return 0;
 }

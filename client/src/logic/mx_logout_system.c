@@ -1,7 +1,7 @@
 #include "client.h"
                
-void logout_system(GtkWidget *widget, gpointer data){
-    close_window(editwindow);
+void mx_logout_system(GtkWidget *widget, gpointer data){
+    mx_close_window(editwindow);
     client_context->edit = 0;
     if (client_context->find == 1){
         gtk_widget_destroy(miniwindow);
@@ -22,5 +22,5 @@ void logout_system(GtkWidget *widget, gpointer data){
     char *packet_with_prefix = packet_len_prefix_adder(packet_str);
     send(client_context->sockfd, packet_with_prefix, (int)strlen(packet_with_prefix), 0);
     gtk_container_add(GTK_CONTAINER(window), fixed);
-    main_menu();
+    mx_main_menu();
 }

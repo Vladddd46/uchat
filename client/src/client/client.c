@@ -24,12 +24,12 @@ static void gui(int argc, char **argv, client_context_t *client_context) {
     gtk_widget_set_name(fixed,"fixedd");
     gtk_container_add(GTK_CONTAINER(window), fixed); 
     client_context->Ukraine = FALSE;
-    main_menu();
+    mx_main_menu();
 
     gtk_main(); 
 }
 
-static struct sockaddr_in client_address_describer(int port) { 
+static struct sockaddr_in client_address_describer(int port,  char *address) { 
     /*
      * Create structure, where client address is described.
      * 1. server`s address 
@@ -38,7 +38,7 @@ static struct sockaddr_in client_address_describer(int port) {
      */
     struct sockaddr_in client_addr;
     bzero(&client_addr, sizeof(client_addr));
-    client_addr.sin_addr.s_addr = inet_addr("127.0.0.1"); //Local Host
+    client_addr.sin_addr.s_addr = inet_addr(address); //Local Host
     client_addr.sin_family = AF_INET;
     client_addr.sin_port = htons(port);
 
@@ -53,7 +53,6 @@ void client_context_init(int sockfd) {
 }
 
 static void received_packet_analyzer(char *packet_type, char *packet) {
-    printf(">>>>>>>>>>>>>packet%s\n",packet );
     if (!mx_strcmp(packet_type, "reg_s"))
         gdk_threads_add_idle_full(G_PRIORITY_HIGH_IDLE, mx_registration_system, (void *)mx_strdup(packet), 0);
     else if (!mx_strcmp(packet_type, "login_s")){
@@ -61,17 +60,17 @@ static void received_packet_analyzer(char *packet_type, char *packet) {
             mx_login_system(client_context, packet);
     }
     else if (!mx_strcmp(packet_type, "find_user_s")){
-        gdk_threads_add_idle_full(G_PRIORITY_HIGH_IDLE, draw_list_box_system, (void *)mx_strdup(packet), 0);
+        gdk_threads_add_idle_full(G_PRIORITY_HIGH_IDLE, mx_draw_list_box_system, (void *)mx_strdup(packet), 0);
     }
     else if (!mx_strcmp(packet_type, "add_new_user_s")) {
 
        if(mx_strcmp(get_value_by_key(packet, "STATUS"), "false") != 0)
-            remake_chats(packet);
+            mx_remake_chats(packet);
     }
     else if (!mx_strcmp(packet_type, "msg_s"))
-        gdk_threads_add_idle_full(G_PRIORITY_HIGH_IDLE, create_row_system, (void *)mx_strdup(packet), 0);
+        gdk_threads_add_idle_full(G_PRIORITY_HIGH_IDLE, mx_create_row_system, (void *)mx_strdup(packet), 0);
      else if (!mx_strcmp(packet_type, "add_msg_s")) {
-        create_row_system_new(client_context, packet);
+        mx_create_row_system_new(client_context, packet);
     }
 
 }
@@ -117,7 +116,7 @@ int main(int argc, char **argv) {
     argv_validator(argc, argv);
     int port                       = atoi(argv[2]);
     int sockfd                     = mx_socket();
-    struct sockaddr_in client_addr = client_address_describer(port);
+    struct sockaddr_in client_addr = client_address_describer(port, argv[1]);
 
     // Do the connect to the server.
     int res = connect(sockfd, (struct sockaddr *)&client_addr, sizeof(client_addr));

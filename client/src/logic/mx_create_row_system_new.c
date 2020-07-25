@@ -1,6 +1,6 @@
 #include "client.h"
 
-void create_row_system_new(client_context_t *client_context, char *packet) {
+void mx_create_row_system_new(client_context_t *client_context, char *packet) {
 	char *chatid = get_value_by_key(packet,"CHATID");
 	if (client_context->indexrow != -1){
 		if (!mx_strcmp(chatid,client_context->mas[client_context->indexrow])) {
@@ -13,7 +13,7 @@ void create_row_system_new(client_context_t *client_context, char *packet) {
 			pack->number = 0;
 			g_idle_add ((int (*)(void *))show_widget, window);
 			for (int i = 0; len > i; i++)
-				gdk_threads_add_idle(create_message, pack);
+				gdk_threads_add_idle(mx_create_message, pack);
 			}
 	}
 

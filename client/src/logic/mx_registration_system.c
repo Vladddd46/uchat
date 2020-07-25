@@ -9,10 +9,9 @@ gboolean mx_registration_system(void *data) {
 
     if (!strcmp(status, "success")) {
         gtk_widget_destroy(grid);
-        main_menu(); 
+        mx_main_menu(); 
     }
     else {
-        printf("%s\n", status);
        /* Денис:
         * Тут регестрация прошла неуспешно.
         * Пользователю должно вывестись уведомление о неуспешной регестрации

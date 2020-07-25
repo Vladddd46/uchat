@@ -1,6 +1,6 @@
 #include "client.h"
 
-void make_registration(GtkWidget *Registration, client_context_t *client_context){
+void mx_make_registration(GtkWidget *Registration, client_context_t *client_context){
     gtk_widget_destroy(grid);
     grid = gtk_grid_new();
     gtk_widget_set_name(grid,"gride");
@@ -49,7 +49,7 @@ void make_registration(GtkWidget *Registration, client_context_t *client_context
     else
         Registration = gtk_button_new_with_label("Зареєструватися");
     gtk_widget_set_name(Registration,"reg");
-    g_signal_connect(Registration, "clicked", G_CALLBACK(do_registration), client_context);
+    g_signal_connect(Registration, "clicked", G_CALLBACK(mx_do_registration), client_context);
     gtk_grid_attach(GTK_GRID(grid), Registration, 1, 105, 1, 1);
 
     labell3 = gtk_label_new("");
@@ -59,7 +59,7 @@ void make_registration(GtkWidget *Registration, client_context_t *client_context
     else
         back = gtk_button_new_with_label("Повернутіся до Логіну");
     gtk_widget_set_name(back,"log");
-    g_signal_connect(back, "clicked", G_CALLBACK(back_to_menu), client_context);
+    g_signal_connect(back, "clicked", G_CALLBACK(mx_back_to_menu), client_context);
     gtk_grid_attach(GTK_GRID(grid), back, 1, 107, 1, 1);
     g_idle_add ((int (*)(void *))show_widget, window);
 }

@@ -1,6 +1,6 @@
  #include "client.h"
  
- void remake_chats(char *packet){
+ void mx_remake_chats(char *packet){
     char *length = get_value_by_key(packet,"LENGTH");
     int len = atoi(length);
     int i = 0;
@@ -10,7 +10,7 @@
     gui->number = client_context->guinumber;
     GtkWidget *scroll = gtk_widget_get_parent(listbox);
     while (len > i && !gtk_events_pending()){
-        gdk_threads_add_idle_full(G_PRIORITY_HIGH_IDLE, create_row, gui, 0);
+        gdk_threads_add_idle_full(G_PRIORITY_HIGH_IDLE, mx_create_row, gui, 0);
         i++;
     }
  }

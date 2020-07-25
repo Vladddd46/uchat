@@ -68,10 +68,9 @@ static void send_login_packet(int socket, char *input_login, char *input_passwor
     free(packet_with_prefix);
 }
 
-void do_login(GtkWidget *entryspawn, client_context_t *client_context){
+void mx_do_login(GtkWidget *entryspawn, client_context_t *client_context){
     char *input_login    = (char *)gtk_entry_get_text(GTK_ENTRY(login));
     char *input_password = (char *)gtk_entry_get_text(GTK_ENTRY(Password));
-    printf("ewvewvew\n");
     if (input_login == NULL || input_password == NULL || !mx_strcmp(input_login, "") || !mx_strcmp(input_password, ""))
         return;
     int  validate_status = validate(input_login, input_password);

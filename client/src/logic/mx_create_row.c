@@ -1,7 +1,7 @@
 #include "client.h"
 
 
-gboolean create_row(void *data){
+gboolean mx_create_row(void *data){
      t_s_glade *gui = (t_s_glade *)data;
     char *chatname = get_value_by_key(gui->pack,mx_strjoin("CHATNAME=",mx_itoa(gui->number)));
     char *lastmessage = get_value_by_key(gui->pack,mx_strjoin("LASTMESSAGE=",mx_itoa(gui->number)));

@@ -46,44 +46,40 @@ typedef struct s_s_glade {
 
 client_context_t *client_context;
 // какие то непонятные функции Дениса. PS. структурируй их пожалуйста.
-void stickerbool (GtkWidget* widget,gpointer data);
-void findbool (GtkWidget* widget,gpointer data);
-void editbool (GtkWidget* widget,gpointer data);
-void close_window(GtkWidget *widget);
+void mx_sticker_menu(GtkWidget* widget, gpointer data);
+void mx_stickerbool (GtkWidget* widget,gpointer data);
+void mx_sticker_send_system(GtkWidget* widget, gpointer data);
+void mx_findbool (GtkWidget* widget,gpointer data);
+void mx_editbool (GtkWidget* widget,gpointer data);
+void mx_close_window(GtkWidget *widget);
 gboolean button_release (GtkWidget *widget, GdkEventKey *event, gpointer data);
-void download_messages(GtkWidget *widget, gpointer data);
+void mx_download_messages(GtkWidget *widget, gpointer data);
 gboolean my_keypress_function (GtkWidget *widget, GdkEventKey *event, gpointer data);
-void create_row_system_new(client_context_t *client_context, char *packet);
+void mx_create_row_system_new(client_context_t *client_context, char *packet);
 int show_widget(GtkWidget *widget);
-void remake_chats(char *pack);
-void back_to_menu(GtkWidget *back, client_context_t *client_context);
-void main_menu();
-gboolean draw_message_menu(void *data);
-gboolean create_message_system(void *data);
-gboolean create_row(void * data);
-gboolean create_message(void * data);
-void end_message (GtkWidget *widget, GtkWidget *message);
-char *get_text_of_textview(GtkWidget *text_view);
-void make_registration(GtkWidget *Registration, client_context_t *client_context);
-void do_login(GtkWidget *entryspawn, client_context_t *client_context);
-void touch_room_signal(GtkWidget *listbox, void *socket);
-void delete_message(GtkWidget *widget, GtkWidget *message);
-void edit_message (GtkWidget *widget, GtkWidget *message);
-void end_message (GtkWidget *widget, GtkWidget *message);
-int show_popup(GtkWidget *widget, GdkEvent *event);
-void add_new_user(GtkWidget *newchatbutton, gpointer data);
-gboolean mini_button_release (GtkWidget *widget, GdkEventKey *event, gpointer data);
-void change_password_system(GtkWidget* widget, gpointer data);
-void editbool (GtkWidget* widget,gpointer data);
-void findbool (GtkWidget* widget,gpointer data);
-void draw_edit_profile(GtkWidget *widget, gpointer data);
-void stickerbool (GtkWidget* widget,gpointer data);
-gboolean add_new_friend (GtkWidget *widget, gpointer data);
-gboolean draw_list_box_system(void *data);
-void dialog(GtkWidget *widget, gpointer data );
-void logout_system(GtkWidget *widget, gpointer data);
-gboolean draw_list_box(void *data);
-void switchlanguage_system(GtkSwitch *widget,
+void mx_remake_chats(char *pack);
+void mx_back_to_menu(GtkWidget *back, client_context_t *client_context);
+void mx_main_menu();
+gboolean mx_draw_message_menu(void *data);
+gboolean mx_create_message_system(void *data);
+gboolean mx_create_row(void * data);
+gboolean mx_create_message(void * data);
+char *mx_get_text_of_textview(GtkWidget *text_view);
+void mx_make_registration(GtkWidget *Registration, client_context_t *client_context);
+void mx_do_login(GtkWidget *entryspawn, client_context_t *client_context);
+void mx_touch_room_signal(GtkWidget *listbox, void *socket);
+void mx_add_new_user(GtkWidget *newchatbutton, gpointer data);
+gboolean mx_mini_button_release (GtkWidget *widget, GdkEventKey *event, gpointer data);
+void mx_change_password_system(GtkWidget* widget, gpointer data);
+void mx_editbool (GtkWidget* widget,gpointer data);
+void mx_findbool (GtkWidget* widget,gpointer data);
+void mx_draw_edit_profile(GtkWidget *widget, gpointer data);
+void mx_stickerbool (GtkWidget* widget,gpointer data);
+gboolean mx_add_new_friend (GtkWidget *widget, gpointer data);
+gboolean mx_draw_list_box_system(void *data);
+void mx_logout_system(GtkWidget *widget, gpointer data);
+gboolean mx_draw_list_box(void *data);
+void mx_switchlanguage_system(GtkSwitch *widget,
                gboolean   state,
                gpointer   user_data);
 // gboolean mini_my_keypress_function (GtkWidget *widget, GdkEventKey *event, gpointer data);
@@ -92,13 +88,13 @@ void switchlanguage_system(GtkSwitch *widget,
 // main
 void argv_validator(int argc, char **argv);
 int mx_socket();
-struct sockaddr_in mx_client_address_describer(int port);
+// struct sockaddr_in mx_client_address_describer(int port,  char *address);
 
 // Logic
-void do_registration(GtkWidget *Registration, client_context_t *client_context);
+void mx_do_registration(GtkWidget *Registration, client_context_t *client_context);
 gboolean mx_registration_system(void *data);
 void mx_login_system(client_context_t *client_context, char *packet);
-gboolean create_row_system(void *data);
+gboolean mx_create_row_system(void *data);
 
 // additional
 void mx_null_error(char *msg);
@@ -106,6 +102,7 @@ char *mx_get_time();
 
 
 //mini приставка для виджетов в окне добавления юзеров
+GtkWidget *scrollm;
 GtkWidget *back;
 GtkWidget *stickermessage;
 GtkWidget *stickerebox;

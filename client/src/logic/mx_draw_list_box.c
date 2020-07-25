@@ -1,6 +1,6 @@
 #include "client.h"
 
-gboolean draw_list_box(void *data){
+gboolean mx_draw_list_box(void *data){
 	t_s_glade *pack = (t_s_glade *)data; 
     minirow = gtk_list_box_row_new();
 	gtk_list_box_insert (GTK_LIST_BOX(minilistbox), minirow, pack->number);
@@ -17,7 +17,7 @@ gboolean draw_list_box(void *data){
     icon = gtk_image_new_from_pixbuf(iconn);
     gtk_grid_attach(GTK_GRID(minibox),minieventbox, 1, 0, 2, 2);
     gtk_container_add(GTK_CONTAINER(minieventbox), icon);
-    g_signal_connect(minieventbox,"button-release-event", G_CALLBACK(add_new_friend), minilistbox);
+    g_signal_connect(minieventbox,"button-release-event", G_CALLBACK(mx_add_new_friend), minilistbox);
     gtk_list_box_select_row(GTK_LIST_BOX(minilistbox),GTK_LIST_BOX_ROW(minirow));
 	g_idle_add ((int (*)(void *))show_widget, miniwindow);
     return 0;

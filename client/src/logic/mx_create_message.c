@@ -1,6 +1,6 @@
 #include "client.h"
 
-gboolean create_message(void *data){
+gboolean mx_create_message(void *data){
     t_s_glade *pack = (t_s_glade *)data; 
     GtkAdjustment *adj;
     char *nameuser = client_context->username;

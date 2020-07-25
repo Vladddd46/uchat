@@ -1,6 +1,6 @@
 #include "client.h"
 
-gboolean add_new_friend(GtkWidget *widget, gpointer data) {
+gboolean mx_add_new_friend(GtkWidget *widget, gpointer data) {
    char  *login = g_object_get_data(G_OBJECT(widget),"name user");
 
   	cJSON *packet = cJSON_CreateObject();

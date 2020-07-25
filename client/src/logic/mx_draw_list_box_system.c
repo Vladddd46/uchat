@@ -1,6 +1,6 @@
 #include "client.h"
 
-gboolean draw_list_box_system(void *data){
+gboolean mx_draw_list_box_system(void *data){
     char *packet = (char *)data;
     char *len_str = get_value_by_key(packet,"LENGTH");
 	int len = atoi(len_str);
@@ -21,7 +21,7 @@ gboolean draw_list_box_system(void *data){
         pack->login = mx_string_copy(pack->login);
         pack->nickname = nickname;
         pack->nickname = mx_string_copy(pack->nickname);
-		gdk_threads_add_idle_full(G_PRIORITY_HIGH_IDLE, draw_list_box, pack, 0);
+		gdk_threads_add_idle_full(G_PRIORITY_HIGH_IDLE, mx_draw_list_box, pack, 0);
 	}
     return 0;
 }
