@@ -10,8 +10,7 @@ int mx_get_port(char **argv) {
     char *msg;
 
     if (port == 0) {
-        msg = "Invalid port number\n";
-        write(2, msg, (int)strlen(msg));
+    	mx_write_to_log("Invalid port number\n", 2);
         exit(1);
     }
     return port;

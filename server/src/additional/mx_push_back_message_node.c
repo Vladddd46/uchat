@@ -7,7 +7,7 @@ static chat_message_t *create_message_node(char *sender, char *time,
 
     if (node == NULL) {
         msg = "create_message_node| Malloc error\n";
-        write(2, msg, (int)strlen(msg));
+        mx_write_to_log(msg, 2);
         exit(1);
     }
     node->sender   = sender;

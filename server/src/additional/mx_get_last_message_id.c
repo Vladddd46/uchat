@@ -3,7 +3,7 @@
 static void db_null_error() {
     char *msg = "mx_get_last_message_id| Request to db returned NULL\n";
 
-    write(2, msg, (int)strlen(msg));
+    mx_write_to_log(msg, 2);
     exit(1);
 }
 

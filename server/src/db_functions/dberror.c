@@ -7,8 +7,7 @@
  */
 void mx_dberror(sqlite3 *db, int status, char *msg) {
     if (status != SQLITE_OK) {
-        write(2, msg, (int)strlen(msg));
-        write(2, "\n", 1);
+        mx_write_to_log(msg, 2);
         sqlite3_close(db); 
         exit(1);
     }

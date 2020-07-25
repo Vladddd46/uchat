@@ -34,7 +34,7 @@ static bool update_connections(fd_set *descriptors) {
     pthread_mutex_lock(&ctx_mutex);  
     for (connected_client_list_t *s = ctx.head.next; s != NULL; s = s->next) {
         if (recv(s->sock_fd, buffer, sizeof(buffer), MSG_PEEK | MSG_DONTWAIT) == 0) {
-            printf("Connection on socket with socket fd %d was closed\n", s->sock_fd);
+            mx_write_to_log("Connection on socket with socket fd %d was closed\n", 1);
             close(s->sock_fd);
             FD_CLR(s->sock_fd, &ctx.read_descriptors);
             if (mx_socket_list_remove(&ctx.head, s->sock_fd) < 0) {
@@ -88,7 +88,6 @@ static void *handle_server(void *param) {
 
     while(true) {    
         update_connections(&read_descriptors);
-        printf("wait for incomming packets...\n");
         status = select(FD_SETSIZE, &read_descriptors, NULL, NULL, &tv);
         if (status <= 0) continue;
         
