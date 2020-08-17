@@ -1,4 +1,10 @@
-03.06.2020 - start.
 Application for messaging. Repository contains server and client side.
+--** Server **--
+Servers incomming connections by multiplexing sockets. select() system call is used for this purpose.
+
+--** Client **--
+GTK+3 for GUI
+sqlite3
+cJSON
 
 
