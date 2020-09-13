@@ -1,5 +1,5 @@
-./server/server
-./client/client
+./server/uchat_server
+./client/uchat
 obj
 .DS_Store
 libmx.a

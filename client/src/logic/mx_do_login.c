@@ -30,13 +30,11 @@ static int validate(char *login, char *password) {
     int password_status = password_validator(password);
 
     if (login_status != OKEY) {
-        // тут должно отрисовываться сообщение "неправильный синтаксис логина"
         write(2, "Input Syntax Error\n", 21);
         return 0;
     }
 
     if (password_status != OKEY) {
-        // тут должно отрисовываться сообщение "неправильный синтаксис пароля"
         write(2, "Input Syntax Error\n", 21);
         return 0;
     }
@@ -44,7 +42,7 @@ static int validate(char *login, char *password) {
 }
 
 static void send_login_packet(int socket, char *input_login, char *input_password) {
-    // char *login_pair = mx_strjoin("LOGIN:",    input_login); // потенциально удолять
+    // char *login_pair = mx_strjoin("LOGIN:",    input_login); // потенциально удолять // оставлю для потомков
     // char *pass_pair  = mx_strjoin("PASSWORD:", input_password);// потенциально удолять
     // char *packet_str     = json_packet_former(3, "TYPE:login_c", login_pair, pass_pair);// потенциально удолять
     

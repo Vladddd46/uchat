@@ -14,18 +14,18 @@
 #include "cJSON.h"
 
 typedef struct client_context_s {
-	int sockfd;
+	int  sockfd;
 	char *username;
 	char *allusers;
-	int indexrow;
-	int counter;
+	int  indexrow;
+	int  counter;
 	char **mas;
 	bool flag;
 	bool Ukraine;
 	bool edit;
 	bool find;
 	bool sticker;
-	int guinumber;
+	int  guinumber;
 } client_context_t;
 
 struct struct_type {
@@ -33,7 +33,7 @@ struct struct_type {
 	int number;
 	char *login;
 	char *nickname;
-	};
+};
 
 typedef struct s_s_glade {
  char *pack;
@@ -82,13 +82,10 @@ gboolean mx_draw_list_box(void *data);
 void mx_switchlanguage_system(GtkSwitch *widget,
                gboolean   state,
                gpointer   user_data);
-// gboolean mini_my_keypress_function (GtkWidget *widget, GdkEventKey *event, gpointer data);
-
 
 // main
 void argv_validator(int argc, char **argv);
 int mx_socket();
-// struct sockaddr_in mx_client_address_describer(int port,  char *address);
 
 // Logic
 void mx_do_registration(GtkWidget *Registration, client_context_t *client_context);
@@ -100,8 +97,6 @@ gboolean mx_create_row_system(void *data);
 void mx_null_error(char *msg);
 char *mx_get_time();
 
-
-//mini приставка для виджетов в окне добавления юзеров
 GtkWidget *scrollm;
 GtkWidget *back;
 GtkWidget *stickermessage;
@@ -138,7 +133,6 @@ GtkWidget *SecondPassword;
 GtkWidget *Registration;
 GtkWidget *screp;
 GtkWidget *buttonrefresh;
-//static GtkWidget *newbutton;
 GtkWidget *fixed;
 GtkTextBuffer *textbuffer;
 GtkWidget *window;
@@ -173,7 +167,6 @@ GtkWidget *delet;
 GtkWidget *editmessedgentry;
 GtkWidget *editbox;
 GtkWidget *messagebox;
-
 GtkWidget *editfixed;
 GtkWidget *editwindow;
 
