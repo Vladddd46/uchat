@@ -18,8 +18,11 @@
   <li><b>sqlite3</b> - database communication.<b>(!must be preinstalled in your system.<a href="https://www.tutorialspoint.com/sqlite/sqlite_installation.htm">installation link</a>)</b></li>
  </ul>
 
-
-  
+<h2>Compilation</h2>
+<ul>
+  <li>Just write <b>`make`</b> in root directory.</li>
+  <li>After successful compilation <b>./client/uchat</b> and <b>./server/uchat_server</b> files will appear.</li>
+  </ul>
   
 
 
