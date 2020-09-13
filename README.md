@@ -24,7 +24,10 @@
   <li>After successful compilation <b>./client/uchat</b> and <b>./server/uchat_server</b> files will appear.</li>
   </ul>
   
-
-
+<h2>Quickstart</h2>
+<ul>
+  <li>First of all you need to start server. <b>cd server; ./uchat_server port_number(<i>ps. I use port 1500</i>)</b></li>
+  <li>After successful compilation <b>./client/uchat</b> and <b>./server/uchat_server</b> files will appear.</li>
+</ul>
 
 
