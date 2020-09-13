@@ -22,6 +22,7 @@
 <ul>
   <li>Just write <b>`make`</b> in root directory.</li>
   <li>After successful compilation <b>./client/uchat</b> and <b>./server/uchat_server</b> files will appear.</li>
+  <li>Compilation was done on MacOS. Other systems were not tested.</li>
   </ul>
   
 <h2>Quickstart</h2>
