@@ -15,7 +15,7 @@
   <li><b>libmx</b> - helpful general functions.</li>
   <li><b>utils</b> - helpful specific functions.</li>
   <li><b>GTK3</b> - for grafical user interface.<b>(!must be preinstalled in your system.<a href="https://www.gtk.org/docs/installations/linux">installation link</a>)</b></li>
-  <li><b>sqlite3</b> - database communication.<b>(!must be preinstalled in your system<a href="https://www.tutorialspoint.com/sqlite/sqlite_installation.htm">installation link</a>)</b></li>
+  <li><b>sqlite3</b> - database communication.<b>(!must be preinstalled in your system<a href="https://www.tutorialspoint.com/sqlite/sqlite_installation.htm">installation link.</a>)</b></li>
  </ul>
 
 
