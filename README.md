@@ -3,11 +3,18 @@
 
 <h2>Project structure</h2>
 <ul>
-  <li>./libs - folder, which contains external libraries.</li>
-  <li>./client - folder with client side of application</li>
-  <li>./server - folder with server side of application</li>
+  <li><b>./libs</b> - folder, which contains external libraries.</li>
+  <li><b>./client</b> - folder with client side of application</li>
+  <li><b>./server</b> - folder with server side of application</li>
  </ul>
 
+<h2>External libraries</h2>
+<ul>
+  <li><b>CJSON</b> - json parser library.</li>
+  <li><b>crypt</b> - library with cryptography.</li>
+  <li><b>libmx</b> - helpful general functions</li>
+  <li><b>utils</b> - helpful specific functions</li>
+ </ul>
 
 
 
